@@ -87,15 +87,14 @@ class BruteForceEnsembleClassifier:
                         classifier = all_possible_ensembles[classifiers][0][cl][0]
                         params = all_possible_ensembles[classifiers][0][cl][1]
                         classifier.set_params(**params)
-                        count_right_answers = 0
+                        y_pred = np.zeros([len_y])
                         #k-fold cross-validation
                         for train, val in kf.split(X):
                             classifier.fit(X[train], y[train])
-                            y_pred = classifier.predict(X[val])
-                            count_right_answers = count_right_answers + np.equal(y_pred, y[val]).sum()
-                            for idx_p, idx_obj in enumerate(val): 
-                                classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_p]
-                        classifiers_right_predictions[classifier_id] = count_right_answers
+                            y_pred[val] = classifier.predict(X[val])
+                            for idx_obj in val: 
+                                classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
+                        classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
                         classifier_id = classifier_id + 1
                     #the ensemble make the final prediction by majority vote for accuracy
                     majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
