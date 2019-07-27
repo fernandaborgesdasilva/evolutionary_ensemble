@@ -1,5 +1,5 @@
 end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
-15:09:36,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+18:56:18,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -54,9 +54,9 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
           verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:36,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 421. 410.
+ 419. 417. 428. 434. 432. 435.]"
+18:56:18,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -111,9 +111,9 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
           verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:37,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 421. 410.
+ 419. 417. 428. 434. 432. 435.]"
+18:56:18,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -168,9 +168,9 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
           verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:37,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 421. 410.
+ 419. 417. 428. 434. 432. 435.]"
+18:56:19,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -225,9 +225,9 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
           verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:38,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 421. 410.
+ 419. 417. 428. 434. 432. 435.]"
+18:56:19,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -282,9 +282,9 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
           verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:38,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 421. 410.
+ 419. 417. 428. 434. 432. 435.]"
+18:56:19,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -339,9 +339,9 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
           verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:38,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 421. 410.
+ 419. 417. 428. 434. 432. 435.]"
+18:56:20,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -393,12 +393,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:39,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:20,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -448,14 +448,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:39,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:21,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -505,14 +505,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:40,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:21,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -562,14 +562,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:40,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:21,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -621,12 +621,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:40,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:22,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -676,14 +676,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:41,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:22,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -733,14 +733,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:41,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:23,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -792,12 +792,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:42,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:23,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -847,14 +847,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:42,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:23,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -904,14 +904,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:43,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:24,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -963,12 +963,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:43,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:24,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1018,14 +1018,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:43,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:24,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1075,14 +1075,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:44,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:25,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1134,12 +1134,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:44,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:25,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1189,14 +1189,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:45,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:26,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1246,14 +1246,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:45,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:26,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1303,14 +1303,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:45,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:26,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1360,14 +1360,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:46,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:27,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1417,14 +1417,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:46,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:27,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1474,14 +1474,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:47,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:28,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1531,14 +1531,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:47,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:28,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1588,14 +1588,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:48,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:28,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1645,14 +1645,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:48,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:29,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1702,14 +1702,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:48,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:29,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1759,14 +1759,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:49,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:29,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1816,14 +1816,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:49,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:30,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1875,12 +1875,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:50,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:30,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1930,14 +1930,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:50,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:31,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -1987,14 +1987,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:50,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:31,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2046,12 +2046,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:51,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:31,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2101,14 +2101,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:51,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:32,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2158,14 +2158,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:52,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:32,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2217,12 +2217,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:52,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:33,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2272,14 +2272,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:53,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:33,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2329,14 +2329,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:53,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:34,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2388,12 +2388,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:54,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:34,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2443,14 +2443,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:54,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:35,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2500,14 +2500,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:55,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:35,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2559,12 +2559,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:55,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:36,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2614,14 +2614,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:56,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:36,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2671,14 +2671,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:56,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:37,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2730,12 +2730,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:57,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:37,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2785,14 +2785,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:57,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:38,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2842,14 +2842,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:58,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:38,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2901,12 +2901,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:58,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:39,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -2956,14 +2956,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:58,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:39,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3013,14 +3013,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:59,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:40,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3072,12 +3072,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:09:59,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:40,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3127,14 +3127,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:00,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:40,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3184,14 +3184,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:00,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:41,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3241,14 +3241,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:01,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:41,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3300,12 +3300,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:01,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:42,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3355,14 +3355,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:02,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:42,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3412,14 +3412,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:02,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:43,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3471,12 +3471,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:02,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:43,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3526,14 +3526,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:03,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:43,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3583,14 +3583,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:03,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:44,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3642,12 +3642,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:04,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:44,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3697,14 +3697,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:04,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:45,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3754,14 +3754,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:05,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:45,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3813,12 +3813,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:05,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:45,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3868,14 +3868,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:06,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:46,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3925,14 +3925,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:06,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:46,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -3982,14 +3982,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:07,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:47,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4039,14 +4039,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:07,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:47,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4096,14 +4096,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:08,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:48,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4153,14 +4153,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:08,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:48,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4210,14 +4210,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:08,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:48,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4267,14 +4267,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:09,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:49,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4324,14 +4324,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:09,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:49,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4381,14 +4381,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:10,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:50,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4438,14 +4438,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:10,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:50,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4495,14 +4495,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:11,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:50,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4554,12 +4554,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:11,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:51,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4609,14 +4609,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:11,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:51,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4666,14 +4666,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:12,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:52,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4725,12 +4725,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:12,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:52,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4780,14 +4780,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:13,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:52,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4837,14 +4837,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:14,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:53,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4896,12 +4896,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:14,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:53,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -4951,14 +4951,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:15,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:53,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5008,14 +5008,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:15,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:54,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5067,12 +5067,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:16,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:54,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5122,14 +5122,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:16,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:55,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5179,14 +5179,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:17,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:55,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5238,12 +5238,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:17,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:55,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5293,14 +5293,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:18,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:56,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5350,14 +5350,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:18,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:56,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5409,12 +5409,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:18,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:57,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5464,14 +5464,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:19,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:57,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5521,14 +5521,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:19,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:58,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5580,12 +5580,12 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:20,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:58,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5635,14 +5635,14 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
-15:10:20,429,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
+18:56:58,430,"((KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
            weights='distance'), {'n_neighbors': 1, 'weights': 'uniform'}), (KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
            metric_params=None, n_jobs=1, n_neighbors=23, p=2,
@@ -5692,10 +5692,10 @@ end_time,best_fitness_ensemble,ensemble,best_fitness_classifiers
             min_weight_fraction_leaf=0.0, presort=False, random_state=None,
             splitter='best'), {'max_depth': 5, 'min_samples_leaf': 5}), (GaussianNB(priors=None), {}), (LinearDiscriminantAnalysis(n_components=None, priors=None, shrinkage=None,
               solver='svd', store_covariance=False, tol=0.0001), {}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
-          intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-          penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1, 'max_iter': 100}), (LogisticRegression(C=1, class_weight=None, dual=False, fit_intercept=True,
           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
           penalty='l2', random_state=None, solver='liblinear', tol=0.0001,
-          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[413. 413. 422. 420. 426. 423. 424. 425. 430. 414. 415. 410. 424. 422.
- 423. 422. 428. 431. 426. 431.]"
+          verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}), (PassiveAggressiveClassifier(C=1000, average=False, class_weight=None,
+              fit_intercept=True, loss='hinge', max_iter=100, n_iter=None,
+              n_jobs=1, random_state=None, shuffle=True, tol=None,
+              verbose=0, warm_start=False), {'C': 1000, 'max_iter': 100}))","[415. 415. 415. 414. 422. 422. 417. 417. 423. 418. 417. 415. 419. 417.
+ 417. 415. 428. 434. 435. 395.]"
