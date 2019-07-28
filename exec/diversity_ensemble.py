@@ -217,16 +217,16 @@ def compare_results(data, target, n_estimators, csv_file, outputfile, stop_time)
     n_samples = int(math.sqrt(data.shape[0]))
     alg = {
                 KNeighborsClassifier: {'n_neighbors':[1, n_samples]},
-                #RidgeClassifier(): {'alpha':[1.0, 10.0],'max_iter':[10, 100]},
+                RidgeClassifier: {'alpha':[1.0, 10.0],'max_iter':[10, 100]},
                 SVC: {'C':[1, 1000],'gamma':[0.0001, 0.001]},
                 DecisionTreeClassifier: {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
-                #ExtraTreeClassifier(): {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
+                ExtraTreeClassifier: {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
                 GaussianNB: {},
                 LinearDiscriminantAnalysis: {},
-                #QuadraticDiscriminantAnalysis(): {},
-                #BernoulliNB(): {},
+                QuadraticDiscriminantAnalysis: {},
+                BernoulliNB: {},
                 LogisticRegression: {'C':[1, 1000], 'max_iter':[100, 1000]},
-                #NearestCentroid(): {},
+                NearestCentroid: {},
                 PassiveAggressiveClassifier: {'C':[1, 1000], 'max_iter':[100, 1000]},
                 SGDClassifier: {'alpha':[1e-5, 1e-2], 'max_iter':[100, 1000]}
     }
@@ -242,13 +242,13 @@ def compare_results(data, target, n_estimators, csv_file, outputfile, stop_time)
             classifier = DiversityEnsembleClassifier(algorithms=alg, population_size=n_estimators, max_epochs=stop_time, random_state=i*10)
             fit_aux = int(round(time.time() * 1000))
             aux = classifier.fit(X_train, y_train)
-            fit_time = (int(round(time.time() * 1000)) - fit_aux)
-            fit_total_time = fit_total_time + fit_time
-            text_file.write("\n\nDEC fit done in %i" % (fit_time))
-            text_file.write(" ms")
             div += aux[0]
             fit += aux[1]
             y_pred = classifier.predict(X_test)
+            fit_time = (int(round(time.time() * 1000)) - fit_aux)
+            fit_total_time = fit_total_time + fit_time
+            text_file.write("\n\nDEC fit and predict done in %i" % (fit_time))
+            text_file.write(" ms")
             accuracy += accuracy_score(y_test, y_pred)
             try: f1 += f1_score(y_test, y_pred)
             except: pass
