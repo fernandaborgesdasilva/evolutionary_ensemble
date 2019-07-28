@@ -237,21 +237,21 @@ def main(argv):
     print('The number of iterations is ', stop_time)
     if inputfile == "iris":
         dataset = datasets.load_iris()
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
         dataset.iloc[:, -1] = le.fit_transform(dataset.iloc[:, -1])
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
     print('It is finished!')
 

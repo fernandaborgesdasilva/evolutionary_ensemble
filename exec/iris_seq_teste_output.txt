@@ -1,7 +1,0 @@
-************************************************************ Brute Force Ensemble Classifier ************************************************************
-
-BFEC fit done in 9923 ms
-
-BFEC predict done in 7 ms
-
-Accuracy = 0.966667

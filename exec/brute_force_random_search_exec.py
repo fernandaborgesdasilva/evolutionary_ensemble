@@ -185,6 +185,8 @@ def compare_results(data, target, n_estimators, csv_file, outputfile, stop_time,
         text_file.write('*'*60)
         text_file.write(' Brute Force Ensemble Classifier ')
         text_file.write('*'*60)
+        text_file.write('\n\nn_estimators = %i' % (n_estimators))
+        text_file.write('\nstop_time = %i' % (stop_time))
         ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, n_estimators=int(n_estimators), random_state=42)
         X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
         fit_aux = int(round(time.time() * 1000))
@@ -231,14 +233,14 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"h:i:o:e:s:",["ifile=","ofile=","enumber=","stoptime="])
     except getopt.GetoptError:
-        print('brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
+        print('brute_force_random_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
         sys.exit(2)
     if opts == []:
-        print('brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
+        print('brute_force_random_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('brute_force_search_exec.py -i <inputfile> -o <outputfile>')
+            print('brute_force_random_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
@@ -258,7 +260,7 @@ def main(argv):
         possible_ensembles = define_all_possible_ensembles(data=dataset.data, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
@@ -266,7 +268,7 @@ def main(argv):
         possible_ensembles = define_all_possible_ensembles(data=dataset.data, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
@@ -274,7 +276,7 @@ def main(argv):
         possible_ensembles = define_all_possible_ensembles(data=dataset.data, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     else:
         le = LabelEncoder()
@@ -284,7 +286,7 @@ def main(argv):
         possible_ensembles = define_all_possible_ensembles(data=dataset.iloc[:, 0:-1].values, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
-        print('Runing Brute Force Ensemble Classifier ...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     print('It is finished!')
 
