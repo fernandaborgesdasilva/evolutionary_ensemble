@@ -1,11 +1,7 @@
 ************************************************************ Brute Force Ensemble Classifier ************************************************************
 
-BFEC fit done in 4240 ms
+BFEC fit done in 9923 ms
 
-BFEC predict done in 2 ms
+BFEC predict done in 7 ms
 
-Accuracy = 0.947368
-F1-score = 0.958333
-Precision = 0.945205
-Recall = 0.971831
-ROC AUC = 0.939404
+Accuracy = 0.966667
