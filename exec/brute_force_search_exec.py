@@ -118,7 +118,10 @@ class BruteForceEnsembleClassifier:
                 best_ensemble_fitness = ensemble_fitness
                 best_fitness_classifiers = classifiers_right_predictions
                 ensemble = classifiers
-            end_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             result_dict.update({i: {"end_time":end_time,"best_fitness_ensemble":best_ensemble_fitness.sum(), "ensemble":ensemble, "best_fitness_classifiers":best_fitness_classifiers}})
         return result_dict
     
