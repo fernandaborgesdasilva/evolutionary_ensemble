@@ -182,57 +182,79 @@ def define_all_possible_ensembles(data, n_estimators=10):
         all_ensembles.append([classifiers])
     return all_ensembles
 
-def compare_results(data, target, n_estimators, csv_file, outputfile, stop_time, all_possible_ensembles):
+def compare_results(data, target, n_estimators, outputfile, stop_time, all_possible_ensembles):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
+    total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
         text_file.write(' Brute Force Ensemble Classifier ')
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, n_estimators=int(n_estimators), random_state=42)
-        X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2)
-        fit_aux = int(round(time.time() * 1000))
-        search_results = ensemble_classifier.fit(X_train, y_train, all_possible_ensembles)
-        #saving results as pandas dataframe and csv
-        search_results_pd = pd.DataFrame.from_dict(search_results, orient='index')
-        search_results_pd.to_csv (csv_file, index = None, header=True)       
-        ensemble = search_results_pd[-1:]["ensemble"].item()
-        best_fitness_classifiers = search_results_pd[-1:]["best_fitness_classifiers"].item()
-        ensemble_classifier.fit_ensemble(X_train, y_train, ensemble[0], best_fitness_classifiers)
-        fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
-        text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
-        text_file.write(" ms")
-        predict_aux = int(round(time.time() * 1000))
-        y_pred = ensemble_classifier.predict(X_test)
-        predict_total_time = (int(round(time.time() * 1000)) - predict_aux)
-        text_file.write("\n\nBFEC predict done in %i" % (predict_total_time))
-        text_file.write(" ms")
-        accuracy += accuracy_score(y_test, y_pred)
-        try: f1 += f1_score(y_test, y_pred)
-        except: pass
-        try: precision += precision_score(y_test, y_pred)
-        except: pass
-        try: recall += recall_score(y_test, y_pred)
-        except: pass
-        try: auc += roc_auc_score(y_test, y_pred)
-        except: pass
-        text_file.write("\n\nAccuracy = %f\n" % (accuracy))
-        if f1>0:
-            text_file.write("F1-score = %f\n" % (f1))
-        if precision>0:
-            text_file.write("Precision = %f\n" % (precision))
-        if recall>0:
-            text_file.write("Recall = %f\n" % (recall))
-        if auc>0:
-            text_file.write("ROC AUC = %f\n" % (auc))
+        for i in range(0, 10):
+            csv_file = 'brute_force_random_search_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+            ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, n_estimators=int(n_estimators), random_state=i*10)
+            print('\n\nIteration = ',i)
+            text_file.write("\n\nIteration = %i" % (i))
+            X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
+            fit_aux = int(round(time.time() * 1000))
+            search_results = ensemble_classifier.fit(X_train, y_train, all_possible_ensembles)
+            #saving results as pandas dataframe and csv
+            search_results_pd = pd.DataFrame.from_dict(search_results, orient='index')
+            search_results_pd.to_csv (csv_file, index = None, header=True)       
+            ensemble = search_results_pd[-1:]["ensemble"].item()
+            best_fitness_classifiers = search_results_pd[-1:]["best_fitness_classifiers"].item()
+            ensemble_classifier.fit_ensemble(X_train, y_train, ensemble[0], best_fitness_classifiers)
+            fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
+            text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
+            text_file.write(" ms")
+            predict_aux = int(round(time.time() * 1000))
+            y_pred = ensemble_classifier.predict(X_test)
+            predict_total_time = (int(round(time.time() * 1000)) - predict_aux)
+            text_file.write("\n\nBFEC predict done in %i" % (predict_total_time))
+            text_file.write(" ms")
+            accuracy = accuracy_score(y_test, y_pred)
+            total_accuracy += accuracy
+            try: 
+                f1 = f1_score(y_test, y_pred)
+                total_f1 += f1
+            except: pass
+            try: 
+                precision = precision_score(y_test, y_pred)
+                total_precision += precision
+            except: pass
+            try: 
+                recall = recall_score(y_test, y_pred)
+                total_recall += recall
+            except: pass
+            try: 
+                auc = roc_auc_score(y_test, y_pred)
+                total_auc += auc
+            except: pass
+            text_file.write("\n\nAccuracy = %f\n" % (accuracy))
+            if f1>0:
+                text_file.write("F1-score = %f\n" % (f1))
+            if precision>0:
+                text_file.write("Precision = %f\n" % (precision))
+            if recall>0:
+                text_file.write("Recall = %f\n" % (recall))
+            if auc>0:
+                text_file.write("ROC AUC = %f\n" % (auc))
+        text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
+        if total_f1>0:
+            text_file.write("Average F1-score = %f\n" % (total_f1/10))
+        if total_precision>0:
+            text_file.write("Average Precision = %f\n" % (total_precision/10))
+        if total_recall>0:
+            text_file.write("Average Recall = %f\n" % (total_recall/10))
+        if total_auc>0:
+            text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
             
 def main(argv):
     inputfile = ''
     outputfile = ''
     n_estimators = ''
     stop_time = ''
-    save_results = 'brute_force_random_search_results_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + ".csv"
     try:
         opts, args = getopt.getopt(argv,"h:i:o:e:s:",["ifile=","ofile=","enumber=","stoptime="])
     except getopt.GetoptError:
@@ -264,7 +286,7 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
         aux = int(round(time.time() * 1000))
@@ -272,7 +294,7 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
         aux = int(round(time.time() * 1000))
@@ -280,7 +302,7 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
@@ -290,7 +312,7 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     print('It is finished!')
 
 if __name__ == "__main__":
