@@ -84,6 +84,19 @@ class Chromossome:
             self.classifier.set_param(random_state=self.random_state)
         except:
             pass
+        
+class Estimator:
+    def __init__(self, classifier=None, random_state=None, fitness=0):
+        self.classifier = classifier
+        self.random_state = random_state
+        self.fitness = fitness
+
+    def fit(self, X, y):
+        is_fitted = True
+        self.classifier.fit(X, y)
+
+    def predict(self, X):
+        return self.classifier.predict(X)
 
 class DiversityEnsembleClassifier:
     def __init__(self, algorithms, population_size = 100, max_epochs = 100, random_state=None):
@@ -92,6 +105,7 @@ class DiversityEnsembleClassifier:
         self.population = []
         self.algorithms = algorithms
         self.random_state = random_state
+        self.ensemble = []
         random.seed(self.random_state)
         for i in range(0, population_size):
             self.population.append(Chromossome(genotypes_pool=algorithms, random_state=random_state))
@@ -101,7 +115,6 @@ class DiversityEnsembleClassifier:
             parents = [x for x in range(0, self.population_size)]
             children = [x for x in range(self.population_size, 2*self.population_size)]
         for i in range(0, len(children)):
-            #por que i%len(parents), quando for 10 o resto da divisao vai dar 0, entao vamos ter 2 cromossomos filhos igual o pai na posicao 0?
             new_chromossome = copy.deepcopy(self.population[parents[i%len(parents)]])
             new_chromossome.mutate()
             try:
@@ -112,7 +125,6 @@ class DiversityEnsembleClassifier:
     def fit_predict_population(self, not_fitted, predictions, kfolds, X, y):
         for i in not_fitted:
             chromossome = self.population[i]
-            ##print (i, chromossome.classifier.__class__, end=' ')
             for train, val in kfolds.split(X):
                 chromossome.fit(X[train], y[train])
                 predictions[i][val] = np.equal(chromossome.predict(X[val]), y[val])
@@ -122,20 +134,14 @@ class DiversityEnsembleClassifier:
         #print(-1)
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
-        #O cromossomo que apresenta o maior valor para sua função de fitness é adicionado ao conjunto S, e serve como base para o cálculo de diversidade da população.
         target_chromossome = np.argmax(pop_fitness)
         selected = [target_chromossome]
         self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
         diversity  = np.zeros(2*self.population_size)
         mean_fitness = pop_fitness[target_chromossome]
         distances[pop_fitness < selection_threshold] = float('-inf')
-        #print(distances)
         for i in range(0, self.population_size-1):
-            #print(i)
-            #print('.' ,end='')
             distances[target_chromossome] = float('-inf')
-            #logical_xor retorna TRUE se os dois arrays tiverem valores diferentes na mesma posicao senao retorna FALSE
-            #Daqui para baixo eu nao entendi nada
             d_i = np.logical_xor(predictions, predictions[target_chromossome]).sum(axis=1)
             distances += d_i
             target_chromossome = np.argmax(distances)
@@ -143,7 +149,6 @@ class DiversityEnsembleClassifier:
                 break
             diversity += d_i/predictions.shape[1]
             mean_fitness += pop_fitness[target_chromossome]
-            ##print(pop_fitness[target_chromossome])
             selected.append(target_chromossome)
             self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
 
@@ -151,6 +156,7 @@ class DiversityEnsembleClassifier:
 
     def fit(self, X, y):
         diversity_values, fitness_values = [], []
+        result_dict = dict()
         ##print('Starting genetic algorithm...')
         kf = KFold(n_splits=5, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
@@ -160,57 +166,57 @@ class DiversityEnsembleClassifier:
         predictions = np.empty([2*self.population_size, y.shape[0]])
 
         frequencies = np.unique(y, return_counts=True)[1]
-        #A fim de aumentar a acurácia do ensemble, não entram no processo de seleção os cromossomos cujos classificadores apresentam acurácia inferior à probabilidade de que, ao selecionar-se um objeto da base de treinamento aleatoriamente, sua classe seja a mais frequente no conjunto de dados.
         selection_threshold = max(frequencies)/np.sum(frequencies)
 
         for epoch in range(self.max_epochs):
-            #print('-' * 60)
-            #print('Epoch', epoch)
-            #print('-' * 60)
+            ensemble = []
+            classifiers_fitness = []
 
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-            #print('Generating offspring...', end='')
-            aux = int(round(time.time() * 1000))
             self.generate_offspring(selected, not_selected)
-            #print('done in',int(round(time.time() * 1000)) - aux, 'ms')
-
-            #print('Fitting and predicting population...', end='')
-            aux = int(round(time.time() * 1000))
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
-            #print('done in',int(round(time.time() * 1000)) - aux, 'ms')
 
             #print('Applying diversity selection...', end='')
-            aux = int(round(time.time() * 1000))
             selected, diversity, fitness = self.diversity_selection(predictions, selection_threshold)
-            #print('done in',int(round(time.time() * 1000)) - aux, 'ms')
             diversity_values.append(diversity)
             fitness_values.append(fitness)
-            #print('New population diversity measure:', diversity)
-
-        #print('-' * 60, '\nFinished genetic algorithm in ', int(round(time.time() * 1000)) - start_time, 'ms')
-
-        self.population = [self.population[x] for x in selected]
-        for chromossome in self.population:
-            chromossome.fit(X, y)
-        return [diversity_values, fitness_values]
+            for chromossome in self.population:
+                ensemble.append(chromossome.classifier)
+                classifiers_fitness.append(chromossome.fitness)
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+            result_dict.update({epoch:{"end_time":end_time,"diversity":diversity,"fitness":fitness,"ensemble":ensemble, "classifiers_fitness":classifiers_fitness}})
+        return result_dict
+    
+    def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
+        classifiers_fitness_it = 0
+        for estimator in ensemble:
+            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, fitness=classifiers_fitness[classifiers_fitness_it]))
+            classifiers_fitness_it = classifiers_fitness_it + 1
+        for classifier in self.ensemble:
+            classifier.fit(X, y)
 
     def predict(self, X):
-        predictions = np.empty((self.population_size, len(X)))
-        y = np.empty(len(X))
+        len_X = len(X)
+        predictions = np.empty((self.population_size, len_X))
+        y = np.empty(len_X)
         for chromossome in range(0, self.population_size):
-            predictions[chromossome] = self.population[chromossome].predict(X)
-        for i in range(0, len(X)):
+            predictions[chromossome] = self.ensemble[chromossome].predict(X)
+        for i in range(0, len_X):
             pred = {}
             for j in range(0, self.population_size):
                 if predictions[j][i] in pred:
-                    pred[predictions[j][i]] += self.population[j].fitness
+                    pred[predictions[j][i]] += self.ensemble[j].fitness
                 else:
-                    pred[predictions[j][i]]  = self.population[j].fitness
+                    pred[predictions[j][i]]  = self.ensemble[j].fitness
             y[i] = max(pred.items(), key=operator.itemgetter(1))[0]
         return y
     
-def compare_results(data, target, n_estimators, csv_file, outputfile, stop_time):
+def compare_results(data, target, n_estimators, outputfile, stop_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
+    total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
     div = np.zeros(stop_time)
     fit = np.zeros(stop_time)
     fit_total_time = 0
@@ -238,40 +244,63 @@ def compare_results(data, target, n_estimators, csv_file, outputfile, stop_time)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
+            csv_file = 'diversity_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
-            classifier = DiversityEnsembleClassifier(algorithms=alg, population_size=n_estimators, max_epochs=stop_time, random_state=i*10)
+            ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg, population_size=n_estimators, max_epochs=stop_time, random_state=i*10)
+            print('\n\nIteration = ',i)
+            text_file.write("\n\nIteration = %i" % (i))
             fit_aux = int(round(time.time() * 1000))
-            aux = classifier.fit(X_train, y_train)
-            div += aux[0]
-            fit += aux[1]
-            y_pred = classifier.predict(X_test)
-            fit_time = (int(round(time.time() * 1000)) - fit_aux)
-            fit_total_time = fit_total_time + fit_time
-            text_file.write("\n\nDEC fit and predict done in %i" % (fit_time))
+            results = ensemble_classifier.fit(X_train, y_train)
+            results_pd = pd.DataFrame.from_dict(results, orient='index')
+            results_pd.to_csv (csv_file, index = None, header=True)
+            ensemble = results_pd[-1:]["ensemble"].item()
+            classifiers_fitness = results_pd[-1:]["classifiers_fitness"].item()
+            ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, classifiers_fitness)
+            fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
+            text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
             text_file.write(" ms")
-            accuracy += accuracy_score(y_test, y_pred)
-            try: f1 += f1_score(y_test, y_pred)
+            predict_aux = int(round(time.time() * 1000))
+            y_pred = ensemble_classifier.predict(X_test)
+            predict_total_time = (int(round(time.time() * 1000)) - predict_aux)
+            text_file.write("\n\nDEC predict done in %i" % (predict_total_time))
+            text_file.write(" ms")
+            accuracy = accuracy_score(y_test, y_pred)
+            total_accuracy += accuracy
+            try: 
+                f1 = f1_score(y_test, y_pred)
+                total_f1 += f1
             except: pass
-            try: precision += precision_score(y_test, y_pred)
+            try: 
+                precision = precision_score(y_test, y_pred)
+                total_precision += precision
             except: pass
-            try: recall += recall_score(y_test, y_pred)
+            try: 
+                recall = recall_score(y_test, y_pred)
+                total_recall += recall
             except: pass
-            try: auc += roc_auc_score(y_test, y_pred)
+            try: 
+                auc = roc_auc_score(y_test, y_pred)
+                total_auc += auc
             except: pass
-        text_file.write("\n\nFinal diversity = %s" % (div/10))
-        text_file.write("\nFinal fitness = %s" % (fit/10))
-        text_file.write("\n\nFinal accuracy = %f\n" % (accuracy/10))
-        if f1>0:
-            text_file.write("Final f1-score = %f\n" % (f1/10))
-        if precision>0:
-            text_file.write("Final precision = %f\n" % (precision/10))
-        if recall>0:
-            text_file.write("Final recall = %f\n" % (recall/10))
-        if auc>0:
-            text_file.write("Final ROC AUC = %f\n" % (auc/10))
-        text_file.write("\n\nDEC done in %i" % (fit_total_time))
-        text_file.write(" ms\n")
-    
+            text_file.write("\n\nAccuracy = %f\n" % (accuracy))
+            if f1>0:
+                text_file.write("F1-score = %f\n" % (f1))
+            if precision>0:
+                text_file.write("Precision = %f\n" % (precision))
+            if recall>0:
+                text_file.write("Recall = %f\n" % (recall))
+            if auc>0:
+                text_file.write("ROC AUC = %f\n" % (auc))
+        text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
+        if total_f1>0:
+            text_file.write("Average F1-score = %f\n" % (total_f1/10))
+        if total_precision>0:
+            text_file.write("Average Precision = %f\n" % (total_precision/10))
+        if total_recall>0:
+            text_file.write("Average Recall = %f\n" % (total_recall/10))
+        if total_auc>0:
+            text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
+            
 def main(argv):
     inputfile = ''
     outputfile = ''
@@ -305,21 +334,21 @@ def main(argv):
     if inputfile == "iris":
         dataset = datasets.load_iris()
         print('Runing Diversity-based Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
         print('Runing Diversity-based Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
         print('Runing Diversity-based Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
         dataset.iloc[:, -1] = le.fit_transform(dataset.iloc[:, -1])
         print('Runing Diversity-based Ensemble Classifier...')
-        compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), csv_file=save_results, outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
     print('It is finished!')
 
 if __name__ == "__main__":
