@@ -110,14 +110,11 @@ class BruteForceEnsembleClassifier:
         majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
         majority_voting = [int(j[0]) for j in majority_voting]
         ensemble_fitness = np.equal(majority_voting,y)
-        #select the most accurate ensemble
-        #if(ensemble_fitness.sum() > best_ensemble_fitness.sum()):
-        #    best_ensemble_fitness = ensemble_fitness
-        #    best_fitness_classifiers = classifiers_right_predictions
-        #    ensemble = classifiers
-        #end_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
-        #result_dict.update({i: {"end_time":end_time,"best_fitness_ensemble":best_ensemble_fitness.sum(), "ensemble":ensemble, "best_fitness_classifiers":best_fitness_classifiers}})
-        result_dict.update({"fitness_ensemble":ensemble_fitness.sum(), "ensemble":classifiers, "fitness_classifiers":classifiers_right_predictions})
+        now = time.time()
+        struct_now = time.localtime(now)
+        mlsec = repr(now).split('.')[1][:3]
+        end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+        result_dict.update({"end_time":end_time,"fitness_ensemble":ensemble_fitness.sum(), "ensemble":classifiers, "fitness_classifiers":classifiers_right_predictions})
         return result_dict
     
     def fit(self, X, y):
