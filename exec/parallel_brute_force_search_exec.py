@@ -41,6 +41,11 @@ from joblib import Parallel, delayed
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+from joblib import Memory
+memory = Memory("./tmpmemoryjoblib", verbose=1)
+
+
+
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
@@ -84,30 +89,25 @@ class BruteForceEnsembleClassifier:
         for classifier in self.ensemble:
             classifier.fit(X, y)
     
+
+
     def parallel_fit(self, X, y, classifiers):
         random.seed(self.random_state)
-        kf = KFold(n_splits=5, random_state=self.random_state)
         result_dict = dict()
         len_y = len(y)
         # a matrix with all observations vs the prediction of each classifier
-        classifiers_predictions = np.zeros([len_y,self.n_estimators])
+        classifiers_predictions = np.zeros([self.n_estimators, len_y])
         # sum the number of right predictions for each classifier
         classifiers_right_predictions = np.zeros([self.n_estimators])
         ensemble_fitness = np.zeros([len_y])
         classifier_id = 0
         for classifier, params in classifiers:
-            classifier.set_params(**params)
-            y_pred = np.zeros([len_y])
-            #k-fold cross-validation
-            for train, val in kf.split(X):
-                classifier.fit(X[train], y[train])
-                y_pred[val] = classifier.predict(X[val])
-                for idx_obj in val: 
-                    classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
+            y_pred = train_clf(classifier, params, X, y, self.random_state)
+            classifiers_predictions[classifier_id][:] = y_pred
             classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
             classifier_id = classifier_id + 1
         #the ensemble make the final prediction by majority vote for accuracy
-        majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
+        majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
         majority_voting = [int(j[0]) for j in majority_voting]
         ensemble_fitness = np.equal(majority_voting,y)
         now = time.time()
@@ -140,7 +140,25 @@ class BruteForceEnsembleClassifier:
                     pred[predictions[j][i]]  = self.ensemble[j].fitness
             y[i] = max(pred.items(), key=operator.itemgetter(1))[0]
         return y
-    
+
+@memory.cache
+def train_clf(clf, params, X, y, random_state):
+
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=FutureWarning)
+    clf.set_params(**params)
+    y_pred = np.zeros([len(y)])
+    #print("treinando",clf,params)
+    #k-fold cross-validation
+    kf = KFold(n_splits=5, random_state=random_state)
+    for train, val in kf.split(X):
+        clf.fit(X[train], y[train])
+        y_pred[val] = clf.predict(X[val])
+
+    return y_pred
+
+
+
 def compare_results(data, target, n_estimators, outputfile, stop_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
@@ -229,6 +247,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
 
 def main(argv):
+
     inputfile = ''
     outputfile = ''
     n_estimators = ''

@@ -151,7 +151,6 @@ class DiversityEnsembleClassifier:
             mean_fitness += pop_fitness[target_chromossome]
             selected.append(target_chromossome)
             self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
-
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size)
 
     def fit(self, X, y):
