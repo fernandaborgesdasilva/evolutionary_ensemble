@@ -39,6 +39,9 @@ import math
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+from joblib import Memory
+memory = Memory("./tmpmemoryjoblib", verbose=0)
+
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
@@ -81,17 +84,21 @@ class BruteForceEnsembleClassifier:
             classifiers_fitness_it = classifiers_fitness_it + 1
         for classifier in self.ensemble:
             classifier.fit(X, y)
-        
+
     def fit(self, X, y):
         len_y = len(y)
         result_dict = dict()
         random.seed(self.random_state)
-        kf = KFold(n_splits=5, random_state=self.random_state)
         best_ensemble_fitness = np.zeros([len_y])
         best_fitness_classifiers = np.zeros([self.n_estimators])
         for i, classifiers in enumerate(combinations(self.estimators_pool(self.algorithms),self.n_estimators)):
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+            time_aux = int(round(now * 1000))
             # a matrix with all observations vs the prediction of each classifier
-            classifiers_predictions = np.zeros([len_y,self.n_estimators])
+            classifiers_predictions = np.zeros([self.n_estimators, len_y])
             # sum the number of right predictions for each classifier
             classifiers_right_predictions = np.zeros([self.n_estimators])
             ensemble_fitness = np.zeros([len_y])
@@ -99,18 +106,12 @@ class BruteForceEnsembleClassifier:
             if i >= self.stop_time:
                 break
             for classifier, params in classifiers:
-                classifier.set_params(**params)
-                y_pred = np.zeros([len_y])
-                #k-fold cross-validation
-                for train, val in kf.split(X):
-                    classifier.fit(X[train], y[train])
-                    y_pred[val] = classifier.predict(X[val])
-                    for idx_obj in val: 
-                        classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
+                y_pred = train_clf(classifier, params, X, y, self.random_state)
+                classifiers_predictions[classifier_id][:] = y_pred
                 classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
                 classifier_id = classifier_id + 1
             #the ensemble make the final prediction by majority vote for accuracy
-            majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
+            majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
             majority_voting = [int(j[0]) for j in majority_voting]
             ensemble_fitness = np.equal(majority_voting,y)
             #select the most accurate ensemble
@@ -122,7 +123,13 @@ class BruteForceEnsembleClassifier:
             struct_now = time.localtime(now)
             mlsec = repr(now).split('.')[1][:3]
             end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-            result_dict.update({i: {"end_time":end_time,"best_fitness_ensemble":best_ensemble_fitness.sum(), "ensemble":ensemble, "best_fitness_classifiers":best_fitness_classifiers}})
+            total_time = (int(round(now * 1000)) - time_aux)
+            result_dict.update({i: {"start_time":start_time,
+                                    "end_time":end_time,
+                                    "total_time_ms":total_time,
+                                    "best_fitness_ensemble":best_ensemble_fitness.sum(),
+                                    "ensemble":ensemble,
+                                    "best_fitness_classifiers":best_fitness_classifiers}})
         return result_dict
     
     def predict(self, X):
@@ -140,6 +147,19 @@ class BruteForceEnsembleClassifier:
                     pred[predictions[j][i]]  = self.ensemble[j].fitness
             y[i] = max(pred.items(), key=operator.itemgetter(1))[0]
         return y
+
+@memory.cache
+def train_clf(clf, params, X, y, random_state):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=FutureWarning)
+    clf.set_params(**params)
+    y_pred = np.zeros([len(y)])
+    #k-fold cross-validation
+    kf = KFold(n_splits=5, random_state=random_state)
+    for train, val in kf.split(X):
+        clf.fit(X[train], y[train])
+        y_pred[val] = clf.predict(X[val])
+    return y_pred
     
 def compare_results(data, target, n_estimators, outputfile, stop_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
@@ -169,8 +189,11 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
         text_file.write('\nstop_time = %i' % (stop_time))
         total_size = 0
         for i in range(0, 10):
-            csv_file = 'brute_force_search_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            ensemble_classifier = BruteForceEnsembleClassifier(algorithms=alg, stop_time=stop_time, n_estimators=int(n_estimators), random_state=i*10)
+            csv_file = 'bfec_seq_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+            ensemble_classifier = BruteForceEnsembleClassifier(algorithms=alg, 
+                                                               stop_time=stop_time, 
+                                                               n_estimators=int(n_estimators), 
+                                                               random_state=i*10)
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
@@ -242,7 +265,7 @@ def main(argv):
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('brute_force_search_exec.py -i <inputfile> -o <outputfile>')
+            print('brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
@@ -259,21 +282,41 @@ def main(argv):
     if inputfile == "iris":
         dataset = datasets.load_iris()
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.data, 
+                        target=dataset.target, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time)
+                       )
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.data, 
+                        target=dataset.target, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time)
+                       )
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.data, 
+                        target=dataset.target, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time)
+                       )
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
         dataset.iloc[:, -1] = le.fit_transform(dataset.iloc[:, -1])
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time))
+        compare_results(data=dataset.iloc[:, 0:-1].values, 
+                        target=dataset.iloc[:, -1].values, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time)
+                       )
     print('It is finished!')
 
 if __name__ == "__main__":
