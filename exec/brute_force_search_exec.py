@@ -240,6 +240,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
+            memory.clear(warn=False)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
