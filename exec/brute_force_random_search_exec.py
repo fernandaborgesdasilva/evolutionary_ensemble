@@ -75,8 +75,11 @@ class BruteForceEnsembleClassifier:
     def fit_ensemble(self, X, y, ensemble, best_fitness_classifiers):
         classifiers_fitness_it = 0
         for estimator, params in ensemble:
+            estimator = getattr(sys.modules[__name__], estimator)()
             estimator.set_params(**params)
-            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, fitness=best_fitness_classifiers[classifiers_fitness_it]))
+            self.ensemble.append(Estimator(classifier=estimator, 
+                                           random_state=self.random_state, 
+                                           fitness=best_fitness_classifiers[classifiers_fitness_it]))
             classifiers_fitness_it = classifiers_fitness_it + 1
         for classifier in self.ensemble:
             classifier.fit(X, y)
@@ -102,8 +105,14 @@ class BruteForceEnsembleClassifier:
                 classifiers = random.choice(range(len_all_possible_ensembles))
                 if selected_ensemble[classifiers] == False:
                     selected_ensemble[classifiers] = True
+                    now = time.time()
+                    struct_now = time.localtime(now)
+                    mlsec = repr(now).split('.')[1][:3]
+                    start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+                    time_aux = int(round(now * 1000))
                     for cl in range(0, self.n_estimators):
-                        classifier = all_possible_ensembles[classifiers][0][cl][0]
+                        #classifier = all_possible_ensembles[classifiers][0][cl][0]
+                        classifier = getattr(sys.modules[__name__], all_possible_ensembles[classifiers][0][cl][0])()
                         params = all_possible_ensembles[classifiers][0][cl][1]
                         classifier.set_params(**params)
                         y_pred = np.zeros([len_y])
@@ -128,7 +137,13 @@ class BruteForceEnsembleClassifier:
                     struct_now = time.localtime(now)
                     mlsec = repr(now).split('.')[1][:3]
                     end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-                    result_dict.update({i: {"end_time":end_time,"best_fitness_ensemble":best_ensemble_fitness.sum(), "ensemble":ensemble, "best_fitness_classifiers":best_fitness_classifiers}})
+                    total_time = (int(round(now * 1000)) - time_aux)
+                    result_dict.update({i: {"start_time":start_time,
+                                            "end_time":end_time,
+                                            "total_time_ms":total_time,
+                                            "best_fitness_ensemble":best_ensemble_fitness.sum(), 
+                                            "ensemble":ensemble, 
+                                            "best_fitness_classifiers":best_fitness_classifiers}})
                     i = i +1
             else:
                 return result_dict
@@ -163,19 +178,19 @@ def estimators(estimator_grid):
 def define_all_possible_ensembles(data, n_estimators=10):
     n_samples = int(math.sqrt(data.shape[0]))
     alg = {
-                KNeighborsClassifier(): {'n_neighbors':[1, 3, 7, n_samples], 'weights':['uniform', 'distance']},
+                'KNeighborsClassifier': {'n_neighbors':[1, 3, 7, n_samples], 'weights':['uniform', 'distance']},
                 #RidgeClassifier(): {'alpha':[1.0, 10.0],'max_iter':[10, 100]},
-                SVC(): {'C':[1, 1000],'gamma':[0.0001, 0.001]},
-                DecisionTreeClassifier(): {'min_samples_leaf':[1, 5], 'max_depth':[None, 5]},
+                'SVC': {'C':[1, 1000],'gamma':[0.0001, 0.001]},
+                'DecisionTreeClassifier': {'min_samples_leaf':[1, 5], 'max_depth':[None, 5]},
                 #ExtraTreeClassifier(): {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
-                GaussianNB(): {},
-                LinearDiscriminantAnalysis(): {},
+                'GaussianNB': {},
+                'LinearDiscriminantAnalysis': {},
                 #QuadraticDiscriminantAnalysis(): {},
                 #BernoulliNB(): {},
-                LogisticRegression(): {'C':[1, 1000], 'max_iter':[100]},
+                'LogisticRegression': {'C':[1, 1000], 'max_iter':[100]},
                 #NearestCentroid(): {},
-                PassiveAggressiveClassifier(): {'C':[1, 1000], 'max_iter':[100]},
-                SGDClassifier(): {'alpha':[1e-5, 1e-2], 'max_iter':[100]}
+                'PassiveAggressiveClassifier': {'C':[1, 1000], 'max_iter':[100]},
+                'SGDClassifier': {'alpha':[1e-5, 1e-2], 'max_iter':[100]}
     }
     all_ensembles = []
     for i, classifiers in enumerate(combinations(estimators(alg),n_estimators)):
