@@ -84,69 +84,62 @@ class BruteForceEnsembleClassifier:
         for classifier in self.ensemble:
             classifier.fit(X, y)
         
-    def fit(self, X, y, all_possible_ensembles):
+    def fit(self, X, y, all_possible_ensembles, selected_ensemble):
         len_all_possible_ensembles = len(all_possible_ensembles)
         len_y = len(y)
         result_dict = dict()
-        selected_ensemble = np.zeros([len_all_possible_ensembles],dtype=bool)
         random.seed(self.random_state)
         kf = KFold(n_splits=5, random_state=self.random_state)
         best_ensemble_fitness = np.zeros([len_y])
         best_fitness_classifiers = np.zeros([self.n_estimators])
         i = 0
-        while i < (len_all_possible_ensembles):
+        for index, classifiers in enumerate(selected_ensemble):
             # a matrix with all observations vs the prediction of each classifier
             classifiers_predictions = np.zeros([len_y,self.n_estimators])
             # sum the number of right predictions for each classifier
             classifiers_right_predictions = np.zeros([self.n_estimators])
             ensemble_fitness = np.zeros([len_y])
             classifier_id = 0
-            if i <= self.stop_time:
-                classifiers = random.choice(range(len_all_possible_ensembles))
-                if selected_ensemble[classifiers] == False:
-                    selected_ensemble[classifiers] = True
-                    now = time.time()
-                    struct_now = time.localtime(now)
-                    mlsec = repr(now).split('.')[1][:3]
-                    start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-                    time_aux = int(round(now * 1000))
-                    for cl in range(0, self.n_estimators):
-                        #classifier = all_possible_ensembles[classifiers][0][cl][0]
-                        classifier = getattr(sys.modules[__name__], all_possible_ensembles[classifiers][0][cl][0])()
-                        params = all_possible_ensembles[classifiers][0][cl][1]
-                        classifier.set_params(**params)
-                        y_pred = np.zeros([len_y])
-                        #k-fold cross-validation
-                        for train, val in kf.split(X):
-                            classifier.fit(X[train], y[train])
-                            y_pred[val] = classifier.predict(X[val])
-                            for idx_obj in val: 
-                                classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
-                        classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
-                        classifier_id = classifier_id + 1
-                    #the ensemble make the final prediction by majority vote for accuracy
-                    majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
-                    majority_voting = [int(j[0]) for j in majority_voting]
-                    ensemble_fitness = np.equal(majority_voting,y)
-                    #select the most accurate ensemble
-                    if(ensemble_fitness.sum() > best_ensemble_fitness.sum()):
-                        best_ensemble_fitness = ensemble_fitness
-                        best_fitness_classifiers = classifiers_right_predictions
-                        ensemble = all_possible_ensembles[classifiers]
-                    now = time.time()
-                    struct_now = time.localtime(now)
-                    mlsec = repr(now).split('.')[1][:3]
-                    end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-                    total_time = (int(round(now * 1000)) - time_aux)
-                    result_dict.update({i: {"start_time":start_time,
-                                            "end_time":end_time,
-                                            "total_time_ms":total_time,
-                                            "best_fitness_ensemble":best_ensemble_fitness.sum(), 
-                                            "ensemble":ensemble, 
-                                            "best_fitness_classifiers":best_fitness_classifiers}})
-                    i = i +1
-            else:
-                return result_dict
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+            time_aux = int(round(now * 1000))
+            for cl in range(0, self.n_estimators):
+                #classifier = all_possible_ensembles[classifiers][0][cl][0]
+                classifier = getattr(sys.modules[__name__], all_possible_ensembles[classifiers][0][cl][0])()
+                params = all_possible_ensembles[classifiers][0][cl][1]
+                classifier.set_params(**params)
+                y_pred = np.zeros([len_y])
+                #k-fold cross-validation
+                for train, val in kf.split(X):
+                    classifier.fit(X[train], y[train])
+                    y_pred[val] = classifier.predict(X[val])
+                    for idx_obj in val: 
+                        classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
+                classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
+                classifier_id = classifier_id + 1
+            #the ensemble make the final prediction by majority vote for accuracy
+            majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
+            majority_voting = [int(j[0]) for j in majority_voting]
+            ensemble_fitness = np.equal(majority_voting,y)
+            #select the most accurate ensemble
+            if(ensemble_fitness.sum() > best_ensemble_fitness.sum()):
+                best_ensemble_fitness = ensemble_fitness
+                best_fitness_classifiers = classifiers_right_predictions
+                ensemble = all_possible_ensembles[classifiers]
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+            total_time = (int(round(now * 1000)) - time_aux)
+            result_dict.update({i: {"start_time":start_time,
+                                    "end_time":end_time,
+                                    "total_time_ms":total_time,
+                                    "best_fitness_ensemble":best_ensemble_fitness.sum(), 
+                                    "ensemble":ensemble, 
+                                    "best_fitness_classifiers":best_fitness_classifiers}})
+        return result_dict
     
     def predict(self, X):
         len_X = len(X)
@@ -208,12 +201,15 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
             csv_file = 'bfec_rand_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, n_estimators=int(n_estimators), random_state=i*10)
+            ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, 
+                                                               n_estimators=int(n_estimators), 
+                                                               random_state=i*10)
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
+            selected_ensemble = random.sample(range(len(all_possible_ensembles)), k=stop_time)
             fit_aux = int(round(time.time() * 1000))
-            search_results = ensemble_classifier.fit(X_train, y_train, all_possible_ensembles)
+            search_results = ensemble_classifier.fit(X_train, y_train, all_possible_ensembles, selected_ensemble)
             #saving results as pandas dataframe and csv
             search_results_pd = pd.DataFrame.from_dict(search_results, orient='index')
             search_results_pd.to_csv (csv_file, index = None, header=True)       
