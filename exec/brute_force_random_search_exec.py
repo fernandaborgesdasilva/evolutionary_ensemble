@@ -39,6 +39,9 @@ import math
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+from joblib import Memory
+memory = Memory("./tmpmemoryjoblib", verbose=0)
+
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
@@ -89,13 +92,11 @@ class BruteForceEnsembleClassifier:
         len_y = len(y)
         result_dict = dict()
         random.seed(self.random_state)
-        kf = KFold(n_splits=5, random_state=self.random_state)
         best_ensemble_fitness = np.zeros([len_y])
         best_fitness_classifiers = np.zeros([self.n_estimators])
-        i = 0
         for index, classifiers in enumerate(selected_ensemble):
             # a matrix with all observations vs the prediction of each classifier
-            classifiers_predictions = np.zeros([len_y,self.n_estimators])
+            classifiers_predictions = np.zeros([self.n_estimators, len_y])
             # sum the number of right predictions for each classifier
             classifiers_right_predictions = np.zeros([self.n_estimators])
             ensemble_fitness = np.zeros([len_y])
@@ -106,21 +107,14 @@ class BruteForceEnsembleClassifier:
             start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             time_aux = int(round(now * 1000))
             for cl in range(0, self.n_estimators):
-                #classifier = all_possible_ensembles[classifiers][0][cl][0]
-                classifier = getattr(sys.modules[__name__], all_possible_ensembles[classifiers][0][cl][0])()
+                classifier = all_possible_ensembles[classifiers][0][cl][0]
                 params = all_possible_ensembles[classifiers][0][cl][1]
-                classifier.set_params(**params)
-                y_pred = np.zeros([len_y])
-                #k-fold cross-validation
-                for train, val in kf.split(X):
-                    classifier.fit(X[train], y[train])
-                    y_pred[val] = classifier.predict(X[val])
-                    for idx_obj in val: 
-                        classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
+                y_pred = train_clf(classifier, params, X, y, self.random_state)
+                classifiers_predictions[classifier_id][:] = y_pred
                 classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
                 classifier_id = classifier_id + 1
             #the ensemble make the final prediction by majority vote for accuracy
-            majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
+            majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
             majority_voting = [int(j[0]) for j in majority_voting]
             ensemble_fitness = np.equal(majority_voting,y)
             #select the most accurate ensemble
@@ -133,7 +127,7 @@ class BruteForceEnsembleClassifier:
             mlsec = repr(now).split('.')[1][:3]
             end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             total_time = (int(round(now * 1000)) - time_aux)
-            result_dict.update({i: {"start_time":start_time,
+            result_dict.update({index: {"start_time":start_time,
                                     "end_time":end_time,
                                     "total_time_ms":total_time,
                                     "best_fitness_ensemble":best_ensemble_fitness.sum(), 
@@ -190,13 +184,29 @@ def define_all_possible_ensembles(data, n_estimators=10):
         all_ensembles.append([classifiers])
     return all_ensembles
 
-def compare_results(data, target, n_estimators, outputfile, stop_time, all_possible_ensembles):
+@memory.cache
+def train_clf(classifier, params, X, y, random_state):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=FutureWarning)
+    clf = getattr(sys.modules[__name__], classifier)()
+    clf.set_params(**params)
+    y_pred = np.zeros([len(y)])
+    #k-fold cross-validation
+    kf = KFold(n_splits=5, random_state=random_state)
+    for train, val in kf.split(X):
+        clf.fit(X[train], y[train])
+        y_pred[val] = clf.predict(X[val])
+    return y_pred
+
+def compare_results(data, target, n_estimators, outputfile, stop_time, all_possible_ensembles, possible_ensembles_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
         text_file.write(' Brute Force Ensemble Classifier ')
         text_file.write('*'*60)
+        text_file.write('\nAll possible ensembles combinatios created in %i' % (possible_ensembles_time))
+        text_file.write(" ms.")
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
@@ -251,6 +261,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
+            memory.clear(warn=False)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
@@ -305,7 +316,14 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.data, 
+                        target=dataset.target, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time), 
+                        all_possible_ensembles=possible_ensembles,
+                        possible_ensembles_time=total_time
+                       )
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
         aux = int(round(time.time() * 1000))
@@ -313,7 +331,14 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.data, 
+                        target=dataset.target, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time), 
+                        all_possible_ensembles=possible_ensembles,
+                        possible_ensembles_time=total_time
+                       )
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
@@ -323,7 +348,14 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.iloc[:, 0:-1].values, target=dataset.iloc[:, -1].values, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.iloc[:, 0:-1].values, 
+                        target=dataset.iloc[:, -1].values, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time), 
+                        all_possible_ensembles=possible_ensembles,
+                        possible_ensembles_time=total_time
+                       )
     print('It is finished!')
 
 if __name__ == "__main__":
