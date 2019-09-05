@@ -40,9 +40,13 @@ from joblib import Parallel, delayed, load, dump
 import tempfile
 import os
 import shutil
+from importlib import import_module
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+from joblib import Memory
+memory = Memory("./tmpmemoryjoblib", verbose=0)
 
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -80,19 +84,27 @@ class BruteForceEnsembleClassifier:
     def fit_ensemble(self, X, y, ensemble, best_fitness_classifiers):
         classifiers_fitness_it = 0
         for estimator, params in ensemble:
+            estimator = getattr(sys.modules[__name__], estimator)()
             estimator.set_params(**params)
-            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, fitness=best_fitness_classifiers[classifiers_fitness_it]))
+            self.ensemble.append(Estimator(classifier=estimator, 
+                                           random_state=self.random_state, 
+                                           fitness=best_fitness_classifiers[classifiers_fitness_it]))
             classifiers_fitness_it = classifiers_fitness_it + 1
         for classifier in self.ensemble:
             classifier.fit(X, y)
         
     def parallel_fit(self, X, y, all_possible_ensembles, classifiers):
+        print("\n\n DEBUG_2 >>>>>>>", sys.modules[__name__])
+        now = time.time()
+        struct_now = time.localtime(now)
+        mlsec = repr(now).split('.')[1][:3]
+        start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+        time_aux = int(round(now * 1000))
         len_y = len(y)
         result_dict = dict()
         random.seed(self.random_state)
-        kf = KFold(n_splits=5, random_state=self.random_state)
         # a matrix with all observations vs the prediction of each classifier
-        classifiers_predictions = np.zeros([len_y,self.n_estimators])
+        classifiers_predictions = np.zeros([self.n_estimators, len_y])
         # sum the number of right predictions for each classifier
         classifiers_right_predictions = np.zeros([self.n_estimators])
         ensemble_fitness = np.zeros([len_y])
@@ -100,18 +112,12 @@ class BruteForceEnsembleClassifier:
         for cl in range(0, self.n_estimators):
             classifier = all_possible_ensembles[classifiers][0][cl][0]
             params = all_possible_ensembles[classifiers][0][cl][1]
-            classifier.set_params(**params)
-            y_pred = np.zeros([len_y])
-            #k-fold cross-validation
-            for train, val in kf.split(X):
-                classifier.fit(X[train], y[train])
-                y_pred[val] = classifier.predict(X[val])
-                for idx_obj in val: 
-                    classifiers_predictions[idx_obj][classifier_id] = y_pred[idx_obj]
+            y_pred = train_clf(classifier, params, X, y, self.random_state)
+            classifiers_predictions[classifier_id][:] = y_pred
             classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
             classifier_id = classifier_id + 1
         #the ensemble make the final prediction by majority vote for accuracy
-        majority_voting = stats.mode(classifiers_predictions, axis=1)[0]
+        majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
         majority_voting = [int(j[0]) for j in majority_voting]
         ensemble_fitness = np.equal(majority_voting,y)
         ensemble = all_possible_ensembles[classifiers]
@@ -119,12 +125,19 @@ class BruteForceEnsembleClassifier:
         struct_now = time.localtime(now)
         mlsec = repr(now).split('.')[1][:3]
         end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-        result_dict.update({"end_time":end_time,"fitness_ensemble":ensemble_fitness.sum(), "ensemble":ensemble, "fitness_classifiers":classifiers_right_predictions})
+        total_time = (int(round(now * 1000)) - time_aux)
+        result_dict.update({"start_time":start_time,
+                            "end_time":end_time,
+                            "total_time_ms":total_time,
+                            "fitness_ensemble":ensemble_fitness.sum(),
+                            "ensemble":ensemble,
+                            "fitness_classifiers":classifiers_right_predictions})
         return result_dict
                 
     def fit(self, X, y, all_possible_ensembles, selected_ensemble):
         num_cores = multiprocessing.cpu_count()
         backend = 'loky'
+        print("\n\n DEBUG_1 >>>>>>>", sys.modules[__name__])
         result = Parallel(n_jobs=num_cores, backend=backend)(delayed(self.parallel_fit)(X, y, all_possible_ensembles, item) for index, item in enumerate(selected_ensemble))
         return result
     
@@ -158,24 +171,39 @@ def estimators(estimator_grid):
 def define_all_possible_ensembles(data, n_estimators=10):
     n_samples = int(math.sqrt(data.shape[0]))
     alg = {
-                KNeighborsClassifier(): {'n_neighbors':[1, 3, 7, n_samples], 'weights':['uniform', 'distance']},
+                'KNeighborsClassifier': {'n_neighbors':[1, 3, 7, n_samples], 'weights':['uniform', 'distance']},
                 #RidgeClassifier(): {'alpha':[1.0, 10.0],'max_iter':[10, 100]},
-                SVC(): {'C':[1, 1000],'gamma':[0.0001, 0.001]},
-                DecisionTreeClassifier(): {'min_samples_leaf':[1, 5], 'max_depth':[None, 5]},
+                'SVC': {'C':[1, 1000],'gamma':[0.0001, 0.001]},
+                'DecisionTreeClassifier': {'min_samples_leaf':[1, 5], 'max_depth':[None, 5]},
                 #ExtraTreeClassifier(): {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
-                GaussianNB(): {},
-                LinearDiscriminantAnalysis(): {},
+                'GaussianNB': {},
+                'LinearDiscriminantAnalysis': {},
                 #QuadraticDiscriminantAnalysis(): {},
                 #BernoulliNB(): {},
-                LogisticRegression(): {'C':[1, 1000], 'max_iter':[100]},
+                'LogisticRegression': {'C':[1, 1000], 'max_iter':[100]},
                 #NearestCentroid(): {},
-                PassiveAggressiveClassifier(): {'C':[1, 1000], 'max_iter':[100]},
-                SGDClassifier(): {'alpha':[1e-5, 1e-2], 'max_iter':[100]}
+                'PassiveAggressiveClassifier': {'C':[1, 1000], 'max_iter':[100]},
+                'SGDClassifier': {'alpha':[1e-5, 1e-2], 'max_iter':[100]}
     }
     all_ensembles = []
     for i, classifiers in enumerate(combinations(estimators(alg),n_estimators)):
         all_ensembles.append([classifiers])
     return all_ensembles
+
+@memory.cache
+def train_clf(classifier, params, X, y, random_state):
+    print("\n\n DEBUG_3 >>>>>>>", sys.modules[__name__])
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings("ignore", category=FutureWarning)
+    clf = getattr(sys.modules[__name__], classifier)()
+    clf.set_params(**params)
+    y_pred = np.zeros([len(y)])
+    #k-fold cross-validation
+    kf = KFold(n_splits=5, random_state=random_state)
+    for train, val in kf.split(X):
+        clf.fit(X[train], y[train])
+        y_pred[val] = clf.predict(X[val])
+    return y_pred
 
 def compare_results(data, target, n_estimators, outputfile, stop_time, all_possible_ensembles):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
