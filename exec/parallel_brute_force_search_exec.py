@@ -128,7 +128,7 @@ class BruteForceEnsembleClassifier:
         #num_cores = multiprocessing.cpu_count()
         backend = 'loky'
         inputs = combinations(self.estimators_pool(self.algorithms),self.n_estimators)
-        result = Parallel(n_jobs=n_cores, backend=backend, require='sharedmem')(delayed(self.parallel_fit)(X, y, item) for index, item in zip(range(0, self.stop_time), inputs))
+        result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(X, y, item) for index, item in zip(range(0, self.stop_time), inputs))
         return result
     
     def predict(self, X):
