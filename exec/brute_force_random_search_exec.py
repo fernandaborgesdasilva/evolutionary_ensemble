@@ -205,7 +205,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
         text_file.write('*'*60)
         text_file.write(' Brute Force Ensemble Classifier ')
         text_file.write('*'*60)
-        text_file.write('\nAll possible ensembles combinatios created in %i' % (possible_ensembles_time))
+        text_file.write('\nAll possible ensembles combinations created in %i' % (possible_ensembles_time))
         text_file.write(" ms.")
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
@@ -306,7 +306,7 @@ def main(argv):
         aux = int(round(time.time() * 1000))
         possible_ensembles = define_all_possible_ensembles(data=dataset.data, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
-        print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
+        print("\nAll possible ensembles combinations created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
     elif inputfile == "breast":
@@ -314,7 +314,7 @@ def main(argv):
         aux = int(round(time.time() * 1000))
         possible_ensembles = define_all_possible_ensembles(data=dataset.data, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
-        print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
+        print("\nAll possible ensembles combinations created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
@@ -329,7 +329,7 @@ def main(argv):
         aux = int(round(time.time() * 1000))
         possible_ensembles = define_all_possible_ensembles(data=dataset.data, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
-        print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
+        print("\nAll possible ensembles combinations created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
@@ -346,7 +346,7 @@ def main(argv):
         aux = int(round(time.time() * 1000))
         possible_ensembles = define_all_possible_ensembles(data=dataset.iloc[:, 0:-1].values, n_estimators=int(n_estimators))
         total_time = (int(round(time.time() * 1000)) - aux)
-        print("\nAll possible ensembles combinatios created in ", total_time, " ms.")
+        print("\nAll possible ensembles combinations created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.iloc[:, 0:-1].values, 
                         target=dataset.iloc[:, -1].values, 
