@@ -1,20 +1,4 @@
 from sklearn.model_selection import KFold
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.linear_model import RidgeClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from sklearn.naive_bayes import GaussianNB
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.linear_model import SGDClassifier
-from sklearn.svm import SVC
-from sklearn.tree import ExtraTreeClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors.nearest_centroid import NearestCentroid
-from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import datasets
 from sklearn.metrics import accuracy_score
@@ -23,18 +7,15 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import VotingClassifier
 from itertools import product, combinations
-import math
 import numpy as np
 import pandas as pd
 from scipy import stats
-import copy
 import random
 import operator
 import time
 import sys, getopt
-import math
+from all_members_ensemble import gen_members
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -78,7 +59,9 @@ class BruteForceEnsembleClassifier:
     def fit_ensemble(self, X, y, ensemble, best_fitness_classifiers):
         classifiers_fitness_it = 0
         for estimator, params in ensemble:
-            estimator = getattr(sys.modules[__name__], estimator)()
+            #estimator = getattr(sys.modules[__name__], estimator)()
+            mod, f = estimator.rsplit('.', 1)
+            estimator =  getattr(__import__(mod, fromlist=[f]), f)()
             estimator.set_params(**params)
             self.ensemble.append(Estimator(classifier=estimator, 
                                            random_state=self.random_state, 
@@ -162,23 +145,8 @@ def estimators(estimator_grid):
                 params = dict(zip(keys, v))
                 yield (estimator, params)
                 
-def define_all_possible_ensembles(data, n_estimators=10):
-    n_samples = int(math.sqrt(data.shape[0]))
-    alg = {
-                'KNeighborsClassifier': {'n_neighbors':[1, 3, 7, n_samples], 'weights':['uniform', 'distance']},
-                #RidgeClassifier(): {'alpha':[1.0, 10.0],'max_iter':[10, 100]},
-                'SVC': {'C':[1, 1000],'gamma':[0.0001, 0.001]},
-                'DecisionTreeClassifier': {'min_samples_leaf':[1, 5], 'max_depth':[None, 5]},
-                #ExtraTreeClassifier(): {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
-                'GaussianNB': {},
-                'LinearDiscriminantAnalysis': {},
-                #QuadraticDiscriminantAnalysis(): {},
-                #BernoulliNB(): {},
-                'LogisticRegression': {'C':[1, 1000], 'max_iter':[100]},
-                #NearestCentroid(): {},
-                'PassiveAggressiveClassifier': {'C':[1, 1000], 'max_iter':[100]},
-                'SGDClassifier': {'alpha':[1e-5, 1e-2], 'max_iter':[100]}
-    }
+def define_all_possible_ensembles(data, n_estimators):
+    alg = gen_members(data.shape)
     all_ensembles = []
     for i, classifiers in enumerate(combinations(estimators(alg),n_estimators)):
         all_ensembles.append([classifiers])
@@ -188,7 +156,9 @@ def define_all_possible_ensembles(data, n_estimators=10):
 def train_clf(classifier, params, X, y, random_state):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     warnings.filterwarnings("ignore", category=FutureWarning)
-    clf = getattr(sys.modules[__name__], classifier)()
+    #clf = getattr(sys.modules[__name__], classifier)()
+    mod, f = classifier.rsplit('.', 1)
+    clf = getattr(__import__(mod, fromlist=[f]), f)()
     clf.set_params(**params)
     y_pred = np.zeros([len(y)])
     #k-fold cross-validation
