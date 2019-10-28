@@ -1,20 +1,4 @@
 from sklearn.model_selection import KFold
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.linear_model import RidgeClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
-from sklearn.naive_bayes import GaussianNB
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.linear_model import SGDClassifier
-from sklearn.svm import SVC
-from sklearn.tree import ExtraTreeClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors.nearest_centroid import NearestCentroid
-from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import datasets
 from sklearn.metrics import accuracy_score
@@ -23,18 +7,14 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.preprocessing import LabelEncoder
-from sklearn.ensemble import VotingClassifier
-from itertools import product, combinations
-import math
 import numpy as np
 import pandas as pd
-from scipy import stats
 import random
 import operator
 import time
 import sys, getopt
-import math
 import copy
+from all_members_ensemble import gen_members
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -43,6 +23,7 @@ class Chromossome:
     def __init__(self, genotypes_pool, random_state=None):
         self.genotypes_pool = genotypes_pool
         self.classifier = None
+        self.classifier_algorithm = None
         self.mutate()
         self.fitness = 0
         self.random_state = random_state
@@ -58,27 +39,24 @@ class Chromossome:
         change_classifier = random.randint(0, len(self.genotypes_pool))
         if self.classifier is None or change_classifier != 0:
             param = {}
-            classifier_algorithm = random.choice(list(self.genotypes_pool.keys()))
+            self.classifier_algorithm = random.choice(list(self.genotypes_pool.keys()))
+            mod, f = self.classifier_algorithm.rsplit('.', 1)
+            clf = getattr(__import__(mod, fromlist=[f]), f)()            
         else:
             param = self.classifier.get_params()
-            classifier_algorithm = self.classifier.__class__
+            clf = self.classifier
 
-        if not n_positions or n_positions>len(self.genotypes_pool[classifier_algorithm]):
-            n_positions = len(self.genotypes_pool[classifier_algorithm])
+        if not n_positions or n_positions>len(self.genotypes_pool[self.classifier_algorithm]):
+            n_positions = len(self.genotypes_pool[self.classifier_algorithm])
 
-        mutation_positions = random.sample(range(0, len(self.genotypes_pool[classifier_algorithm])), n_positions)
+        mutation_positions = random.sample(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
         i=0
-        for hyperparameter, h_range in self.genotypes_pool[classifier_algorithm].items():
-            if i in mutation_positions or classifier_algorithm != self.classifier.__class__:
-                if isinstance(h_range[0], str):
-                    param[hyperparameter] = random.choice(h_range)
-                elif isinstance(h_range[0], float):
-                    param[hyperparameter] = random.uniform(h_range[0], h_range[1]+1)
-                else:
-                    param[hyperparameter] = random.randint(h_range[0], h_range[1]+1)
+        for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
+            if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
+                param[hyperparameter] = random.choice(h_range)
             i+= 1
-
-        self.classifier = classifier_algorithm(**param)
+            
+        self.classifier = clf.set_params(**param)
 
         try:
             self.classifier.set_param(random_state=self.random_state)
@@ -243,22 +221,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
     div = np.zeros(stop_time)
     fit = np.zeros(stop_time)
     fit_total_time = 0
-    n_samples = int(math.sqrt(data.shape[0]))
-    alg = {
-                KNeighborsClassifier: {'n_neighbors':[1, n_samples]},
-                RidgeClassifier: {'alpha':[1.0, 10.0],'max_iter':[10, 100]},
-                SVC: {'C':[1, 1000],'gamma':[0.0001, 0.001]},
-                DecisionTreeClassifier: {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
-                ExtraTreeClassifier: {'min_samples_leaf':[1, n_samples], 'max_depth':[1, n_samples]},
-                GaussianNB: {},
-                LinearDiscriminantAnalysis: {},
-                QuadraticDiscriminantAnalysis: {},
-                BernoulliNB: {},
-                LogisticRegression: {'C':[1, 1000], 'max_iter':[100, 1000]},
-                NearestCentroid: {},
-                PassiveAggressiveClassifier: {'C':[1, 1000], 'max_iter':[100, 1000]},
-                SGDClassifier: {'alpha':[1e-5, 1e-2], 'max_iter':[100, 1000]}
-    }
+    alg = gen_members(data.shape)
     
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
