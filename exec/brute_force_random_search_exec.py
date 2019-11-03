@@ -278,7 +278,14 @@ def main(argv):
         total_time = (int(round(time.time() * 1000)) - aux)
         print("\nAll possible ensembles combinations created in ", total_time, " ms.")
         print('Runing Brute Force Ensemble Classifier...')
-        compare_results(data=dataset.data, target=dataset.target, n_estimators=int(n_estimators), outputfile=outputfile, stop_time=int(stop_time), all_possible_ensembles=possible_ensembles)
+        compare_results(data=dataset.data, 
+                        target=dataset.target, 
+                        n_estimators=int(n_estimators), 
+                        outputfile=outputfile, 
+                        stop_time=int(stop_time), 
+                        all_possible_ensembles=possible_ensembles,
+                        possible_ensembles_time=total_time
+                       )
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
         aux = int(round(time.time() * 1000))
