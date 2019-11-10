@@ -22,7 +22,7 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 from joblib import Memory
-cachedir = "./brute_force_random_search_exec_tmpmemory"
+cachedir = './brute_force_random_search_exec_tmpmemory' + '_' + time.strftime("%H_%M_%S", time.localtime(time.time()))
 memory = Memory(cachedir, verbose=0)
 
 class Estimator:
