@@ -15,6 +15,7 @@ import random
 import operator
 import time
 import sys, getopt
+import shutil
 from joblib import Parallel, delayed
 from all_members_ensemble import gen_members
 
@@ -23,7 +24,8 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 from joblib import Memory
-memory = Memory("./tmpmemoryjoblib", verbose=0)
+cachedir = "./parallel_brute_force_search_exec_tmpmemory"
+memory = Memory(cachedir, verbose=0)
 
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -210,6 +212,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
             memory.clear(warn=False)
+            shutil.rmtree(cachedir)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))

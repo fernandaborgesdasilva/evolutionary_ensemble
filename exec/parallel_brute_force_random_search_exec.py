@@ -10,6 +10,7 @@ import random
 from itertools import product, combinations
 import pandas as pd
 import sys, getopt
+import shutil
 from sklearn.model_selection import KFold
 import numpy as np
 from scipy import stats
@@ -22,7 +23,8 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 from joblib import Memory
-memory = Memory("./tmpmemoryjoblib", verbose=0)
+cachedir = "./parallel_brute_force_random_search_exec_tmpmemory"
+memory = Memory(cachedir, verbose=0)
 
 @memory.cache
 def train_clf(classifier, params, X, y, random_state):
@@ -230,7 +232,8 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
-            memory.clear(warn=False)    
+            memory.clear(warn=False)
+            shutil.rmtree(cachedir)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
