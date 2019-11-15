@@ -51,9 +51,21 @@ class Chromossome:
 
         mutation_positions = random.sample(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
         i=0
+        
         for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
             if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
-                param[hyperparameter] = random.choice(h_range)
+                if isinstance(h_range[0], str):
+                    param[hyperparameter] = random.choice(h_range)
+                elif isinstance(h_range[0], float):
+                    h_range_ = []
+                    h_range_.append(min(h_range))
+                    h_range_.append(max(h_range))
+                    param[hyperparameter] = random.uniform(h_range_[0], h_range_[1]+1)
+                else:
+                    h_range_ = []
+                    h_range_.append(min(h_range))
+                    h_range_.append(max(h_range))
+                    param[hyperparameter] = random.randint(h_range_[0], h_range_[1]+1)
             i+= 1
             
         self.classifier = clf.set_params(**param)
