@@ -8,7 +8,7 @@ do
 	basef=`basename $base .csv`
 	mkdir -p $basef
 	header="#!/bin/bash
-#SBATCH -J seq-$basef
+#SBATCH -J seq-TP.$basef
 #SBATCH -o log-seq-TP.%j.out
 #SBATCH -e log-seq-TP.%j.err
 #SBATCH --mem=20GB
@@ -21,7 +21,7 @@ do
 	"
 
 	header_paralelo="#!/bin/bash
-#SBATCH -J pll-$basef
+#SBATCH -J pll-TP.$basef
 #SBATCH -o log-pll-TP.%j.out
 #SBATCH -e log-pll-TP.%j.err
 #SBATCH -n 32
