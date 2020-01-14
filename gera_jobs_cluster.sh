@@ -48,7 +48,7 @@ do
 	pushd $basef
 	for i in \"\${cores[@]}\"
 	do
-		python $exec_patch/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl\$i -e $nEstimator -s $stopTime -c \$i
+		python $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl\$i -e $nEstimator -s $stopTime -c \$i
 	done
 	popd
 	"
