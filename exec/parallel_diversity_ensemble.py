@@ -250,7 +250,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
-            csv_file = 'parallel_diversity_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+            csv_file = 'parallel_diversity_results_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
             ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg, 
                                                               population_size=n_estimators, 
