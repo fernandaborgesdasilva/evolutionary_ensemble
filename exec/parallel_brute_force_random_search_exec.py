@@ -183,7 +183,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
-            csv_file = 'pbfec_rand_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+            csv_file = 'pbfec_rand_results_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, n_estimators=int(n_estimators), random_state=i*10)
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
