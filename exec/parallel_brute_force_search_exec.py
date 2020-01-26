@@ -159,7 +159,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write('\nstop_time = %i' % (stop_time))
         total_size = 0
         for i in range(0, 10):
-            csv_file = 'pbfec_seq_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+            csv_file = 'pbfec_seq_results_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             ensemble_classifier = BruteForceEnsembleClassifier(algorithms=alg, 
                                                                stop_time=stop_time, 
                                                                n_estimators=int(n_estimators), 
