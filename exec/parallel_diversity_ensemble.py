@@ -16,6 +16,7 @@ import sys, getopt
 import copy
 from joblib import Parallel, delayed, load, dump
 from all_members_ensemble import gen_members
+import gc
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -74,6 +75,7 @@ class Chromossome:
             self.classifier.set_param(random_state=self.random_state)
         except:
             pass
+        del clf
         
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -209,6 +211,7 @@ class DiversityEnsembleClassifier:
                                        "fitness":fitness,
                                        "ensemble":ensemble, 
                                        "classifiers_fitness":classifiers_fitness}})
+            gc.collect()
         return result_dict
     
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
@@ -261,8 +264,8 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             results = ensemble_classifier.fit(X_train, y_train, n_cores)
             results_pd = pd.DataFrame.from_dict(results, orient='index')
             results_pd.to_csv (csv_file, index = None, header=True)
-            ensemble = results_pd[-1:]["ensemble"].item()
-            classifiers_fitness = results_pd[-1:]["classifiers_fitness"].item()
+            ensemble = results_pd[-1:]["ensemble"].values.item()
+            classifiers_fitness = results_pd[-1:]["classifiers_fitness"].values.item()
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, classifiers_fitness)
             fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
             text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
@@ -299,6 +302,8 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
+            del results, results_pd
+            gc.collect()
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
