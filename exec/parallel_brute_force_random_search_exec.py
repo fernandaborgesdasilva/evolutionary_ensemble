@@ -126,7 +126,7 @@ class BruteForceEnsembleClassifier:
         result_dict.update({"start_time":start_time,
                             "end_time":end_time,
                             "total_time_ms":total_time,
-                            "fitness_ensemble":ensemble_fitness.sum(),
+                            "best_ensemble_fitness":ensemble_fitness.sum(),
                             "ensemble":ensemble,
                             "fitness_classifiers":classifiers_right_predictions})
         return result_dict
@@ -194,8 +194,8 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             #saving results as pandas dataframe and csv
             search_results_pd = pd.DataFrame(search_results)
             search_results_pd.to_csv(csv_file, index = None, header=True)     
-            ensemble = search_results_pd.loc[search_results_pd['fitness_ensemble'].idxmax()]["ensemble"]
-            best_fitness_classifiers = search_results_pd.loc[search_results_pd['fitness_ensemble'].idxmax()]["fitness_classifiers"]
+            ensemble = search_results_pd.loc[search_results_pd['best_ensemble_fitness'].idxmax()]["ensemble"]
+            best_fitness_classifiers = search_results_pd.loc[search_results_pd['best_ensemble_fitness'].idxmax()]["fitness_classifiers"]
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble[0], best_fitness_classifiers)
             fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
             text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))

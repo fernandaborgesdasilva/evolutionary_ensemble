@@ -208,7 +208,7 @@ class DiversityEnsembleClassifier:
                                        "end_time":end_time,
                                        "total_time_ms":total_time,
                                        "diversity":diversity,
-                                       "fitness":fitness,
+                                       "best_ensemble_fitness":fitness,
                                        "ensemble":ensemble, 
                                        "classifiers_fitness":classifiers_fitness}})
             gc.collect()
