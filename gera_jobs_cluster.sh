@@ -40,7 +40,7 @@ do
 	comandos_forca_bruta_random="
 
 	pushd $basef
-	python $exec_path/brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria -e $nEstimator -s $stopTime
+	python3 -u $exec_path/brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria -e $nEstimator -s $stopTime
 	popd
 	"
 	comandos_forca_bruta_random_parallel="
@@ -48,14 +48,14 @@ do
 	pushd $basef
 	for i in \"\${cores[@]}\"
 	do
-		python $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl\$i -e $nEstimator -s $stopTime -c \$i
+		python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl\$i -e $nEstimator -s $stopTime -c \$i
 	done
 	popd
 	"
 
 	comandos_forca_bruta="
 	pushd $basef
-	python $exec_path/brute_force_search_exec.py -i $base -o saida_forca_bruta -e $nEstimator -s $stopTime
+	python3 -u $exec_path/brute_force_search_exec.py -i $base -o saida_forca_bruta -e $nEstimator -s $stopTime
 	popd
 	"
 	comandos_forca_bruta_parallel="
@@ -63,7 +63,7 @@ do
 	pushd $basef
 	for i in \"\${cores[@]}\"
 	do
-		python $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl\$i -e $nEstimator -s $stopTime -c \$i
+		python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl\$i -e $nEstimator -s $stopTime -c \$i
 	done
 	popd
 	"
@@ -71,7 +71,7 @@ do
 
 	comandos_dec="
 	pushd $basef
-	python $exec_path/diversity_ensemble.py -i $base -o saida_dec -e $nEstimator -s $stopTime
+	python3 -u $exec_path/diversity_ensemble.py -i $base -o saida_dec -e $nEstimator -s $stopTime
 	popd
 	"
 	comandos_dec_parallel="
@@ -79,7 +79,7 @@ do
 	pushd $basef
 	for i in \"\${cores[@]}\"
 	do
-		python $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl\$i -e $nEstimator -s $stopTime -c \$i
+		python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl\$i -e $nEstimator -s $stopTime -c \$i
 	done
 	popd
 	"
