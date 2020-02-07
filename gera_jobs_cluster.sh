@@ -1,5 +1,5 @@
 bases=("breast" "iris" "/home/covoes/evolutionary_ensemble/exec/dados_captcha.csv")
-stopTime=1000
+stopTime=19448
 nEstimator=10
 exec_path="/home/covoes/env_v_p/evolutionary_ensemble/exec"
 for base in "${bases[@]}"   
