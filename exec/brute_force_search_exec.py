@@ -17,6 +17,10 @@ import time
 import sys, getopt
 import shutil
 from all_members_ensemble import gen_members
+import asyncio
+from aiofile import AIOFile, Writer
+import nest_asyncio
+nest_asyncio.apply()
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -70,12 +74,21 @@ class BruteForceEnsembleClassifier:
         for classifier in self.ensemble:
             classifier.fit(X, y)
 
-    def fit(self, X, y):
+    def fit(self, X, y, csv_file):
         len_y = len(y)
         result_dict = dict()
         random.seed(self.random_state)
         best_ensemble_fitness = np.zeros([len_y])
         best_fitness_classifiers = np.zeros([self.n_estimators])
+        writing_results_task_obj = None
+        my_event_loop = asyncio.get_event_loop()
+        header = open(csv_file, "w")
+        try:
+            header.write('start_time,end_time,total_time_ms,best_ensemble_fitness,ensemble,best_fitness_classifiers')
+            header.write('\n')
+        finally:
+            header.close()
+        
         for i, classifiers in enumerate(combinations(self.estimators_pool(self.algorithms),self.n_estimators)):
             now = time.time()
             struct_now = time.localtime(now)
@@ -109,13 +122,24 @@ class BruteForceEnsembleClassifier:
             mlsec = repr(now).split('.')[1][:3]
             end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             total_time = (int(round(now * 1000)) - time_aux)
+            
+            if (i%100 == 0 and i != 0):
+                if (writing_results_task_obj is not None):
+                    my_event_loop.run_until_complete(writing_results_task_obj)
+                writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
+                result_dict = dict()
+            
             result_dict.update({i: {"start_time":start_time,
                                     "end_time":end_time,
                                     "total_time_ms":total_time,
                                     "best_ensemble_fitness":best_ensemble_fitness.sum(),
                                     "ensemble":ensemble,
                                     "best_fitness_classifiers":best_fitness_classifiers}})
-        return result_dict
+        
+        writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
+        my_event_loop.run_until_complete(writing_results_task_obj)
+        result_dict = dict()
+        return ensemble, best_fitness_classifiers
     
     def predict(self, X):
         len_X = len(X)
@@ -147,6 +171,12 @@ def train_clf(classifier, params, X, y, random_state):
         clf.fit(X[train], y[train])
         y_pred[val] = clf.predict(X[val])
     return y_pred
+
+async def writing_results_task(result_dict, csv_file):
+    async with AIOFile(csv_file, 'a') as afp:
+        writer = Writer(afp)
+        await writer(pd.DataFrame.from_dict(result_dict, orient='index').to_csv(header=False, index=None))
+        await afp.fsync() 
     
 def compare_results(data, target, n_estimators, outputfile, stop_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
@@ -170,12 +200,12 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             text_file.write("\n\nIteration = %i" % (i))
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
             fit_aux = int(round(time.time() * 1000))
-            search_results = ensemble_classifier.fit(X_train, y_train)
+            ensemble, best_fitness_classifiers = ensemble_classifier.fit(X_train, y_train, csv_file)
             #saving results as pandas dataframe and csv
-            search_results_pd = pd.DataFrame.from_dict(search_results, orient='index')
-            search_results_pd.to_csv (csv_file, index = None, header=True)
-            ensemble = search_results_pd[-1:]["ensemble"].values.item()
-            best_fitness_classifiers = search_results_pd[-1:]["best_fitness_classifiers"].values.item()
+            #search_results_pd = pd.DataFrame.from_dict(search_results, orient='index')
+            #search_results_pd.to_csv (csv_file, index = None, header=True)
+            #ensemble = search_results_pd[-1:]["ensemble"].values.item()
+            #best_fitness_classifiers = search_results_pd[-1:]["best_fitness_classifiers"].values.item()
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, best_fitness_classifiers)
             fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
             text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))

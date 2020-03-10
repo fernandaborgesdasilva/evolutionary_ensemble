@@ -16,7 +16,7 @@ import numpy as np
 from scipy import stats
 import operator
 import time
-from joblib import Parallel, delayed, load, dump
+from joblib import Parallel, delayed
 from all_members_ensemble import gen_members
 
 import warnings
@@ -133,7 +133,6 @@ class BruteForceEnsembleClassifier:
                 
     def fit(self, X, y, all_possible_ensembles, selected_ensemble, n_cores):
         backend = 'loky'
-        #result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(X, y, all_possible_ensembles, item) for index, item in zip(range(0, self.stop_time), selected_ensemble))
         result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(X, y, all_possible_ensembles[item]) for index, item in zip(range(0, self.stop_time), selected_ensemble))
         return result
     

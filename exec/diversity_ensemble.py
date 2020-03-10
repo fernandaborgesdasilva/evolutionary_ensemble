@@ -15,7 +15,10 @@ import time
 import sys, getopt
 import copy
 from all_members_ensemble import gen_members
-import gc
+import asyncio
+from aiofile import AIOFile, Writer
+import nest_asyncio
+nest_asyncio.apply()
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -155,14 +158,23 @@ class DiversityEnsembleClassifier:
             selected.append(target_chromossome)
             self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
-
-    def fit(self, X, y):
+    
+    def fit(self, X, y, csv_file):
         diversity_values, fitness_values = [], []
         result_dict = dict()
         ##print('Starting genetic algorithm...')
         kf = KFold(n_splits=5, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
         random.seed(self.random_state)
+        writing_results_task_obj = None
+        my_event_loop = asyncio.get_event_loop()
+        
+        header = open(csv_file, "w")
+        try:
+            header.write('start_time,end_time,total_time_ms,diversity,best_ensemble_fitness,ensemble,classifiers_fitness')
+            header.write('\n')
+        finally:
+            header.close()
 
         selected, not_selected, pop_fitness = [], [], []
         predictions = np.zeros([2*self.population_size, y.shape[0]])
@@ -196,6 +208,13 @@ class DiversityEnsembleClassifier:
             mlsec = repr(now).split('.')[1][:3]
             end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             total_time = (int(round(now * 1000)) - time_aux)
+            
+            if (epoch%100 == 0 and epoch != 0):
+                if (writing_results_task_obj is not None):
+                    my_event_loop.run_until_complete(writing_results_task_obj)
+                writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
+                result_dict = dict()
+            
             result_dict.update({epoch:{"start_time":start_time,
                                        "end_time":end_time,
                                        "total_time_ms":total_time,
@@ -203,8 +222,11 @@ class DiversityEnsembleClassifier:
                                        "best_ensemble_fitness":fitness,
                                        "ensemble":ensemble,
                                        "classifiers_fitness":classifiers_fitness}})
-            gc.collect()
-        return result_dict
+            
+        writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
+        my_event_loop.run_until_complete(writing_results_task_obj)
+        result_dict = dict()
+        return ensemble, classifiers_fitness
     
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
         classifiers_fitness_it = 0
@@ -229,7 +251,14 @@ class DiversityEnsembleClassifier:
                     pred[predictions[j][i]]  = self.ensemble[j].fitness
             y[i] = max(pred.items(), key=operator.itemgetter(1))[0]
         return y
+
     
+async def writing_results_task(result_dict, csv_file):
+    async with AIOFile(csv_file, 'a') as afp:
+        writer = Writer(afp)
+        await writer(pd.DataFrame.from_dict(result_dict, orient='index').to_csv(header=False, index=None))
+        await afp.fsync()  
+        
 def compare_results(data, target, n_estimators, outputfile, stop_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
@@ -254,11 +283,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
             fit_aux = int(round(time.time() * 1000))
-            results = ensemble_classifier.fit(X_train, y_train)
-            results_pd = pd.DataFrame.from_dict(results, orient='index')
-            results_pd.to_csv (csv_file, index = None, header=True)
-            ensemble = results_pd[-1:]["ensemble"].values.item()
-            classifiers_fitness = results_pd[-1:]["classifiers_fitness"].values.item()
+            ensemble, classifiers_fitness = ensemble_classifier.fit(X_train, y_train, csv_file)
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, classifiers_fitness)
             fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
             text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
@@ -295,8 +320,6 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
-            del results, results_pd
-            gc.collect()
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
@@ -336,6 +359,14 @@ def main(argv):
     print('Output file is ', outputfile)
     print('The number of estimators is ', n_estimators)
     print('The number of iterations is ', stop_time)
+    
+    now = time.time()
+    struct_now = time.localtime(now)
+    mlsec = repr(now).split('.')[1][:3]
+    start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+    print('\nStart time = ', start_time)
+    print('\n')
+    
     if inputfile == "iris":
         dataset = datasets.load_iris()
         print('Runing Diversity-based Ensemble Classifier...')
@@ -370,7 +401,13 @@ def main(argv):
                         n_estimators=int(n_estimators), 
                         outputfile=outputfile, 
                         stop_time=int(stop_time))
-    print('It is finished!')
+        
+    now = time.time()
+    struct_now = time.localtime(now)
+    mlsec = repr(now).split('.')[1][:3]
+    end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+    print('\nEnd time = ', end_time)
+    print('\nIt is finished!')
 
 if __name__ == "__main__":
     main(sys.argv[1:])
