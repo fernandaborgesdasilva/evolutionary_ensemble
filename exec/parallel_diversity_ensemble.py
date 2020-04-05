@@ -15,6 +15,7 @@ import time
 import sys, getopt
 import copy
 from joblib import Parallel, delayed
+import statistics
 from all_members_ensemble import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
@@ -180,6 +181,7 @@ class DiversityEnsembleClassifier:
         selected, not_selected = [], []
         selected, not_selected, pop_fitness = [], [], []
         all_predictions = np.zeros([2*self.population_size, y.shape[0]])
+        total_parallel_time = 0
 
         frequencies = np.unique(y, return_counts=True)[1]
         selection_threshold = max(frequencies)/np.sum(frequencies)
@@ -196,10 +198,13 @@ class DiversityEnsembleClassifier:
 
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
             self.generate_offspring(selected, not_selected, pop_fitness)
-            
+
+            parallel_time_aux = int(round(time.time() * 1000))
             backend = 'loky'
             fit_predictions = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit_predict_population)(item, kf, X, y) for item in not_selected)
+            total_parallel_time = total_parallel_time + (int(round(time.time() * 1000)) - parallel_time_aux)
             
+
             for i in fit_predictions:
                 all_predictions[i[0]] = i[1]
 
@@ -233,7 +238,8 @@ class DiversityEnsembleClassifier:
             
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
-        result_dict = dict()    
+        result_dict = dict()
+        print("\n>>>>> Parallel step processing time = %i" % (total_parallel_time))
         return ensemble, classifiers_fitness
     
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
@@ -269,6 +275,7 @@ async def writing_results_task(result_dict, csv_file):
 def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
+    sum_total_iter_time = []
     div = np.zeros(stop_time)
     fit = np.zeros(stop_time)
     fit_total_time = 0
@@ -281,6 +288,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
+            fit_time_aux = int(round(time.time() * 1000))
             csv_file = 'parallel_diversity_results_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
             ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg, 
@@ -288,14 +296,9 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                                                               max_epochs=stop_time, random_state=i*10)
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
-            fit_aux = int(round(time.time() * 1000))
             ensemble, classifiers_fitness = ensemble_classifier.fit(X_train, y_train, n_cores, csv_file)
-            #results_pd = pd.DataFrame.from_dict(results, orient='index')
-            #results_pd.to_csv (csv_file, index = None, header=True)
-            #ensemble = results_pd[-1:]["ensemble"].values.item()
-            #classifiers_fitness = results_pd[-1:]["classifiers_fitness"].values.item()
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, classifiers_fitness)
-            fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
+            fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
             text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
             text_file.write(" ms")
             predict_aux = int(round(time.time() * 1000))
@@ -330,8 +333,11 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
-            #del results, results_pd
-            #gc.collect()
+            total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
+            text_file.write("\nIteration done in %i" % (total_iter_time))
+            text_file.write(" ms")
+            print("\n>>>>> Iteration done in %i" % (total_iter_time))
+            sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
@@ -341,6 +347,12 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             text_file.write("Average Recall = %f\n" % (total_recall/10))
         if total_auc>0:
             text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
+        text_file.write("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
+        text_file.write(" ms")
+        print("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
+        text_file.write("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
+        text_file.write(" ms\n")
+        print("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
             
 def main(argv):
     inputfile = ''

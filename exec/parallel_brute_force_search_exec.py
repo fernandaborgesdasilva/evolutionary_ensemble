@@ -11,6 +11,7 @@ from itertools import product, combinations
 import numpy as np
 import pandas as pd
 from scipy import stats
+import statistics
 import random
 import operator
 import time
@@ -110,9 +111,12 @@ class BruteForceEnsembleClassifier:
     
     def fit(self, X, y, n_cores):
         len_y = len(y)
+        parallel_time_aux = int(round(time.time() * 1000))
         backend = 'loky'
         inputs = combinations(self.estimators_pool(self.algorithms),self.n_estimators)
         result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(X, y, item) for index, item in zip(range(0, self.stop_time), inputs))
+        total_parallel_time = (int(round(time.time() * 1000)) - parallel_time_aux)
+        print("\n>>>>> Parallel step processing time = %i" % (total_parallel_time))
         return result
     
     def predict(self, X):
@@ -149,6 +153,7 @@ def train_clf(classifier, params, X, y, random_state):
 def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
+    sum_total_iter_time = []
     alg = gen_members(data.shape)
     
     with open(outputfile, "w") as text_file:
@@ -159,6 +164,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write('\nstop_time = %i' % (stop_time))
         total_size = 0
         for i in range(0, 10):
+            fit_time_aux = int(round(time.time() * 1000))
             csv_file = 'pbfec_seq_results_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             ensemble_classifier = BruteForceEnsembleClassifier(algorithms=alg, 
                                                                stop_time=stop_time, 
@@ -167,16 +173,13 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
-            fit_aux = int(round(time.time() * 1000))
             search_results = ensemble_classifier.fit(X_train, y_train, n_cores)
-            #saving results as pandas dataframe and csv
-            #search_results_pd = pd.DataFrame.from_dict(search_results, orient='index')
             search_results_pd = pd.DataFrame(search_results)
             search_results_pd.to_csv(csv_file, index = None, header=True)
             ensemble = search_results_pd.loc[search_results_pd['best_ensemble_fitness'].idxmax()]["ensemble"]
             best_fitness_classifiers = search_results_pd.loc[search_results_pd['best_ensemble_fitness'].idxmax()]["fitness_classifiers"]
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, best_fitness_classifiers)
-            fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
+            fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
             text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
             text_file.write(" ms")
             predict_aux = int(round(time.time() * 1000))
@@ -213,6 +216,11 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                 text_file.write("ROC AUC = %f\n" % (auc))
             memory.clear(warn=False)
             shutil.rmtree(cachedir)
+            total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
+            text_file.write("\nIteration done in %i" % (total_iter_time))
+            text_file.write(" ms")
+            print("\n>>>>> Iteration done in %i" % (total_iter_time))
+            sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
@@ -222,6 +230,12 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             text_file.write("Average Recall = %f\n" % (total_recall/10))
         if total_auc>0:
             text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
+        text_file.write("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
+        text_file.write(" ms")
+        print("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
+        text_file.write("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
+        text_file.write(" ms\n")
+        print("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
 
 def main(argv):
     inputfile = ''

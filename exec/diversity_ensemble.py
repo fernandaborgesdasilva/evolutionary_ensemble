@@ -9,6 +9,7 @@ from sklearn.metrics import recall_score
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import pandas as pd
+import statistics
 import random
 import operator
 import time
@@ -266,6 +267,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
     fit = np.zeros(stop_time)
     fit_total_time = 0
     alg = gen_members(data.shape)
+    sum_total_iter_time = []
     
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
@@ -274,6 +276,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         for i in range(0, 10):
+            fit_time_aux = int(round(time.time() * 1000))
             csv_file = 'diversity_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
             ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg, 
@@ -282,10 +285,9 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
                                                               random_state=i*10)
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
-            fit_aux = int(round(time.time() * 1000))
             ensemble, classifiers_fitness = ensemble_classifier.fit(X_train, y_train, csv_file)
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, classifiers_fitness)
-            fit_total_time = (int(round(time.time() * 1000)) - fit_aux)
+            fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
             text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
             text_file.write(" ms")
             predict_aux = int(round(time.time() * 1000))
@@ -320,6 +322,10 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
                 text_file.write("Recall = %f\n" % (recall))
             if auc>0:
                 text_file.write("ROC AUC = %f\n" % (auc))
+            total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
+            text_file.write("\nIteration done in %i" % (total_iter_time))
+            text_file.write(" ms")
+            sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
         if total_f1>0:
             text_file.write("Average F1-score = %f\n" % (total_f1/10))
@@ -329,6 +335,10 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             text_file.write("Average Recall = %f\n" % (total_recall/10))
         if total_auc>0:
             text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
+        text_file.write("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
+        text_file.write(" ms")
+        text_file.write("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
+        text_file.write(" ms\n")
             
 def main(argv):
     inputfile = ''
