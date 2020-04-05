@@ -1,9 +1,8 @@
-bases=("breast" "iris" "/home/covoes/fernanda/evolutionary_ensemble/exec/dados_captcha.csv")
-#stopTime=19448
-stopTime=100
+bases=("breast" "iris" "/home/covoes/fernanda/assync_test_v2/evolutionary_ensemble/exec/dados_captcha.csv")
+stopTime=19448
 nEstimator=10
-exec_path="/home/covoes/fernanda/evolutionary_ensemble/exec"
-for base in "${bases[@]}"   
+exec_path="/home/covoes/fernanda/assync_test_v2/evolutionary_ensemble/exec"
+for base in "${bases[@]}"
 do
 
         basef=`basename $base .csv`
@@ -16,7 +15,7 @@ do
 #SBATCH -n 32
 #SBATCH -w compute-0-9
         source /home/covoes/env_v_p/bin/activate
-        pushd /home/covoes/env_v_p
+        pushd /home/covoes/fernanda/assync_test_v2
 
 
         "
@@ -29,7 +28,7 @@ do
 #SBATCH --mem=20GB
 #SBATCH -w compute-0-9
         source /home/covoes/env_v_p/bin/activate
-        pushd /home/covoes/env_v_p
+        pushd /home/covoes/fernanda/assync_test_v2
         "
 
         fim="
@@ -144,41 +143,41 @@ do
         popd
         "
 
-        echo "${header//TP/DEC}" > job_1_dec_$basef
-        echo "$comandos_dec" >> job_1_dec_$basef
-        echo "$fim" >> job_1_dec_$basef
+        echo "${header//TP/DEC}" > job_01_dec_$basef
+        echo "$comandos_dec" >> job_01_dec_$basef
+        echo "$fim" >> job_01_dec_$basef
 
-        echo "${header//TP/FB}" > job_2_forca_bruta_$basef
-        echo "$comandos_forca_bruta" >> job_2_forca_bruta_$basef
-        echo "$fim" >> job_2_forca_bruta_$basef
+        echo "${header//TP/FB}" > job_02_forca_bruta_$basef
+        echo "$comandos_forca_bruta" >> job_02_forca_bruta_$basef
+        echo "$fim" >> job_02_forca_bruta_$basef
 
-        echo "${header//TP/FBR}" > job_3_forca_bruta_random_$basef
-        echo "$comandos_forca_bruta_random" >> job_3_forca_bruta_random_$basef
-        echo "$fim" >> job_3_forca_bruta_random_$basef
+        echo "${header//TP/FBR}" > job_03_forca_bruta_random_$basef
+        echo "$comandos_forca_bruta_random" >> job_03_forca_bruta_random_$basef
+        echo "$fim" >> job_03_forca_bruta_random_$basef
 
-        echo "${header_paralelo//TP/DEC}" > job_4_dec_paralelo_2_cores_$basef
-        echo "$comandos_dec_parallel_2_cores" >> job_4_dec_paralelo_2_cores_$basef
-        echo "$fim" >> job_4_dec_paralelo_2_cores_$basef
+        echo "${header_paralelo//TP/DEC}" > job_04_dec_paralelo_2_cores_$basef
+        echo "$comandos_dec_parallel_2_cores" >> job_04_dec_paralelo_2_cores_$basef
+        echo "$fim" >> job_04_dec_paralelo_2_cores_$basef
 
-        echo "${header_paralelo//TP/FB}" > job_5_forca_bruta_paralelo_2_cores_$basef
-        echo "$comandos_forca_bruta_parallel_2_cores" >> job_5_forca_bruta_paralelo_2_cores_$basef
-        echo "$fim" >> job_5_forca_bruta_paralelo_2_cores_$basef
+        echo "${header_paralelo//TP/FB}" > job_05_forca_bruta_paralelo_2_cores_$basef
+        echo "$comandos_forca_bruta_parallel_2_cores" >> job_05_forca_bruta_paralelo_2_cores_$basef
+        echo "$fim" >> job_05_forca_bruta_paralelo_2_cores_$basef
 
-        echo "${header_paralelo//TP/FBR}" > job_6_forca_bruta_random_paralelo_2_cores_$basef
-        echo "$comandos_forca_bruta_random_parallel_2_cores" >> job_6_forca_bruta_random_paralelo_2_cores_$basef
-        echo "$fim" >> job_6_forca_bruta_random_paralelo_2_cores_$basef
+        echo "${header_paralelo//TP/FBR}" > job_06_forca_bruta_random_paralelo_2_cores_$basef
+        echo "$comandos_forca_bruta_random_parallel_2_cores" >> job_06_forca_bruta_random_paralelo_2_cores_$basef
+        echo "$fim" >> job_06_forca_bruta_random_paralelo_2_cores_$basef
 
-        echo "${header_paralelo//TP/DEC}" > job_7_dec_paralelo_4_cores_$basef
-        echo "$comandos_dec_parallel_4_cores" >> job_7_dec_paralelo_4_cores_$basef
-        echo "$fim" >> job_7_dec_paralelo_4_cores_$basef
+        echo "${header_paralelo//TP/DEC}" > job_07_dec_paralelo_4_cores_$basef
+        echo "$comandos_dec_parallel_4_cores" >> job_07_dec_paralelo_4_cores_$basef
+        echo "$fim" >> job_07_dec_paralelo_4_cores_$basef
 
-        echo "${header_paralelo//TP/FB}" > job_8_forca_bruta_paralelo_4_cores_$basef
-        echo "$comandos_forca_bruta_parallel_4_cores" >> job_8_forca_bruta_paralelo_4_cores_$basef
-        echo "$fim" >> job_8_forca_bruta_paralelo_4_cores_$basef
+        echo "${header_paralelo//TP/FB}" > job_08_forca_bruta_paralelo_4_cores_$basef
+        echo "$comandos_forca_bruta_parallel_4_cores" >> job_08_forca_bruta_paralelo_4_cores_$basef
+        echo "$fim" >> job_08_forca_bruta_paralelo_4_cores_$basef
 
-        echo "${header_paralelo//TP/FBR}" > job_9_forca_bruta_random_paralelo_4_cores_$basef
-        echo "$comandos_forca_bruta_random_parallel_4_cores" >> job_9_forca_bruta_random_paralelo_4_cores_$basef
-        echo "$fim" >> job_9_forca_bruta_random_paralelo_4_cores_$basef
+        echo "${header_paralelo//TP/FBR}" > job_09_forca_bruta_random_paralelo_4_cores_$basef
+        echo "$comandos_forca_bruta_random_parallel_4_cores" >> job_09_forca_bruta_random_paralelo_4_cores_$basef
+        echo "$fim" >> job_09_forca_bruta_random_paralelo_4_cores_$basef
 
         echo "${header_paralelo//TP/DEC}" > job_10_dec_paralelo_8_cores_$basef
         echo "$comandos_dec_parallel_8_cores" >> job_10_dec_paralelo_8_cores_$basef
