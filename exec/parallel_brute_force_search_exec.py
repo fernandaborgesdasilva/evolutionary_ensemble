@@ -29,10 +29,10 @@ cachedir = './parallel_brute_force_search_exec_tmpmemory' + '_' + time.strftime(
 memory = Memory(cachedir, verbose=0)
 
 class Estimator:
-    def __init__(self, classifier=None, random_state=None, fitness=0):
+    def __init__(self, classifier=None, random_state=None, accuracy=0):
         self.classifier = classifier
         self.random_state = random_state
-        self.fitness = fitness
+        self.accuracy = accuracy
 
     def fit(self, X, y):
         is_fitted = True
@@ -61,14 +61,14 @@ class BruteForceEnsembleClassifier:
                     params = dict(zip(keys, v))
                     yield (estimator, params)
                     
-    def fit_ensemble(self, X, y, ensemble, best_fitness_classifiers):
-        classifiers_fitness_it = 0
+    def fit_ensemble(self, X, y, ensemble, best_accuracy_classifiers):
+        classifiers_accuracy_it = 0
         for estimator, params in ensemble:
             mod, f = estimator.rsplit('.', 1)
             estimator =  getattr(__import__(mod, fromlist=[f]), f)()
             estimator.set_params(**params)
-            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, fitness=best_fitness_classifiers[classifiers_fitness_it]))
-            classifiers_fitness_it = classifiers_fitness_it + 1
+            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, accuracy=best_accuracy_classifiers[classifiers_accuracy_it]))
+            classifiers_accuracy_it = classifiers_accuracy_it + 1
         for classifier in self.ensemble:
             classifier.fit(X, y)
 
@@ -85,17 +85,16 @@ class BruteForceEnsembleClassifier:
         classifiers_predictions = np.zeros([self.n_estimators, len_y])
         # sum the number of right predictions for each classifier
         classifiers_right_predictions = np.zeros([self.n_estimators])
-        ensemble_fitness = np.zeros([len_y])
+        ensemble_accuracy = np.zeros([len_y])
         classifier_id = 0
         for classifier, params in classifiers:
             y_pred = train_clf(classifier, params, X, y, self.random_state)
             classifiers_predictions[classifier_id][:] = y_pred
-            classifiers_right_predictions[classifier_id] = np.equal(y_pred, y).sum()
+            classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
             classifier_id = classifier_id + 1
         #the ensemble make the final prediction by majority vote for accuracy
         majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
-        majority_voting = [int(j[0]) for j in majority_voting]
-        ensemble_fitness = np.equal(majority_voting,y)
+        ensemble_accuracy = (np.equal(majority_voting,y).sum()/len_y)
         now = time.time()
         struct_now = time.localtime(now)
         mlsec = repr(now).split('.')[1][:3]
@@ -104,9 +103,9 @@ class BruteForceEnsembleClassifier:
         result_dict.update({"start_time":start_time,
                             "end_time":end_time,
                             "total_time_ms":total_time,
-                            "best_ensemble_fitness":ensemble_fitness.sum(), 
+                            "best_ensemble_accuracy":ensemble_accuracy, 
                             "ensemble":classifiers, 
-                            "fitness_classifiers":classifiers_right_predictions})
+                            "accuracy_classifiers":classifiers_right_predictions})
         return result_dict
     
     def fit(self, X, y, n_cores):
@@ -129,9 +128,9 @@ class BruteForceEnsembleClassifier:
             pred = {}
             for j in range(0, self.n_estimators):
                 if predictions[j][i] in pred:
-                    pred[predictions[j][i]] += self.ensemble[j].fitness
+                    pred[predictions[j][i]] += self.ensemble[j].accuracy
                 else:
-                    pred[predictions[j][i]]  = self.ensemble[j].fitness
+                    pred[predictions[j][i]]  = self.ensemble[j].accuracy
             y[i] = max(pred.items(), key=operator.itemgetter(1))[0]
         return y
 
@@ -176,9 +175,9 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             search_results = ensemble_classifier.fit(X_train, y_train, n_cores)
             search_results_pd = pd.DataFrame(search_results)
             search_results_pd.to_csv(csv_file, index = None, header=True)
-            ensemble = search_results_pd.loc[search_results_pd['best_ensemble_fitness'].idxmax()]["ensemble"]
-            best_fitness_classifiers = search_results_pd.loc[search_results_pd['best_ensemble_fitness'].idxmax()]["fitness_classifiers"]
-            ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, best_fitness_classifiers)
+            ensemble = search_results_pd.loc[search_results_pd['best_ensemble_accuracy'].idxmax()]["ensemble"]
+            best_accuracy_classifiers = search_results_pd.loc[search_results_pd['best_ensemble_accuracy'].idxmax()]["accuracy_classifiers"]
+            ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, best_accuracy_classifiers)
             fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
             text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
             text_file.write(" ms")
