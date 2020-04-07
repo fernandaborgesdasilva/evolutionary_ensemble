@@ -25,12 +25,13 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class Chromossome:
-    def __init__(self, genotypes_pool, random_state=None):
+    def __init__(self, genotypes_pool, len_X, random_state=None):
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
         self.mutate()
         self.fitness = 0
+        self.y_train_pred = np.zeros(len_X)
         self.random_state = random_state
 
     def fit(self, X, y):
@@ -95,7 +96,7 @@ class Estimator:
         return self.classifier.predict(X)
 
 class DiversityEnsembleClassifier:
-    def __init__(self, algorithms, population_size = 100, max_epochs = 100, random_state=None):
+    def __init__(self, algorithms, len_X, population_size = 100, max_epochs = 100, random_state=None):
         self.population_size = population_size
         self.max_epochs = max_epochs
         self.population = []
@@ -104,7 +105,7 @@ class DiversityEnsembleClassifier:
         self.ensemble = []
         random.seed(self.random_state)
         for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=algorithms, random_state=random_state))
+            self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, random_state=random_state))
 
     def generate_offspring(self, parents, children, pop_fitness):
         children_aux = children
@@ -134,7 +135,8 @@ class DiversityEnsembleClassifier:
             chromossome = self.population[i]
             for train, val in kfolds.split(X):
                 chromossome.fit(X[train], y[train])
-                predictions[i][val] = np.equal(chromossome.predict(X[val]), y[val])
+                chromossome.y_train_pred[val] = chromossome.predict(X[val])
+                predictions[i][val] = np.equal(chromossome.y_train_pred[val], y[val])
         return predictions
 
     def diversity_selection(self, predictions, selection_threshold):
@@ -161,7 +163,7 @@ class DiversityEnsembleClassifier:
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
     
     def fit(self, X, y, csv_file):
-        diversity_values, fitness_values = [], []
+        #diversity_values, fitness_values = [], []
         result_dict = dict()
         ##print('Starting genetic algorithm...')
         kf = KFold(n_splits=5, random_state=self.random_state)
@@ -172,7 +174,7 @@ class DiversityEnsembleClassifier:
         
         header = open(csv_file, "w")
         try:
-            header.write('start_time,end_time,total_time_ms,diversity,best_ensemble_fitness,ensemble,classifiers_fitness')
+            header.write('start_time,end_time,total_time_ms,diversity,fitness,best_ensemble_accuracy,ensemble,classifiers_accuracy')
             header.write('\n')
         finally:
             header.close()
@@ -199,11 +201,29 @@ class DiversityEnsembleClassifier:
 
             #print('Applying diversity selection...', end='')
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
-            diversity_values.append(diversity)
-            fitness_values.append(fitness)
-            for chromossome in self.population:
+            
+            #diversity_values.append(diversity)
+            #fitness_values.append(fitness)
+            len_X = len(X)
+            ensemble_pred = np.zeros([self.population_size, len_X])
+            y_train_pred = np.zeros(len_X)
+            for i, sel in enumerate(selected):
+                chromossome = self.population[sel]
                 ensemble.append(chromossome.classifier)
                 classifiers_fitness.append(chromossome.fitness)
+                ensemble_pred[i] = chromossome.y_train_pred
+                
+            for i in range(0, len_X):
+                pred = {}
+                for j, sel in enumerate(selected):
+                    if ensemble_pred[j][i] in pred:
+                        pred[ensemble_pred[j][i]] += self.population[sel].fitness
+                    else:
+                        pred[ensemble_pred[j][i]]  = self.population[sel].fitness
+                y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
+
+            best_ensemble_accuracy = accuracy_score(y, y_train_pred)
+
             now = time.time()
             struct_now = time.localtime(now)
             mlsec = repr(now).split('.')[1][:3]
@@ -220,9 +240,10 @@ class DiversityEnsembleClassifier:
                                        "end_time":end_time,
                                        "total_time_ms":total_time,
                                        "diversity":diversity,
-                                       "best_ensemble_fitness":fitness,
+                                       "fitness":fitness,
+                                       "best_ensemble_accuracy":best_ensemble_accuracy,
                                        "ensemble":ensemble,
-                                       "classifiers_fitness":classifiers_fitness}})
+                                       "classifiers_accuracy":classifiers_fitness}})
             
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
@@ -279,9 +300,10 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             fit_time_aux = int(round(time.time() * 1000))
             csv_file = 'diversity_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
-            ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg, 
+            ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg,
+                                                              len_X = len(X_train),
                                                               population_size=n_estimators, 
-                                                              max_epochs=stop_time, 
+                                                              max_epochs=stop_time,
                                                               random_state=i*10)
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
