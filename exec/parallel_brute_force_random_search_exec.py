@@ -97,6 +97,7 @@ class BruteForceEnsembleClassifier:
         start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
         time_aux = int(round(now * 1000))
         len_y = len(y)
+        len_X = len(X)
         result_dict = dict()
         random.seed(self.random_state)
         # a matrix with all observations vs the prediction of each classifier
@@ -114,9 +115,19 @@ class BruteForceEnsembleClassifier:
             classifiers_predictions[classifier_id][:] = y_pred
             classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
             classifier_id = classifier_id + 1
-        #the ensemble make the final prediction by majority vote for accuracy
-        majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
-        ensemble_accuracy = (np.equal(majority_voting,y).sum()/len_y)
+
+        y_train_pred = np.zeros(len_X)
+        for i in range(0, len_X):
+            pred = {}
+            for j in range(0,self.n_estimators):
+                if classifiers_predictions[j][i] in pred:
+                    pred[classifiers_predictions[j][i]] += classifiers_right_predictions[j]
+                else:
+                    pred[classifiers_predictions[j][i]]  = classifiers_right_predictions[j]
+            y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
+
+            ensemble_accuracy = accuracy_score(y, y_train_pred)
+
         ensemble = classifiers
         now = time.time()
         struct_now = time.localtime(now)
@@ -128,7 +139,7 @@ class BruteForceEnsembleClassifier:
                             "total_time_ms":total_time,
                             "best_ensemble_accuracy":ensemble_accuracy,
                             "ensemble":ensemble,
-                            "accuracy_classifiers":classifiers_right_predictions})
+                            "accuracy_classifiers":list(classifiers_right_predictions)})
         return result_dict
                 
     def fit(self, X, y, all_possible_ensembles, selected_ensemble, n_cores):

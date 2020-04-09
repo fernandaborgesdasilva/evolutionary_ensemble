@@ -208,8 +208,6 @@ class DiversityEnsembleClassifier:
             fit_predictions = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit_predict_population)(item, kf, X, y) for item in not_selected)
             total_parallel_time = total_parallel_time + (int(round(time.time() * 1000)) - parallel_time_aux)
             
-            
-            
             for i in fit_predictions:
                 all_predictions[i[0]] = i[1]
                 y_fit_pred[i[0]] = i[2]

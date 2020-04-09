@@ -81,6 +81,7 @@ class BruteForceEnsembleClassifier:
         random.seed(self.random_state)
         result_dict = dict()
         len_y = len(y)
+        len_X = len(X)
         # a matrix with all observations vs the prediction of each classifier
         classifiers_predictions = np.zeros([self.n_estimators, len_y])
         # sum the number of right predictions for each classifier
@@ -92,9 +93,19 @@ class BruteForceEnsembleClassifier:
             classifiers_predictions[classifier_id][:] = y_pred
             classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
             classifier_id = classifier_id + 1
-        #the ensemble make the final prediction by majority vote for accuracy
-        majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
-        ensemble_accuracy = (np.equal(majority_voting,y).sum()/len_y)
+
+        y_train_pred = np.zeros(len_X)
+        for i in range(0, len_X):
+            pred = {}
+            for j in range(0,self.n_estimators):
+                if classifiers_predictions[j][i] in pred:
+                    pred[classifiers_predictions[j][i]] += classifiers_right_predictions[j]
+                else:
+                    pred[classifiers_predictions[j][i]]  = classifiers_right_predictions[j]
+            y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
+
+            ensemble_accuracy = accuracy_score(y, y_train_pred)
+
         now = time.time()
         struct_now = time.localtime(now)
         mlsec = repr(now).split('.')[1][:3]
@@ -103,9 +114,9 @@ class BruteForceEnsembleClassifier:
         result_dict.update({"start_time":start_time,
                             "end_time":end_time,
                             "total_time_ms":total_time,
-                            "best_ensemble_accuracy":ensemble_accuracy, 
+                            "best_ensemble_accuracy":ensemble_accuracy,
                             "ensemble":classifiers, 
-                            "accuracy_classifiers":classifiers_right_predictions})
+                            "accuracy_classifiers":list(classifiers_right_predictions)})
         return result_dict
     
     def fit(self, X, y, n_cores):
