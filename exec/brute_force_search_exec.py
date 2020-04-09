@@ -77,6 +77,7 @@ class BruteForceEnsembleClassifier:
 
     def fit(self, X, y, csv_file):
         len_y = len(y)
+        len_X = len(X)
         result_dict = dict()
         random.seed(self.random_state)
         best_ensemble_accuracy = 0
@@ -90,7 +91,7 @@ class BruteForceEnsembleClassifier:
         finally:
             header.close()
         
-        for i, classifiers in enumerate(combinations(self.estimators_pool(self.algorithms),self.n_estimators)):
+        for index, classifiers in enumerate(combinations(self.estimators_pool(self.algorithms),self.n_estimators)):
             now = time.time()
             struct_now = time.localtime(now)
             mlsec = repr(now).split('.')[1][:3]
@@ -102,39 +103,50 @@ class BruteForceEnsembleClassifier:
             classifiers_right_predictions = np.zeros([self.n_estimators])
             ensemble_accuracy = np.zeros([len_y])
             classifier_id = 0
-            if i >= self.stop_time:
+            if index >= self.stop_time:
                 break
             for classifier, params in classifiers:
                 y_pred = train_clf(classifier, params, X, y, self.random_state)
                 classifiers_predictions[classifier_id][:] = y_pred
                 classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
                 classifier_id = classifier_id + 1
-            #the ensemble make the final prediction by majority vote for accuracy
-            majority_voting = stats.mode(classifiers_predictions, axis=0)[0]
-            ensemble_accuracy = (np.equal(majority_voting,y).sum()/len_y)
+
+            y_train_pred = np.zeros(len_X)
+            for i in range(0, len_X):
+                pred = {}
+                for j in range(0,self.n_estimators):
+                    if classifiers_predictions[j][i] in pred:
+                        pred[classifiers_predictions[j][i]] += classifiers_right_predictions[j]
+                    else:
+                        pred[classifiers_predictions[j][i]]  = classifiers_right_predictions[j]
+                y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
+
+            ensemble_accuracy = accuracy_score(y, y_train_pred)
+
             #select the most accurate ensemble
             if(ensemble_accuracy > best_ensemble_accuracy):
                 best_ensemble_accuracy = ensemble_accuracy
-                best_accuracy_classifiers = classifiers_right_predictions
+                best_accuracy_classifiers = list(classifiers_right_predictions)
                 ensemble = classifiers
+            
             now = time.time()
             struct_now = time.localtime(now)
             mlsec = repr(now).split('.')[1][:3]
             end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             total_time = (int(round(now * 1000)) - time_aux)
             
-            if (i%100 == 0 and i != 0):
+            if (index%100 == 0 and index != 0):
                 if (writing_results_task_obj is not None):
                     my_event_loop.run_until_complete(writing_results_task_obj)
                 writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
                 result_dict = dict()
             
-            result_dict.update({i: {"start_time":start_time,
-                                    "end_time":end_time,
-                                    "total_time_ms":total_time,
-                                    "best_ensemble_accuracy":best_ensemble_accuracy,
-                                    "ensemble":ensemble,
-                                    "best_accuracy_classifiers":best_accuracy_classifiers}})
+            result_dict.update({index: {"start_time":start_time,
+                                        "end_time":end_time,
+                                        "total_time_ms":total_time,
+                                        "best_ensemble_accuracy":best_ensemble_accuracy,
+                                        "ensemble":ensemble,
+                                        "best_accuracy_classifiers":best_accuracy_classifiers}})
         
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
