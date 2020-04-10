@@ -1,7 +1,8 @@
-bases=("breast" "iris" "/home/covoes/fernanda/assync_test_v2/evolutionary_ensemble/exec/dados_captcha.csv")
+MAIN_DIR="/home/covoes/fernanda/assync_test_v2"
+bases=("breast" "iris" "${MAIN_DIR}/evolutionary_ensemble/exec/dados_captcha.csv")
 stopTime=19448
 nEstimator=10
-exec_path="/home/covoes/fernanda/assync_test_v2/evolutionary_ensemble/exec"
+exec_path="${MAIN_DIR}/evolutionary_ensemble/exec"
 for base in "${bases[@]}"
 do
 
@@ -15,7 +16,7 @@ do
 #SBATCH -n 32
 #SBATCH -w compute-0-9
         source /home/covoes/env_v_p/bin/activate
-        pushd /home/covoes/fernanda/assync_test_v2
+        pushd $MAIN_DIR
 
 
         "
@@ -28,7 +29,7 @@ do
 #SBATCH --mem=20GB
 #SBATCH -w compute-0-9
         source /home/covoes/env_v_p/bin/activate
-        pushd /home/covoes/fernanda/assync_test_v2
+        pushd $MAIN_DIR
         "
 
         fim="
@@ -37,109 +38,109 @@ do
 
         comandos_dec="
         pushd $basef
-        python3 -u $exec_path/diversity_ensemble.py -i $base -o saida_dec -e $nEstimator -s $stopTime
+        time python3 -u $exec_path/diversity_ensemble.py -i $base -o saida_dec -e $nEstimator -s $stopTime
         popd
         "
 
         comandos_forca_bruta="
         pushd $basef
-        python3 -u $exec_path/brute_force_search_exec.py -i $base -o saida_forca_bruta -e $nEstimator -s $stopTime
+        time python3 -u $exec_path/brute_force_search_exec.py -i $base -o saida_forca_bruta -e $nEstimator -s $stopTime
         popd
         "
 
         comandos_forca_bruta_random="
         pushd $basef
-        python3 -u $exec_path/brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria -e $nEstimator -s $stopTime
+        time python3 -u $exec_path/brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria -e $nEstimator -s $stopTime
         popd
         "
 
         comandos_forca_bruta_parallel_2_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_2_cores -e $nEstimator -s $stopTime -c 2
+        time python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_2_cores -e $nEstimator -s $stopTime -c 2
         popd
         "
 
         comandos_forca_bruta_random_parallel_2_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_2_cores -e $nEstimator -s $stopTime -c 2
+        time python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_2_cores -e $nEstimator -s $stopTime -c 2
         popd
         "
 
         comandos_dec_parallel_2_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_2_cores -e $nEstimator -s $stopTime -c 2
+        time python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_2_cores -e $nEstimator -s $stopTime -c 2
         popd
         "
 
         comandos_forca_bruta_parallel_4_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_4_cores -e $nEstimator -s $stopTime -c 4
+        time python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_4_cores -e $nEstimator -s $stopTime -c 4
         popd
         "
 
         comandos_forca_bruta_random_parallel_4_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_4_cores -e $nEstimator -s $stopTime -c 4
+        time python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_4_cores -e $nEstimator -s $stopTime -c 4
         popd
         "
 
         comandos_dec_parallel_4_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_4_cores -e $nEstimator -s $stopTime -c 4
+        time python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_4_cores -e $nEstimator -s $stopTime -c 4
         popd
         "
 
         comandos_forca_bruta_parallel_8_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_8_cores -e $nEstimator -s $stopTime -c 8
+        time python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_8_cores -e $nEstimator -s $stopTime -c 8
         popd
         "
 
         comandos_forca_bruta_random_parallel_8_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_8_cores -e $nEstimator -s $stopTime -c 8
+        time python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_8_cores -e $nEstimator -s $stopTime -c 8
         popd
         "
 
         comandos_dec_parallel_8_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_8_cores -e $nEstimator -s $stopTime -c 8
+        time python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_8_cores -e $nEstimator -s $stopTime -c 8
         popd
         "
 
         comandos_forca_bruta_parallel_16_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_16_cores -e $nEstimator -s $stopTime -c 16
+        time python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_16_cores -e $nEstimator -s $stopTime -c 16
         popd
         "
 
         comandos_forca_bruta_random_parallel_16_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_16_cores -e $nEstimator -s $stopTime -c 16
+        time python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_16_cores -e $nEstimator -s $stopTime -c 16
         popd
         "
 
         comandos_dec_parallel_16_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_16_cores -e $nEstimator -s $stopTime -c 16
+        time python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_16_cores -e $nEstimator -s $stopTime -c 16
         popd
         "
 
         comandos_forca_bruta_parallel_32_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_32_cores -e $nEstimator -s $stopTime -c 32
+        time python3 -u $exec_path/parallel_brute_force_search_exec.py -i $base -o saida_forca_bruta_pl_32_cores -e $nEstimator -s $stopTime -c 32
         popd
         "
 
         comandos_forca_bruta_random_parallel_32_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_32_cores -e $nEstimator -s $stopTime -c 32
+        time python3 -u $exec_path/parallel_brute_force_random_search_exec.py -i $base -o saida_forca_bruta_aleatoria_pl_32_cores -e $nEstimator -s $stopTime -c 32
         popd
         "
 
         comandos_dec_parallel_32_cores="
         pushd $basef
-        python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_32_cores -e $nEstimator -s $stopTime -c 32
+        time python3 -u $exec_path/parallel_diversity_ensemble.py -i $base -o saida_dec_pl_32_cores -e $nEstimator -s $stopTime -c 32
         popd
         "
 
