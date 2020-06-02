@@ -190,7 +190,8 @@ class DiversityEnsembleClassifier:
 
         frequencies = np.unique(y, return_counts=True)[1]
         selection_threshold = max(frequencies)/np.sum(frequencies)
-        stop_criteria = []
+        stop_criteria = 0
+        prev_best_ensemble_accuracy = 0
 
         for epoch in range(self.max_epochs):
             now = time.time()
@@ -199,21 +200,9 @@ class DiversityEnsembleClassifier:
             start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             time_aux = int(round(now * 1000))
 
-            #The algorithm stops if at least one of the last ten ensembles doesn't have 
-            #an accuracy one percent greater than the others accuracy
-            if(len(stop_criteria) == 10):
-                diff = []
-                for v_1,v_2 in itertools.combinations(stop_criteria, 2):
-                    if v_1 == v_2:
-                        diff.append(0)
-                    else:
-                        diff.append(((max(v_1,v_2) - min(v_1,v_2)) / max(v_1,v_2)) * 100.0)
-            
-                if any(x > 1.0 for x in diff):
-                    stop_criteria = stop_criteria[-9:]
-                else:
-                    break
-            
+            if stop_criteria == 10:
+                break
+
             ensemble = []
             classifiers_fitness = []
 
@@ -275,7 +264,13 @@ class DiversityEnsembleClassifier:
                                        "best_ensemble_accuracy":best_ensemble_accuracy,
                                        "ensemble":ensemble, 
                                        "classifiers_accuracy":classifiers_fitness}})
-            stop_criteria.append(best_ensemble_accuracy)
+            if prev_best_ensemble_accuracy != 0:
+                increase_accuracy = ((best_ensemble_accuracy - prev_best_ensemble_accuracy)/prev_best_ensemble_accuracy) * 100.0
+                if (increase_accuracy < 1.0):
+                    stop_criteria = stop_criteria + 1
+                else:
+                    stop_criteria = 0
+            prev_best_ensemble_accuracy = best_ensemble_accuracy
             
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
