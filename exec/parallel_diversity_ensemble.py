@@ -177,7 +177,7 @@ class DiversityEnsembleClassifier:
         
         header = open(csv_file, "w")
         try:
-            header.write('start_time,end_time,total_time_ms,diversity,fitness,best_ensemble_accuracy,ensemble,classifiers_accuracy')
+            header.write('start_time,end_time,total_time_ms,diversity,fitness,ensemble_accuracy,ensemble,classifiers_accuracy')
             header.write('\n')
         finally:
             header.close()
@@ -191,7 +191,10 @@ class DiversityEnsembleClassifier:
         frequencies = np.unique(y, return_counts=True)[1]
         selection_threshold = max(frequencies)/np.sum(frequencies)
         stop_criteria = 0
-        prev_best_ensemble_accuracy = 0
+        prev_ensemble_accuracy = 0
+        best_ensemble_accuracy = 0
+        best_ensemble = []
+        best_classifiers_fitness = []
 
         for epoch in range(self.max_epochs):
             now = time.time()
@@ -242,7 +245,7 @@ class DiversityEnsembleClassifier:
                         pred[ensemble_pred[j][i]]  = self.population[sel].fitness
                 y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
 
-            best_ensemble_accuracy = accuracy_score(y, y_train_pred)
+            ensemble_accuracy = accuracy_score(y, y_train_pred)
                 
             now = time.time()
             struct_now = time.localtime(now)
@@ -261,22 +264,27 @@ class DiversityEnsembleClassifier:
                                        "total_time_ms":total_time,
                                        "diversity":diversity,
                                        "fitness":fitness,
-                                       "best_ensemble_accuracy":best_ensemble_accuracy,
+                                       "ensemble_accuracy":ensemble_accuracy,
                                        "ensemble":ensemble, 
                                        "classifiers_accuracy":classifiers_fitness}})
-            if prev_best_ensemble_accuracy != 0:
-                increase_accuracy = ((best_ensemble_accuracy - prev_best_ensemble_accuracy)/prev_best_ensemble_accuracy) * 100.0
+            if prev_ensemble_accuracy != 0:
+                increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
                 if (increase_accuracy < 1.0):
                     stop_criteria = stop_criteria + 1
                 else:
                     stop_criteria = 0
-            prev_best_ensemble_accuracy = best_ensemble_accuracy
+            prev_ensemble_accuracy = ensemble_accuracy
+
+            if best_ensemble_accuracy < ensemble_accuracy:
+                best_ensemble_accuracy = ensemble_accuracy
+                best_ensemble = ensemble
+                best_classifiers_fitness = classifiers_fitness
             
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
         result_dict = dict()
         print("\n>>>>> Parallel step processing time = %i" % (total_parallel_time))
-        return ensemble, classifiers_fitness
+        return best_ensemble, best_classifiers_fitness
     
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
         classifiers_fitness_it = 0
