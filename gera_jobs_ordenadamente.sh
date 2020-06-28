@@ -1,5 +1,5 @@
 MAIN_DIR="/home/covoes/fernanda/assync_test_v2"
-bases=("breast" "iris" "${MAIN_DIR}/evolutionary_ensemble/exec/dados_captcha.csv")
+bases=("breast" "iris" "${MAIN_DIR}/evolutionary_ensemble/exec/dados_captcha.csv" "${MAIN_DIR}/mnist_full.csv")
 stopTime=19448
 nEstimator=10
 exec_path="${MAIN_DIR}/evolutionary_ensemble/exec"
@@ -14,7 +14,7 @@ do
 #SBATCH -e log-seq-TP.%j.err
 #SBATCH --mem=20GB
 #SBATCH -n 32
-#SBATCH -w compute-0-9
+#SBATCH -w compute-0-3
         source /home/covoes/env_v_p/bin/activate
         pushd $MAIN_DIR
 
@@ -27,7 +27,7 @@ do
 #SBATCH -e log-pll-TP.%j.err
 #SBATCH -n 32
 #SBATCH --mem=20GB
-#SBATCH -w compute-0-9
+#SBATCH -w compute-0-3
         source /home/covoes/env_v_p/bin/activate
         pushd $MAIN_DIR
         "

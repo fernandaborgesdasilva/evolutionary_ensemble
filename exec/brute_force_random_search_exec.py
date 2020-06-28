@@ -21,6 +21,7 @@ from all_members_ensemble import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
 import nest_asyncio
+import os
 nest_asyncio.apply()
 
 import warnings
@@ -81,6 +82,12 @@ class BruteForceEnsembleClassifier:
         len_all_possible_ensembles = len(all_possible_ensembles)
         len_y = len(y)
         len_X = len(X)
+
+        x_train_file_path = "./temp_x_train.npy"
+        y_train_file_path = "./temp_y_train.npy"
+        np.save(x_train_file_path, X)
+        np.save(y_train_file_path, y)
+
         result_dict = dict()
         random.seed(self.random_state)
         best_ensemble_accuracy = 0
@@ -90,7 +97,7 @@ class BruteForceEnsembleClassifier:
         
         header = open(csv_file, "w")
         try:
-            header.write('start_time,end_time,total_time_ms,best_ensemble_accuracy,ensemble,best_accuracy_classifiers')
+            header.write('start_time,end_time,total_time_ms,ensemble_accuracy,ensemble,best_accuracy_classifiers')
             header.write('\n')
         finally:
             header.close()
@@ -110,7 +117,7 @@ class BruteForceEnsembleClassifier:
             for cl in range(0, self.n_estimators):
                 classifier = all_possible_ensembles[classifiers][0][cl][0]
                 params = all_possible_ensembles[classifiers][0][cl][1]
-                y_pred = train_clf(classifier, params, X, y, self.random_state)
+                y_pred = train_clf(classifier, params, x_train_file_path, y_train_file_path, self.random_state)
                 classifiers_predictions[classifier_id][:] = y_pred
                 classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
                 classifier_id = classifier_id + 1
@@ -155,6 +162,10 @@ class BruteForceEnsembleClassifier:
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
         result_dict = dict()
+        
+        os.remove(x_train_file_path)
+        os.remove(y_train_file_path)
+
         return ensemble, best_accuracy_classifiers
 
     def predict(self, X):
@@ -192,9 +203,11 @@ def define_all_possible_ensembles(data, n_estimators):
     return all_ensembles
 
 @memory.cache
-def train_clf(classifier, params, X, y, random_state):
+def train_clf(classifier, params, x_file, y_file, random_state):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     warnings.filterwarnings("ignore", category=FutureWarning)
+    X = np.load(x_file)
+    y = np.load(y_file)
     #clf = getattr(sys.modules[__name__], classifier)()
     mod, f = classifier.rsplit('.', 1)
     clf = getattr(__import__(mod, fromlist=[f]), f)()

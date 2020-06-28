@@ -19,6 +19,7 @@ import sys, getopt
 import shutil
 from joblib import Parallel, delayed
 from all_members_ensemble import gen_members
+import os
 
 
 import warnings
@@ -72,7 +73,7 @@ class BruteForceEnsembleClassifier:
         for classifier in self.ensemble:
             classifier.fit(X, y)
 
-    def parallel_fit(self, X, y, classifiers):
+    def parallel_fit(self, x_file, y_file, len_X, len_y, y_true, classifiers):
         now = time.time()
         struct_now = time.localtime(now)
         mlsec = repr(now).split('.')[1][:3]
@@ -80,8 +81,6 @@ class BruteForceEnsembleClassifier:
         time_aux = int(round(now * 1000))
         random.seed(self.random_state)
         result_dict = dict()
-        len_y = len(y)
-        len_X = len(X)
         # a matrix with all observations vs the prediction of each classifier
         classifiers_predictions = np.zeros([self.n_estimators, len_y])
         # sum the number of right predictions for each classifier
@@ -89,9 +88,9 @@ class BruteForceEnsembleClassifier:
         ensemble_accuracy = np.zeros([len_y])
         classifier_id = 0
         for classifier, params in classifiers:
-            y_pred = train_clf(classifier, params, X, y, self.random_state)
+            y_pred = train_clf(classifier, params, x_file, y_file, self.random_state)
             classifiers_predictions[classifier_id][:] = y_pred
-            classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
+            classifiers_right_predictions[classifier_id] = accuracy_score(y_true, y_pred)
             classifier_id = classifier_id + 1
 
         y_train_pred = np.zeros(len_X)
@@ -104,7 +103,7 @@ class BruteForceEnsembleClassifier:
                     pred[classifiers_predictions[j][i]]  = classifiers_right_predictions[j]
             y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
 
-            ensemble_accuracy = accuracy_score(y, y_train_pred)
+            ensemble_accuracy = accuracy_score(y_true, y_train_pred)
 
         now = time.time()
         struct_now = time.localtime(now)
@@ -114,19 +113,31 @@ class BruteForceEnsembleClassifier:
         result_dict.update({"start_time":start_time,
                             "end_time":end_time,
                             "total_time_ms":total_time,
-                            "best_ensemble_accuracy":ensemble_accuracy,
+                            "ensemble_accuracy":ensemble_accuracy,
                             "ensemble":classifiers, 
                             "accuracy_classifiers":list(classifiers_right_predictions)})
         return result_dict
     
     def fit(self, X, y, n_cores):
-        len_y = len(y)
         parallel_time_aux = int(round(time.time() * 1000))
+        x_train_file_path = "./temp_x_train.npy"
+        y_train_file_path = "./temp_y_train.npy"
+        np.save(x_train_file_path, X)
+        np.save(y_train_file_path, y)
+        len_y = len(y)
+        len_X = len(X)
         backend = 'loky'
         inputs = combinations(self.estimators_pool(self.algorithms),self.n_estimators)
-        result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(X, y, item) for index, item in zip(range(0, self.stop_time), inputs))
+        result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(x_train_file_path, 
+                                                                                      y_train_file_path,
+                                                                                      len_X,
+                                                                                      len_y,
+                                                                                      y, 
+                                                                                      item) for index, item in zip(range(0, self.stop_time), inputs))
         total_parallel_time = (int(round(time.time() * 1000)) - parallel_time_aux)
         print("\n>>>>> Parallel step processing time = %i" % (total_parallel_time))
+        os.remove(x_train_file_path)
+        os.remove(y_train_file_path)
         return result
     
     def predict(self, X):
@@ -146,9 +157,11 @@ class BruteForceEnsembleClassifier:
         return y
 
 @memory.cache
-def train_clf(classifier, params, X, y, random_state):
+def train_clf(classifier, params, x_file, y_file, random_state):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     warnings.filterwarnings("ignore", category=FutureWarning)
+    X = np.load(x_file)
+    y = np.load(y_file)
     mod, f = classifier.rsplit('.', 1)
     clf = getattr(__import__(mod, fromlist=[f]), f)()
     clf.set_params(**params)
@@ -172,7 +185,6 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        total_size = 0
         for i in range(0, 10):
             fit_time_aux = int(round(time.time() * 1000))
             csv_file = 'pbfec_seq_results_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
@@ -186,8 +198,8 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             search_results = ensemble_classifier.fit(X_train, y_train, n_cores)
             search_results_pd = pd.DataFrame(search_results)
             search_results_pd.to_csv(csv_file, index = None, header=True)
-            ensemble = search_results_pd.loc[search_results_pd['best_ensemble_accuracy'].idxmax()]["ensemble"]
-            best_accuracy_classifiers = search_results_pd.loc[search_results_pd['best_ensemble_accuracy'].idxmax()]["accuracy_classifiers"]
+            ensemble = search_results_pd.loc[search_results_pd['ensemble_accuracy'].idxmax()]["ensemble"]
+            best_accuracy_classifiers = search_results_pd.loc[search_results_pd['ensemble_accuracy'].idxmax()]["accuracy_classifiers"]
             ensemble_classifier.fit_ensemble(X_train, y_train, ensemble, best_accuracy_classifiers)
             fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
             text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))

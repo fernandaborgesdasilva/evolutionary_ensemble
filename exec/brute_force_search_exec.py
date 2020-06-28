@@ -21,6 +21,7 @@ from all_members_ensemble import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
 import nest_asyncio
+import os
 nest_asyncio.apply()
 
 import warnings
@@ -37,7 +38,6 @@ class Estimator:
         self.accuracy = accuracy
 
     def fit(self, X, y):
-        is_fitted = True
         self.classifier.fit(X, y)
 
     def predict(self, X):
@@ -78,6 +78,12 @@ class BruteForceEnsembleClassifier:
     def fit(self, X, y, csv_file):
         len_y = len(y)
         len_X = len(X)
+
+        x_train_file_path = "./temp_x_train.npy"
+        y_train_file_path = "./temp_y_train.npy"
+        np.save(x_train_file_path, X)
+        np.save(y_train_file_path, y)
+
         result_dict = dict()
         random.seed(self.random_state)
         best_ensemble_accuracy = 0
@@ -86,7 +92,7 @@ class BruteForceEnsembleClassifier:
         my_event_loop = asyncio.get_event_loop()
         header = open(csv_file, "w")
         try:
-            header.write('start_time,end_time,total_time_ms,best_ensemble_accuracy,ensemble,best_accuracy_classifiers')
+            header.write('start_time,end_time,total_time_ms,ensemble_accuracy,ensemble,best_accuracy_classifiers')
             header.write('\n')
         finally:
             header.close()
@@ -106,7 +112,7 @@ class BruteForceEnsembleClassifier:
             if index >= self.stop_time:
                 break
             for classifier, params in classifiers:
-                y_pred = train_clf(classifier, params, X, y, self.random_state)
+                y_pred = train_clf(classifier, params, x_train_file_path, y_train_file_path, self.random_state)
                 classifiers_predictions[classifier_id][:] = y_pred
                 classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
                 classifier_id = classifier_id + 1
@@ -144,13 +150,17 @@ class BruteForceEnsembleClassifier:
             result_dict.update({index: {"start_time":start_time,
                                         "end_time":end_time,
                                         "total_time_ms":total_time,
-                                        "best_ensemble_accuracy":best_ensemble_accuracy,
+                                        "ensemble_accuracy":best_ensemble_accuracy,
                                         "ensemble":ensemble,
                                         "best_accuracy_classifiers":best_accuracy_classifiers}})
         
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
         result_dict = dict()
+
+        os.remove(x_train_file_path)
+        os.remove(y_train_file_path)
+
         return ensemble, best_accuracy_classifiers
     
     def predict(self, X):
@@ -170,9 +180,11 @@ class BruteForceEnsembleClassifier:
         return y
 
 @memory.cache
-def train_clf(classifier, params, X, y, random_state):
+def train_clf(classifier, params, x_file, y_file, random_state):
     warnings.filterwarnings("ignore", category=DeprecationWarning)
     warnings.filterwarnings("ignore", category=FutureWarning)
+    X = np.load(x_file)
+    y = np.load(y_file)
     mod, f = classifier.rsplit('.', 1)
     clf = getattr(__import__(mod, fromlist=[f]), f)()
     clf.set_params(**params)
@@ -201,7 +213,6 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        total_size = 0
         sum_total_iter_time = []
         for i in range(0, 10):
             fit_time_aux = int(round(time.time() * 1000))
