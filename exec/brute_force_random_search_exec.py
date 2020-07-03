@@ -71,6 +71,9 @@ class BruteForceEnsembleClassifier:
             mod, f = estimator.rsplit('.', 1)
             estimator =  getattr(__import__(mod, fromlist=[f]), f)()
             estimator.set_params(**params)
+            all_parameters = estimator.get_params()
+            if 'random_state' in list(all_parameters.keys()):
+                estimator.set_params(random_state=self.random_state)
             self.ensemble.append(Estimator(classifier=estimator, 
                                            random_state=self.random_state, 
                                            accuracy=best_accuracy_classifiers[classifiers_accuracy_it]))
