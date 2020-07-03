@@ -212,6 +212,9 @@ def train_clf(classifier, params, x_file, y_file, random_state):
     mod, f = classifier.rsplit('.', 1)
     clf = getattr(__import__(mod, fromlist=[f]), f)()
     clf.set_params(**params)
+    all_parameters = clf.get_params()
+    if 'random_state' in list(all_parameters.keys()):
+        clf.set_params(random_state=random_state)
     y_pred = np.zeros([len(y)])
     #k-fold cross-validation
     kf = KFold(n_splits=5, random_state=random_state)

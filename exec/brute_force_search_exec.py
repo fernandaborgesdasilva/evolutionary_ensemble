@@ -70,6 +70,9 @@ class BruteForceEnsembleClassifier:
             mod, f = estimator.rsplit('.', 1)
             estimator =  getattr(__import__(mod, fromlist=[f]), f)()
             estimator.set_params(**params)
+            all_parameters = estimator.get_params()
+            if 'random_state' in list(all_parameters.keys()):
+                estimator.set_params(random_state=self.random_state)
             self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, accuracy=best_accuracy_classifiers[classifiers_accuracy_it]))
             classifiers_accuracy_it = classifiers_accuracy_it + 1
         for classifier in self.ensemble:
@@ -188,6 +191,9 @@ def train_clf(classifier, params, x_file, y_file, random_state):
     mod, f = classifier.rsplit('.', 1)
     clf = getattr(__import__(mod, fromlist=[f]), f)()
     clf.set_params(**params)
+    all_parameters = clf.get_params()
+    if 'random_state' in list(all_parameters.keys()):
+        clf.set_params(random_state=random_state)
     y_pred = np.zeros([len(y)])
     #k-fold cross-validation
     kf = KFold(n_splits=5, random_state=random_state)

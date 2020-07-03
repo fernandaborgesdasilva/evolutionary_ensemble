@@ -32,9 +32,9 @@ class Chromossome:
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
-        self.mutate()
         self.fitness = 0
         self.random_state = random_state
+        self.mutate()
 
     def fit(self, X, y):
         is_fitted = True
@@ -77,11 +77,9 @@ class Chromossome:
 
         self.classifier = clf.set_params(**param)
 
-        try:
-            self.classifier.set_param(random_state=self.random_state)
-        except:
-            pass
-        del clf
+        all_parameters = self.classifier.get_params()
+        if 'random_state' in list(all_parameters.keys()):
+            self.classifier.set_params(random_state=self.random_state)
         
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
