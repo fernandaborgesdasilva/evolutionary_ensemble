@@ -123,8 +123,8 @@ class BruteForceEnsembleClassifier:
     
     def fit(self, X, y, n_cores):
         parallel_time_aux = int(round(time.time() * 1000))
-        x_train_file_path = "./temp_x_train_pbfs" + str(n_cores) + ".npy"
-        y_train_file_path = "./temp_y_train_pbfs" + str(n_cores) + ".npy"
+        x_train_file_path = "/dev/shm/temp_x_train_pbfs" + str(n_cores) + ".npy"
+        y_train_file_path = "/dev/shm/temp_y_train_pbfs" + str(n_cores) + ".npy"
         np.save(x_train_file_path, X)
         np.save(y_train_file_path, y)
         len_y = len(y)

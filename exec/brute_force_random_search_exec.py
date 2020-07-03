@@ -86,8 +86,8 @@ class BruteForceEnsembleClassifier:
         len_y = len(y)
         len_X = len(X)
 
-        x_train_file_path = "./temp_x_train_bfrs.npy"
-        y_train_file_path = "./temp_y_train_bfrs.npy"
+        x_train_file_path = "/dev/shm/temp_x_train_bfrs.npy"
+        y_train_file_path = "/dev/shm/temp_y_train_bfrs.npy"
         np.save(x_train_file_path, X)
         np.save(y_train_file_path, y)
 
