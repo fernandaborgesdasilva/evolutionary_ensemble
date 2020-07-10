@@ -205,7 +205,7 @@ def define_all_possible_ensembles(data, n_estimators):
 
 def compare_results(data, target, n_estimators, outputfile, stop_time, all_possible_ensembles, possible_ensembles_time, n_cores):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
-    total_accuracy, total_f1, total_precision, total_recall, total_auc = 0, 0, 0, 0, 0
+    total_accuracy, total_f1, total_precision, total_recall, total_auc = [], [], [], [], []
     sum_total_iter_time = []
 
     with open(outputfile, "w") as text_file:
@@ -240,22 +240,22 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             text_file.write("\n\nBFEC predict done in %i" % (predict_total_time))
             text_file.write(" ms")
             accuracy = accuracy_score(y_test, y_pred)
-            total_accuracy += accuracy
+            total_accuracy.append(accuracy)
             try: 
                 f1 = f1_score(y_test, y_pred)
-                total_f1 += f1
+                total_f1.append(f1)
             except: pass
             try: 
                 precision = precision_score(y_test, y_pred)
-                total_precision += precision
+                total_precision.append(precision)
             except: pass
             try: 
                 recall = recall_score(y_test, y_pred)
-                total_recall += recall
+                total_recall.append(recall)
             except: pass
             try: 
                 auc = roc_auc_score(y_test, y_pred)
-                total_auc += auc
+                total_auc.append(auc)
             except: pass
             text_file.write("\n\nAccuracy = %f\n" % (accuracy))
             if f1>0:
@@ -273,22 +273,25 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             text_file.write(" ms")
             print("\n>>>>> Iteration done in %i" % (total_iter_time))
             sum_total_iter_time.append(total_iter_time)
-        text_file.write("\n\nAverage Accuracy = %f\n" % (total_accuracy/10))
-        if total_f1>0:
-            text_file.write("Average F1-score = %f\n" % (total_f1/10))
-        if total_precision>0:
-            text_file.write("Average Precision = %f\n" % (total_precision/10))
-        if total_recall>0:
-            text_file.write("Average Recall = %f\n" % (total_recall/10))
-        if total_auc>0:
-            text_file.write("Average ROC AUC = %f\n" % (total_auc/10))
+        text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
+        text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
+        if sum(total_f1)>0:
+            text_file.write("\nAverage F1-score = %f\n" % (statistics.mean(total_f1)))
+            text_file.write("Standard Deviation of F1-score = %f\n" % (statistics.stdev(total_f1)))
+        if sum(total_precision)>0:
+            text_file.write("\nAverage Precision = %f\n" % (statistics.mean(total_precision)))
+            text_file.write("Standard Deviation of Precision = %f\n" % (statistics.stdev(total_precision)))
+        if sum(total_recall)>0:
+            text_file.write("\nAverage Recall = %f\n" % (statistics.mean(total_recall)))
+            text_file.write("Standard Deviation of Recall = %f\n" % (statistics.stdev(total_recall)))
+        if sum(total_auc)>0:
+            text_file.write("\nAverage ROC AUC = %f\n" % (statistics.mean(total_auc)))
+            text_file.write("Standard Deviation of ROC AUC = %f\n" % (statistics.stdev(total_auc)))
         text_file.write("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
         text_file.write(" ms")
-        print("\n\nAverage duration of iterations = %i" % statistics.mean(sum_total_iter_time))
         text_file.write("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
         text_file.write(" ms\n")
-        print("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
-            
+
 def main(argv):
     inputfile = ''
     outputfile = ''
