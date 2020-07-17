@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 import statistics
-import random
 import operator
 import time
 import sys, getopt
@@ -51,7 +50,6 @@ class BruteForceEnsembleClassifier:
         self.stop_time = stop_time
         self.algorithms = algorithms
         self.random_state = random_state
-        random.seed(self.random_state)
 
     def estimators_pool(self, estimator_grid):
         for estimator, param_grid in estimator_grid.items():
@@ -88,7 +86,6 @@ class BruteForceEnsembleClassifier:
         np.save(y_train_file_path, y)
 
         result_dict = dict()
-        random.seed(self.random_state)
         best_ensemble_accuracy = 0
         best_accuracy_classifiers = np.zeros([self.n_estimators])
         writing_results_task_obj = None

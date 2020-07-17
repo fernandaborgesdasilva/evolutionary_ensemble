@@ -10,7 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 import numpy as np
 import pandas as pd
 import statistics
-import random
+from numpy.random import RandomState, SeedSequence
 import operator
 import time
 import sys, getopt
@@ -26,27 +26,45 @@ import itertools
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 class Chromossome:
-    def __init__(self, genotypes_pool, len_X, random_state=None):
+    def __init__(self, genotypes_pool, len_X, random_id, random_state=None):
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
         self.fitness = 0
         self.y_train_pred = np.zeros(len_X)
         self.random_state = random_state
+        self.random_id = self.random_state + random_id
+        self.rnd = RandomState(self.random_id)
         self.mutate()
 
     def fit(self, X, y):
         is_fitted = True
         self.classifier.fit(X, y)
+        
+    def set_random_id(self, random_id):
+        self.random_id = self.random_state + random_id
+        self.rnd = RandomState(self.random_id)
 
     def predict(self, X):
         return self.classifier.predict(X)
 
     def mutate(self, n_positions=None):
-        change_classifier = random.randint(0, len(self.genotypes_pool))
+         
+        change_classifier = self.rnd.randint(0, len(self.genotypes_pool))
+        
+        #APAGAR
+        if(self.random_state == 0):
+            print("\n\n\nDEBUG change_classifier >>>>>> ", change_classifier)
+
+
         if self.classifier is None or change_classifier != 0:
             param = {}
-            self.classifier_algorithm = random.choice(list(self.genotypes_pool.keys()))
+            self.classifier_algorithm = list(self.genotypes_pool.keys())[self.rnd.choice(len(list(self.genotypes_pool.keys())))]
+            
+            #APAGAR
+            if(self.random_state == 0):
+                print("\nDEBUG self.classifier_algorithm >>>>>> ", self.classifier_algorithm)
+
             mod, f = self.classifier_algorithm.rsplit('.', 1)
             clf = getattr(__import__(mod, fromlist=[f]), f)()            
         else:
@@ -56,24 +74,46 @@ class Chromossome:
         if not n_positions or n_positions>len(self.genotypes_pool[self.classifier_algorithm]):
             n_positions = len(self.genotypes_pool[self.classifier_algorithm])
 
-        mutation_positions = random.sample(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
-        i=0
+        mutation_positions = self.rnd.choice(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
         
+        #APAGAR
+        if(self.random_state == 0):
+            print("\nDEBUG mutation_positions >>>>>> ", mutation_positions)
+        
+        
+        i=0
         for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
             if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
                 if isinstance(h_range[0], str):
-                    param[hyperparameter] = random.choice(h_range)
+                    param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
+
+                    #APAGAR
+                    if(self.random_state == 0):
+                        print("\nDEBUG param[hyperparameter] >>>>>> ", param[hyperparameter])
+
+
                 elif isinstance(h_range[0], float):
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = random.uniform(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1]+1)
+
+                    #APAGAR
+                    if(self.random_state == 0):
+                        print("\nDEBUG param[hyperparameter] >>>>>> ", param[hyperparameter])
+
                 else:
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = random.randint(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1]+1)
+
+                    #APAGAR
+                    if(self.random_state == 0):
+                        print("\nDEBUG param[hyperparameter] >>>>>> ", param[hyperparameter])
             i+= 1
+            
+        print("\nDEBUG >>>>>> ", param)    
             
         self.classifier = clf.set_params(**param)
 
@@ -81,11 +121,11 @@ class Chromossome:
 
         if 'random_state' in list(all_parameters.keys()):
             self.classifier.set_params(random_state=self.random_state)
-        
+            
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
-        self.random_state = random_state
+        #self.random_state = random_state
         self.fitness = fitness
 
     def fit(self, X, y):
@@ -103,11 +143,11 @@ class DiversityEnsembleClassifier:
         self.algorithms = algorithms
         self.random_state = random_state
         self.ensemble = []
-        random.seed(self.random_state)
+        print("\n\n!!!!!!!!!!!! DEBUG DiversityEnsembleClassifier")
         for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, random_state=self.random_state))
+            self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, random_id = i, random_state=self.random_state))
 
-    def generate_offspring(self, parents, children, pop_fitness):
+    def generate_offspring(self, parents, children, pop_fitness, epoch):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
@@ -121,9 +161,12 @@ class DiversityEnsembleClassifier:
                 parents.append(children_aux[i])
                 pop_fitness = np.delete(pop_fitness, max_fit_index_aux)
                 children = np.delete(children, i)
-                
+        
+        random_id = self.population_size + epoch + 1
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
+            random_id = random_id + i
+            new_chromossome.set_random_id(random_id)
             new_chromossome.mutate()
             try:
                 self.population[children[i]] = new_chromossome
@@ -143,6 +186,7 @@ class DiversityEnsembleClassifier:
         #print(-1)
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
+        print("\n\n&&&&&&&&&&&&&&&& DEBUG pop_fitness = ",pop_fitness)
         target_chromossome = np.argmax(pop_fitness)
         selected = [target_chromossome]
         self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
@@ -168,7 +212,6 @@ class DiversityEnsembleClassifier:
         ##print('Starting genetic algorithm...')
         kf = KFold(n_splits=5, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
-        random.seed(self.random_state)
         writing_results_task_obj = None
         my_event_loop = asyncio.get_event_loop()
         
@@ -205,7 +248,8 @@ class DiversityEnsembleClassifier:
             classifiers_fitness = []
             
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-            self.generate_offspring(selected, not_selected, pop_fitness)
+            print("\n\n!!!!!!!!!!!! DEBUG epoch = ", epoch)
+            self.generate_offspring(selected, not_selected, pop_fitness, epoch)
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
             #print('Applying diversity selection...', end='')
@@ -260,6 +304,9 @@ class DiversityEnsembleClassifier:
                 else:
                     stop_criteria = 0
             prev_ensemble_accuracy = ensemble_accuracy
+            
+            print("\n\n!!!!!!!!!!!! DEBUG ensemble_accuracy = ", ensemble_accuracy)
+            print("!!!!!!!!!!!! DEBUG ensemble = ", ensemble)
 
             if best_ensemble_accuracy < ensemble_accuracy:
                 best_ensemble_accuracy = ensemble_accuracy
@@ -368,6 +415,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             text_file.write(" ms")
             sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
+        print("DEBUG >>>>>> ", total_accuracy)
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:
             text_file.write("\nAverage F1-score = %f\n" % (statistics.mean(total_f1)))

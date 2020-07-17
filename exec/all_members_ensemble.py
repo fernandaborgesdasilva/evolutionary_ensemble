@@ -1,4 +1,5 @@
 import math
+import collections
 
 def gen_members(dims):
     n_samples = int(math.sqrt(dims[0]))
@@ -22,4 +23,5 @@ def gen_members(dims):
             'sklearn.linear_model.SGDClassifier': {'alpha':[1e-5, 1e-2], 'max_iter':[100]}
     }
     
-    return members
+    return collections.OrderedDict(members)
+
