@@ -278,7 +278,6 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
-        print("DEBUG >>>>>> ", total_accuracy)
         if sum(total_f1)>0:
             text_file.write("\nAverage F1-score = %f\n" % (statistics.mean(total_f1)))
             text_file.write("Standard Deviation of F1-score = %f\n" % (statistics.stdev(total_f1)))
