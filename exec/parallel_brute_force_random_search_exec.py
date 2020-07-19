@@ -72,7 +72,6 @@ class BruteForceEnsembleClassifier:
         self.ensemble = []
         self.stop_time = stop_time
         self.random_state = random_state
-        random.seed(self.random_state)
 
     def estimators_pool(self, estimator_grid):
         for estimator, param_grid in estimator_grid.items():
@@ -109,7 +108,6 @@ class BruteForceEnsembleClassifier:
         start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
         time_aux = int(round(now * 1000))
         result_dict = dict()
-        random.seed(self.random_state)
         # a matrix with all observations vs the prediction of each classifier
         classifiers_predictions = np.zeros([self.n_estimators, len_y])
         # sum the number of right predictions for each classifier
@@ -227,6 +225,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
+            random.seed(i*10)
             selected_ensemble = random.sample(range(len(all_possible_ensembles)), k=stop_time)
             search_results = ensemble_classifier.fit(X_train, y_train, all_possible_ensembles, selected_ensemble, n_cores)
             #saving results as pandas dataframe and csv
@@ -279,6 +278,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
+        print("DEBUG >>>>>> ", total_accuracy)
         if sum(total_f1)>0:
             text_file.write("\nAverage F1-score = %f\n" % (statistics.mean(total_f1)))
             text_file.write("Standard Deviation of F1-score = %f\n" % (statistics.stdev(total_f1)))

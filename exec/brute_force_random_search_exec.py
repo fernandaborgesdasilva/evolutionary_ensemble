@@ -54,7 +54,6 @@ class BruteForceEnsembleClassifier:
         self.ensemble = []
         self.stop_time = stop_time
         self.random_state = random_state
-        random.seed(self.random_state)
 
     def estimators_pool(self, estimator_grid):
         for estimator, param_grid in estimator_grid.items():
@@ -95,7 +94,6 @@ class BruteForceEnsembleClassifier:
         np.save(y_train_file_path, y)
 
         result_dict = dict()
-        random.seed(self.random_state)
         best_ensemble_accuracy = 0
         best_accuracy_classifiers = np.zeros([self.n_estimators])
         writing_results_task_obj = None
@@ -256,6 +254,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
             print('\n\nIteration = ',i)
             text_file.write("\n\nIteration = %i" % (i))
             X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
+            random.seed(i*10)
             selected_ensemble = random.sample(range(len(all_possible_ensembles)), k=stop_time)
             ensemble, best_accuracy_classifiers = ensemble_classifier.fit(X_train, 
                                                                          y_train, 

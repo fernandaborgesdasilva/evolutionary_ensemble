@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 import statistics
-import random
 import operator
 import time
 import sys, getopt
@@ -53,7 +52,6 @@ class BruteForceEnsembleClassifier:
         self.stop_time = stop_time
         self.algorithms = algorithms
         self.random_state = random_state
-        random.seed(self.random_state)
 
     def estimators_pool(self, estimator_grid):
         for estimator, param_grid in estimator_grid.items():
@@ -86,7 +84,6 @@ class BruteForceEnsembleClassifier:
         mlsec = repr(now).split('.')[1][:3]
         start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
         time_aux = int(round(now * 1000))
-        random.seed(self.random_state)
         result_dict = dict()
         # a matrix with all observations vs the prediction of each classifier
         classifiers_predictions = np.zeros([self.n_estimators, len_y])
