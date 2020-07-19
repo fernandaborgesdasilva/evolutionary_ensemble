@@ -27,6 +27,9 @@ nest_asyncio.apply()
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+from sklearn.exceptions import ConvergenceWarning
+warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
+
 from joblib import Memory
 cachedir = './brute_force_random_search_exec_tmpmemory' + '_' + time.strftime("%H_%M_%S", time.localtime(time.time()))
 memory = Memory(cachedir, verbose=0)

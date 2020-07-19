@@ -8,9 +8,9 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
+from numpy.random import RandomState, SeedSequence
 import pandas as pd
 import statistics
-from numpy.random import RandomState, SeedSequence
 import operator
 import time
 import sys, getopt
@@ -24,6 +24,10 @@ nest_asyncio.apply()
 import warnings
 import itertools
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+from sklearn.exceptions import ConvergenceWarning
+warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
+
 
 class Chromossome:
     def __init__(self, genotypes_pool, len_X, random_id, random_state=None):
@@ -51,20 +55,9 @@ class Chromossome:
     def mutate(self, n_positions=None):
          
         change_classifier = self.rnd.randint(0, len(self.genotypes_pool))
-        
-        #APAGAR
-        if(self.random_state == 0):
-            print("\n\n\nDEBUG change_classifier >>>>>> ", change_classifier)
-
-
         if self.classifier is None or change_classifier != 0:
             param = {}
             self.classifier_algorithm = list(self.genotypes_pool.keys())[self.rnd.choice(len(list(self.genotypes_pool.keys())))]
-            
-            #APAGAR
-            if(self.random_state == 0):
-                print("\nDEBUG self.classifier_algorithm >>>>>> ", self.classifier_algorithm)
-
             mod, f = self.classifier_algorithm.rsplit('.', 1)
             clf = getattr(__import__(mod, fromlist=[f]), f)()            
         else:
@@ -75,48 +68,24 @@ class Chromossome:
             n_positions = len(self.genotypes_pool[self.classifier_algorithm])
 
         mutation_positions = self.rnd.choice(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
-        
-        #APAGAR
-        if(self.random_state == 0):
-            print("\nDEBUG mutation_positions >>>>>> ", mutation_positions)
-        
-        
         i=0
         for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
             if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
                 if isinstance(h_range[0], str):
                     param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
-
-                    #APAGAR
-                    if(self.random_state == 0):
-                        print("\nDEBUG param[hyperparameter] >>>>>> ", param[hyperparameter])
-
-
                 elif isinstance(h_range[0], float):
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
                     param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1]+1)
-
-                    #APAGAR
-                    if(self.random_state == 0):
-                        print("\nDEBUG param[hyperparameter] >>>>>> ", param[hyperparameter])
-
                 else:
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
                     param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1]+1)
-
-                    #APAGAR
-                    if(self.random_state == 0):
-                        print("\nDEBUG param[hyperparameter] >>>>>> ", param[hyperparameter])
-            i+= 1
-            
-        print("\nDEBUG >>>>>> ", param)    
+            i+= 1  
             
         self.classifier = clf.set_params(**param)
-
         all_parameters = self.classifier.get_params()
 
         if 'random_state' in list(all_parameters.keys()):
@@ -143,7 +112,6 @@ class DiversityEnsembleClassifier:
         self.algorithms = algorithms
         self.random_state = random_state
         self.ensemble = []
-        print("\n\n!!!!!!!!!!!! DEBUG DiversityEnsembleClassifier")
         for i in range(0, population_size):
             self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, random_id = i, random_state=self.random_state))
 
@@ -186,7 +154,6 @@ class DiversityEnsembleClassifier:
         #print(-1)
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
-        print("\n\n&&&&&&&&&&&&&&&& DEBUG pop_fitness = ",pop_fitness)
         target_chromossome = np.argmax(pop_fitness)
         selected = [target_chromossome]
         self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
@@ -248,11 +215,9 @@ class DiversityEnsembleClassifier:
             classifiers_fitness = []
             
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-            print("\n\n!!!!!!!!!!!! DEBUG epoch = ", epoch)
             self.generate_offspring(selected, not_selected, pop_fitness, epoch)
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
-            #print('Applying diversity selection...', end='')
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
             
             #diversity_values.append(diversity)
@@ -304,9 +269,6 @@ class DiversityEnsembleClassifier:
                 else:
                     stop_criteria = 0
             prev_ensemble_accuracy = ensemble_accuracy
-            
-            print("\n\n!!!!!!!!!!!! DEBUG ensemble_accuracy = ", ensemble_accuracy)
-            print("!!!!!!!!!!!! DEBUG ensemble = ", ensemble)
 
             if best_ensemble_accuracy < ensemble_accuracy:
                 best_ensemble_accuracy = ensemble_accuracy
@@ -415,7 +377,6 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             text_file.write(" ms")
             sum_total_iter_time.append(total_iter_time)
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
-        print("DEBUG >>>>>> ", total_accuracy)
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:
             text_file.write("\nAverage F1-score = %f\n" % (statistics.mean(total_f1)))
