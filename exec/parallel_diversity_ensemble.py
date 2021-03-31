@@ -8,7 +8,7 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
-from numpy.random import RandomState, SeedSequence
+from numpy.random import RandomState
 import pandas as pd
 import operator
 import time
