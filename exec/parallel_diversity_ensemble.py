@@ -31,33 +31,28 @@ if not sys.warnoptions:
     os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
 
 class Chromossome:
-    def __init__(self, genotypes_pool, random_id, random_state=None):
+    def __init__(self, genotypes_pool, rnd=None, random_state=None):
 
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
         self.fitness = 0
         self.random_state = random_state
-        self.random_id = self.random_state + random_id
-        self.rnd = RandomState(self.random_id)
-        self.mutate()
+        self.rnd = rnd
+        self.mutate(self.rnd)
 
     def fit(self, X, y):
         is_fitted = True
         self.classifier.fit(X, y)
-
-    def set_random_id(self, random_id):
-        self.random_id = self.random_state + random_id
-        self.rnd = RandomState(self.random_id)    
         
     def predict(self, X):
         return self.classifier.predict(X)
 
-    def mutate(self, n_positions=None):
-        change_classifier = self.rnd.randint(0, len(self.genotypes_pool))
+    def mutate(self, rnd, n_positions=None):
+        change_classifier = rnd.randint(0, len(self.genotypes_pool))
         if self.classifier is None or change_classifier != 0:
             param = {}
-            self.classifier_algorithm = list(self.genotypes_pool.keys())[self.rnd.choice(len(list(self.genotypes_pool.keys())))]
+            self.classifier_algorithm = list(self.genotypes_pool.keys())[rnd.choice(len(list(self.genotypes_pool.keys())))]
             mod, f = self.classifier_algorithm.rsplit('.', 1)
             clf = getattr(__import__(mod, fromlist=[f]), f)()
         else:
@@ -67,22 +62,22 @@ class Chromossome:
         if not n_positions or n_positions>len(self.genotypes_pool[self.classifier_algorithm]):
             n_positions = len(self.genotypes_pool[self.classifier_algorithm])
 
-        mutation_positions = self.rnd.choice(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
+        mutation_positions = rnd.choice(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
         i=0
         for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
             if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
                 if isinstance(h_range[0], str):
-                    param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
+                    param[hyperparameter] = h_range[rnd.choice(len(h_range))]
                 elif isinstance(h_range[0], float):
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
                 else:
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
             i+= 1
 
         self.classifier = clf.set_params(**param)
@@ -94,7 +89,6 @@ class Chromossome:
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
-        self.random_state = random_state
         self.fitness = fitness
 
     def fit(self, X, y):
@@ -111,9 +105,10 @@ class DiversityEnsembleClassifier:
         self.population = []
         self.algorithms = algorithms
         self.random_state = random_state
+        self.rnd = RandomState(self.random_state)
         self.ensemble = []
         for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=algorithms, random_id = i, random_state=random_state))
+            self.population.append(Chromossome(genotypes_pool=algorithms, rnd=self.rnd, random_state=random_state))
             
 
     def generate_offspring(self, parents, children, pop_fitness, epoch):
@@ -130,13 +125,10 @@ class DiversityEnsembleClassifier:
                 parents.append(children_aux[i])
                 pop_fitness = np.delete(pop_fitness, max_fit_index_aux)
                 children = np.delete(children, i)
-                
-        random_id = self.population_size + epoch + 1        
+                    
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
-            random_id = random_id + i
-            new_chromossome.set_random_id(random_id)
-            new_chromossome.mutate()
+            new_chromossome.mutate(self.rnd)
             try:
                 self.population[children[i]] = new_chromossome
             except:
@@ -153,7 +145,6 @@ class DiversityEnsembleClassifier:
         return [not_fitted, predictions, y_train_pred]
 
     def diversity_selection(self, predictions, selection_threshold):
-        #print(-1)
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
         target_chromossome = np.argmax(pop_fitness)
@@ -179,7 +170,6 @@ class DiversityEnsembleClassifier:
     def fit(self, X, y, n_cores, csv_file):
         diversity_values, fitness_values = [], []
         result_dict = dict()
-        ##print('Starting genetic algorithm...')
         kf = KFold(n_splits=5, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
         my_event_loop = asyncio.get_event_loop()
@@ -231,11 +221,7 @@ class DiversityEnsembleClassifier:
                 all_predictions[i[0]] = i[1]
                 y_fit_pred[i[0]] = i[2]
 
-            #print('Applying diversity selection...', end='')
             selected, diversity, fitness, pop_fitness = self.diversity_selection(all_predictions, selection_threshold)
-                       
-            #diversity_values.append(diversity)
-            #fitness_values.append(fitness)
 
             len_X = len(X)
             ensemble_pred = np.zeros([self.population_size, len_X])
@@ -277,6 +263,7 @@ class DiversityEnsembleClassifier:
                                        "ensemble_accuracy":ensemble_accuracy,
                                        "ensemble":ensemble, 
                                        "classifiers_accuracy":classifiers_fitness}})
+                                       
             if prev_ensemble_accuracy != 0:
                 increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
                 if (increase_accuracy < 1.0):

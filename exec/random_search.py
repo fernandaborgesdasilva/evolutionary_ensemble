@@ -45,16 +45,16 @@ class Estimator:
         return self.classifier.predict(X)
 
 
-class BruteForceEnsembleClassifier:
+class RandomSearchEnsembleClassifier:
     def __init__(self, classifiers_pool, stop_time = 100, n_estimators = 10, random_state = None):
         self.n_estimators = n_estimators
         self.ensemble = []
         self.stop_time = stop_time
         self.random_state = random_state
         self.classifiers_pool = classifiers_pool
+        self.rnd = RandomState(self.random_state)
 
-    def get_new_classifier(self, random_id):
-        self.rnd = RandomState(random_id)
+    def get_new_classifier(self):
         param = {}
         classifier_algorithm = list(self.classifiers_pool.keys())[self.rnd.choice(len(list(self.classifiers_pool.keys())))]
         mod, f = classifier_algorithm.rsplit('.', 1)
@@ -82,11 +82,8 @@ class BruteForceEnsembleClassifier:
         len_y = len(y)
         len_X = len(X)
         best_ensemble = []
-        random_id = random_state
-        #x_train_file_path = "/dev/shm/temp_x_train_rs.npy"
-        #y_train_file_path = "/dev/shm/temp_y_train_rs.npy"
-        x_train_file_path = "./temp_x_train_rs.npy"
-        y_train_file_path = "./temp_y_train_rs.npy"
+        x_train_file_path = "/dev/shm/temp_x_train_rs.npy"
+        y_train_file_path = "/dev/shm/temp_y_train_rs.npy"
         np.save(x_train_file_path, X)
         np.save(y_train_file_path, y)
 
@@ -116,8 +113,7 @@ class BruteForceEnsembleClassifier:
             start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             time_aux = int(round(now * 1000))
             for cl in range(0, self.n_estimators):
-                random_id = random_id + 1
-                classifier = self.get_new_classifier(random_id)
+                classifier = self.get_new_classifier()
                 y_pred = train_clf(classifier, x_train_file_path, y_train_file_path, self.random_state)
                 ensemble.append(classifier)
                 classifiers_predictions[classifier_id][:] = y_pred
@@ -237,10 +233,10 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
                 csv_file = 'rand_search_results_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 print('\n\nIteration = ',i)
                 text_file.write("\n\nIteration = %i" % (i))
-                ensemble_classifier = BruteForceEnsembleClassifier(classifiers_pool = alg,
-                                                                   stop_time=stop_time, 
-                                                                   n_estimators=int(n_estimators), 
-                                                                   random_state=i*10)
+                ensemble_classifier = RandomSearchEnsembleClassifier(classifiers_pool = alg,
+                                                                     stop_time=stop_time, 
+                                                                     n_estimators=int(n_estimators), 
+                                                                     random_state=i*10)
                 ensemble, best_accuracy_classifiers = ensemble_classifier.fit(data[train],
                                                                               target[train],
                                                                               csv_file,
