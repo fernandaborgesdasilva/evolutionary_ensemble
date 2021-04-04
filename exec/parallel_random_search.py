@@ -126,10 +126,8 @@ class RandomSearchEnsembleClassifier:
 
     def fit(self, X, y, n_cores, csv_file, random_state, parallel_type):
         #parallel_time_aux = int(round(time.time() * 1000))
-        #x_train_file_path = "/dev/shm/temp_x_train_prs" + str(n_cores) + ".npy"
-        #y_train_file_path = "/dev/shm/temp_y_train_prs" + str(n_cores) + ".npy"
-        x_train_file_path = "./temp_x_train_prs" + str(n_cores) + ".npy"
-        y_train_file_path = "./temp_y_train_prs" + str(n_cores) + ".npy"
+        x_train_file_path = "/dev/shm/temp_x_train_prs" + str(n_cores) + ".npy"
+        y_train_file_path = "/dev/shm/temp_y_train_prs" + str(n_cores) + ".npy"
         np.save(x_train_file_path, X)
         np.save(y_train_file_path, y)
         len_y = len(y)

@@ -101,7 +101,7 @@ class DiversityEnsembleClassifier:
             self.population.append(Chromossome(genotypes_pool=algorithms, rnd=self.rnd, random_state=random_state))
             
 
-    def generate_offspring(self, parents, children, pop_fitness, epoch):
+    def generate_offspring(self, parents, children, pop_fitness):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
@@ -200,7 +200,7 @@ class DiversityEnsembleClassifier:
             classifiers_fitness = []
 
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-            self.generate_offspring(selected, not_selected, pop_fitness, epoch)
+            self.generate_offspring(selected, not_selected, pop_fitness)
 
             parallel_time_aux = int(round(time.time() * 1000))
             backend = 'loky'
