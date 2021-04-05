@@ -44,22 +44,22 @@ list='16 32'
 for num_cores in $list;do 
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_diversity_ensemble.py with $num_cores cores"
-    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_diversity_ensemble.py -i $input_file -o saida_pdce_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores &> output_pdce_$num_cores.txt
+    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_diversity_ensemble.py -i $input_file -o saida_pdce_$num_cores -e $num_cores -s $num_iterations -c $num_cores &> output_pdce_$num_cores.txt
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_brute_force_search_exec.py with $num_cores cores"
-    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_brute_force_search_exec.py -i $input_file -o saida_pbf_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores &> output_pbf_$num_cores.txt
+    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_brute_force_search_exec.py -i $input_file -o saida_pbf_$num_cores -e $num_cores -s $num_iterations -c $num_cores &> output_pbf_$num_cores.txt
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_brute_force_random_search_exec.py with $num_cores cores"
-    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_brute_force_random_search_exec.py -i $input_file -o saida_pbfr_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores &> output_pbfr_$num_cores.txt
+    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_brute_force_random_search_exec.py -i $input_file -o saida_pbfr_$num_cores -e $num_cores -s $num_iterations -c $num_cores &> output_pbfr_$num_cores.txt
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_diversity_grid.py with $num_cores cores"
-    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_diversity_grid.py -i $input_file -o saida_pdce_grid_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores &> output_pdce_grid_$num_cores.txt
+    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_diversity_grid.py -i $input_file -o saida_pdce_grid_$num_cores -e $num_cores -s $num_iterations -c $num_cores &> output_pdce_grid_$num_cores.txt
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_random_search.py with $num_cores cores"
-    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_random_search.py -i $input_file -o saida_prs_0_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores -p 0 &> output_prs_0_$num_cores.txt
+    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_random_search.py -i $input_file -o saida_prs_0_$num_cores -e $num_cores -s $num_iterations -c $num_cores -p 0 &> output_prs_0_$num_cores.txt
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_random_search.py with $num_cores cores"
-    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_random_search.py -i $input_file -o saida_prs_1_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores -p 1 &> output_prs_1_$num_cores.txt
+    time python -u /home-ext/fbslnlv/evolutionary_ensemble/exec/parallel_random_search.py -i $input_file -o saida_prs_1_$num_cores -e $num_cores -s $num_iterations -c $num_cores -p 1 &> output_prs_1_$num_cores.txt
 done
 popd
 popd
