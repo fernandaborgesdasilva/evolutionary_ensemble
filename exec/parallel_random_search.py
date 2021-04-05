@@ -126,10 +126,8 @@ class RandomSearchEnsembleClassifier:
 
     def fit(self, X, y, n_cores, csv_file, random_state, parallel_type):
         #parallel_time_aux = int(round(time.time() * 1000))
-        #x_train_file_path = "/dev/shm/temp_x_train_prs" + str(n_cores) + ".npy"
-        #y_train_file_path = "/dev/shm/temp_y_train_prs" + str(n_cores) + ".npy"
-        x_train_file_path = "./temp_x_train_prs" + str(n_cores) + ".npy"
-        y_train_file_path = "./temp_y_train_prs" + str(n_cores) + ".npy"
+        x_train_file_path = "/dev/shm/temp_x_train_prs" + str(n_cores) + ".npy"
+        y_train_file_path = "/dev/shm/temp_y_train_prs" + str(n_cores) + ".npy"
         np.save(x_train_file_path, X)
         np.save(y_train_file_path, y)
         len_y = len(y)
@@ -268,7 +266,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores, 
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
             for i in range(0, 10):
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file = 'parallel_rs_results_ptype_' + str(parallel_type) +'_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+                csv_file = 'parallel_rs_results_ptype_' + str(parallel_type) +'_fold_' + str(fold) + '_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 print('\n\nIteration = ',i)
                 text_file.write("\n\nIteration = %i" % (i))
                 ensemble_classifier = RandomSearchEnsembleClassifier(classifiers_pool = alg,
