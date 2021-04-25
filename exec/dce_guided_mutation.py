@@ -15,6 +15,7 @@ import operator
 import time
 import sys, getopt
 import copy
+from collections import defaultdict
 from all_members_ensemble import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
@@ -38,7 +39,7 @@ class Chromossome:
         self.y_train_pred = np.zeros(len_X)
         self.random_state = random_state
         self.rnd = rnd
-        self.mutate(self.rnd)
+        #self.mutate(self.rnd)
 
     def fit(self, X, y):
         is_fitted = True
@@ -47,8 +48,7 @@ class Chromossome:
     def predict(self, X):
         return self.classifier.predict(X)
 
-    def mutate(self, rnd, hyperparameter_proba=[], mutation_guided_before=0, n_positions=None):
-        new_hyperparameter_proba = []
+    def mutate(self, rnd, hyperparameter_proba, mutation_guided_before=0, n_positions=None):
         change_classifier = rnd.randint(0, len(self.genotypes_pool))
         if self.classifier is None or change_classifier != 0:
             param = {}
@@ -68,12 +68,10 @@ class Chromossome:
             hyper_values = []
             hyper_proba = []
             hyper_proba_ = []
-            for d in hyperparameter_proba:
-                if d["classifier"] == self.classifier_algorithm and d["hyperparameter"] == hyperparameter:
-                    if d["value"] not in hyper_values:
-                        hyper_values.append(d["value"])
-                        hyper_proba.append(d["probability"])
-
+            if hyperparameter_proba.get(self.classifier_algorithm, 0) != 0:
+                if hyperparameter_proba[self.classifier_algorithm].get(hyperparameter, 0) != 0:
+                    hyper_values = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["value"]
+                    hyper_proba = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["probability"]
             for fitness in hyper_proba:
                 if sum(hyper_proba) > 0:
                     hyper_proba_.append(fitness/sum(hyper_proba))
@@ -85,31 +83,16 @@ class Chromossome:
                 if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
                     if isinstance(h_range[0], str):
                         param[hyperparameter] = h_range[rnd.choice(len(h_range))]
-                        if param[hyperparameter] not in hyper_values:
-                            new_hyperparameter_proba.append({"classifier":self.classifier_algorithm,
-                                                             "hyperparameter":hyperparameter,
-                                                             "value":param[hyperparameter],
-                                                             "probability":0})
                     elif isinstance(h_range[0], float):
                         h_range_ = []
                         h_range_.append(min(h_range))
                         h_range_.append(max(h_range))
-                        param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
-                        if param[hyperparameter] not in hyper_values:
-                            new_hyperparameter_proba.append({"classifier":self.classifier_algorithm,
-                                                             "hyperparameter":hyperparameter,
-                                                             "value":param[hyperparameter],
-                                                             "probability":0})
+                        param[hyperparameter] = round(rnd.uniform(h_range_[0], h_range_[1]+1),4)
                     else:
                         h_range_ = []
                         h_range_.append(min(h_range))
                         h_range_.append(max(h_range))
                         param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
-                        if param[hyperparameter] not in hyper_values:
-                            new_hyperparameter_proba.append({"classifier":self.classifier_algorithm,
-                                                             "hyperparameter":hyperparameter,
-                                                             "value":param[hyperparameter],
-                                                             "probability":0})
             else:
                 #it chooses between the values already used
                 if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
@@ -120,14 +103,12 @@ class Chromossome:
                     else:
                         param[hyperparameter] = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
             i+= 1
-            
+
         self.classifier = clf.set_params(**param)
         all_parameters = self.classifier.get_params()
 
         if 'random_state' in list(all_parameters.keys()):
             self.classifier.set_params(random_state=self.random_state)
-
-        return new_hyperparameter_proba
             
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -150,9 +131,11 @@ class DiversityEnsembleClassifier:
         self.random_state = random_state
         self.rnd = RandomState(self.random_state)
         self.ensemble = []
-        self.hyperparameter_proba = []
+        self.hyperparameter_proba = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
         for i in range(0, population_size):
             self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, rnd=self.rnd, random_state=self.random_state))
+        for i in range(0, population_size):
+            self.population[i].mutate(self.rnd, self.hyperparameter_proba)
 
     def generate_offspring(self, parents, children, pop_fitness, mutation_guided_before):
         children_aux = children
@@ -171,7 +154,7 @@ class DiversityEnsembleClassifier:
 
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
-            self.hyperparameter_proba.extend(new_chromossome.mutate(self.rnd, self.hyperparameter_proba, mutation_guided_before))
+            new_chromossome.mutate(self.rnd, self.hyperparameter_proba, mutation_guided_before)
             try:
                 self.population[children[i]] = new_chromossome
             except:
@@ -254,6 +237,7 @@ class DiversityEnsembleClassifier:
             
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
             mutation_guided_before = self.generate_offspring(selected, not_selected, pop_fitness, mutation_guided_before)
+
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
@@ -263,9 +247,25 @@ class DiversityEnsembleClassifier:
             y_train_pred = np.zeros(len_X)
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
-                for index, clf_dict in enumerate(self.hyperparameter_proba):
-                    if clf_dict["classifier"] == chromossome.classifier_algorithm and clf_dict["value"] == chromossome.classifier.get_params()[clf_dict["hyperparameter"]]:
-                        self.hyperparameter_proba[index]["probability"] += chromossome.fitness
+                for hyper in chromossome.classifier.get_params():
+                    if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
+                        if chromossome.classifier.get_params()[hyper] in self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]['value']:
+                            index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].index(chromossome.classifier.get_params()[hyper])
+                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][index] += chromossome.fitness
+                        else:
+                            if len(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"]) < 20:
+                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(chromossome.classifier.get_params()[hyper])
+                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                            else:
+                                min_proba = min(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"])
+                                min_proba_index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].index(min_proba)
+                                del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][min_proba_index]
+                                del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"][min_proba_index]
+                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(chromossome.classifier.get_params()[hyper])
+                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                    else:
+                        self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(chromossome.classifier.get_params()[hyper])
+                        self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
                 ensemble.append(chromossome.classifier)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = chromossome.y_train_pred
