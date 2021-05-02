@@ -15,6 +15,7 @@ import operator
 import time
 import sys, getopt
 import copy
+from collections import defaultdict
 from all_members_ensemble import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
@@ -40,7 +41,7 @@ class Chromossome:
         self.rnd = rnd
         self.cols = []
         self.x_n_cols = x_n_cols
-        self.mutate(self.rnd)
+        #self.mutate(self.rnd, x_n_cols)
 
     def fit(self, X, y):
         is_fitted = True
@@ -49,7 +50,7 @@ class Chromossome:
     def predict(self, X):
         return self.classifier.predict(X)
 
-    def mutate(self, rnd):
+    def mutate(self, rnd, hyperparameter_proba, columns_proba, mutation_guided_before=0, n_positions=None):
         change = rnd.randint(0, 3)
         if self.classifier is None:
             param = {}
@@ -86,18 +87,41 @@ class Chromossome:
             clf = getattr(__import__(mod, fromlist=[f]), f)()
             #defining the hyperparameters conf
             for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
-                if isinstance(h_range[0], str):
-                    param[hyperparameter] = h_range[rnd.choice(len(h_range))]
-                elif isinstance(h_range[0], float):
-                    h_range_ = []
-                    h_range_.append(min(h_range))
-                    h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                hyper_values = []
+                hyper_proba = []
+                hyper_proba_ = []
+                if hyperparameter_proba.get(self.classifier_algorithm, 0) != 0:
+                    if hyperparameter_proba[self.classifier_algorithm].get(hyperparameter, 0) != 0:
+                        hyper_values = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["value"]
+                        hyper_proba = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["probability"]
+                for fitness in hyper_proba:
+                    if sum(hyper_proba) > 0:
+                        hyper_proba_.append(fitness/sum(hyper_proba))
+                    else:
+                        hyper_proba_.append(1.0/len(hyper_proba))
+
+                if mutation_guided_before == 0 or len(hyper_values) == 0:
+                    #it does a search for new values
+                    if isinstance(h_range[0], str):
+                        param[hyperparameter] = h_range[rnd.choice(len(h_range))]
+                    elif isinstance(h_range[0], float):
+                        h_range_ = []
+                        h_range_.append(min(h_range))
+                        h_range_.append(max(h_range))
+                        param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                    else:
+                        h_range_ = []
+                        h_range_.append(min(h_range))
+                        h_range_.append(max(h_range))
+                        param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
                 else:
-                    h_range_ = []
-                    h_range_.append(min(h_range))
-                    h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1) 
+                    #it chooses between the values already used
+                    if isinstance(h_range[0], str):
+                        param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                    elif isinstance(h_range[0], float):
+                        param[hyperparameter] = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
+                    else:
+                        param[hyperparameter] = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
             self.classifier = clf.set_params(**param)
             all_parameters = self.classifier.get_params()
             if 'random_state' in list(all_parameters.keys()):
@@ -116,18 +140,41 @@ class Chromossome:
                 i=0
                 for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
                     if i in mutation_positions:
-                        if isinstance(h_range[0], str):
-                            param[hyperparameter] = h_range[rnd.choice(len(h_range))]
-                        elif isinstance(h_range[0], float):
-                            h_range_ = []
-                            h_range_.append(min(h_range))
-                            h_range_.append(max(h_range))
-                            param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                        hyper_values = []
+                        hyper_proba = []
+                        hyper_proba_ = []
+                        if hyperparameter_proba.get(self.classifier_algorithm, 0) != 0:
+                            if hyperparameter_proba[self.classifier_algorithm].get(hyperparameter, 0) != 0:
+                                hyper_values = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["value"]
+                                hyper_proba = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["probability"]
+                        for fitness in hyper_proba:
+                            if sum(hyper_proba) > 0:
+                                hyper_proba_.append(fitness/sum(hyper_proba))
+                            else:
+                                hyper_proba_.append(1.0/len(hyper_proba))
+
+                        if mutation_guided_before == 0 or len(hyper_values) == 0:
+                            #it does a search for new values
+                            if isinstance(h_range[0], str):
+                                param[hyperparameter] = h_range[rnd.choice(len(h_range))]
+                            elif isinstance(h_range[0], float):
+                                h_range_ = []
+                                h_range_.append(min(h_range))
+                                h_range_.append(max(h_range))
+                                param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                            else:
+                                h_range_ = []
+                                h_range_.append(min(h_range))
+                                h_range_.append(max(h_range))
+                                param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
                         else:
-                            h_range_ = []
-                            h_range_.append(min(h_range))
-                            h_range_.append(max(h_range))
-                            param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
+                            #it chooses between the values already used
+                            if isinstance(h_range[0], str):
+                                param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                            elif isinstance(h_range[0], float):
+                                param[hyperparameter] = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
+                            else:
+                                param[hyperparameter] = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
                     i+= 1
                 self.classifier = clf.set_params(**param)
                 all_parameters = self.classifier.get_params()
@@ -135,8 +182,22 @@ class Chromossome:
                     self.classifier.set_params(random_state=self.random_state)
         elif change == 2:
             #changing the columns
+            cols_proba_ = []
+            cols_values = columns_proba["value"]
+            cols_proba = columns_proba["probability"]
+            for fitness in cols_proba:
+                if sum(cols_proba) > 0:
+                    cols_proba_.append(fitness/sum(cols_proba))
+                else:
+                    cols_proba_.append(1.0/len(cols_proba))
             n_cols = rnd.randint(1, self.x_n_cols+1)
-            self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
+            if mutation_guided_before == 0 or len(cols_values) == 0:
+                self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
+            else:
+                if n_cols < len(cols_values):
+                    self.cols = rnd.choice(cols_values, n_cols, p=cols_proba_, replace=False)
+                else:
+                    self.cols = rnd.choice(cols_values, len(cols_values), replace=False)
             
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -160,10 +221,14 @@ class DiversityEnsembleClassifier:
         self.random_state = random_state
         self.rnd = RandomState(self.random_state)
         self.ensemble = []
+        self.hyperparameter_proba = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
+        self.columns_proba = {"value":[],"probability":[]}
         for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state))
+            self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, x_n_cols=x_n_cols, rnd=self.rnd, random_state=self.random_state))
+        for i in range(0, population_size):
+            self.population[i].mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
 
-    def generate_offspring(self, parents, children, pop_fitness):
+    def generate_offspring(self, parents, children, pop_fitness, mutation_guided_before):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
@@ -180,11 +245,15 @@ class DiversityEnsembleClassifier:
 
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
-            new_chromossome.mutate(self.rnd)
+            new_chromossome.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba, mutation_guided_before)
             try:
                 self.population[children[i]] = new_chromossome
             except:
                 self.population.append(new_chromossome)
+        if mutation_guided_before == 0:
+            return 1
+        else:
+            return 0
 
     def fit_predict_population(self, not_fitted, predictions, kfolds, X, y):
         for i in not_fitted:
@@ -241,6 +310,7 @@ class DiversityEnsembleClassifier:
         best_ensemble_accuracy = 0
         best_ensemble = []
         best_classifiers_fitness = []
+        mutation_guided_before = 1
         
         for epoch in range(self.max_epochs):
             
@@ -257,7 +327,8 @@ class DiversityEnsembleClassifier:
             classifiers_fitness = []
             
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-            self.generate_offspring(selected, not_selected, pop_fitness)
+            mutation_guided_before = self.generate_offspring(selected, not_selected, pop_fitness, mutation_guided_before)
+
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
@@ -267,6 +338,33 @@ class DiversityEnsembleClassifier:
             y_train_pred = np.zeros(len_X)
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
+                for hyper in chromossome.classifier.get_params():
+                    if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
+                        if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
+                            if chromossome.classifier.get_params()[hyper] in self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]['value']:
+                                index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].index(chromossome.classifier.get_params()[hyper])
+                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][index] += chromossome.fitness
+                            else:
+                                if len(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"]) < 20:
+                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(chromossome.classifier.get_params()[hyper])
+                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                                else:
+                                    min_proba = min(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"])
+                                    min_proba_index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].index(min_proba)
+                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][min_proba_index]
+                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"][min_proba_index]
+                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(chromossome.classifier.get_params()[hyper])
+                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                        else:
+                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(chromossome.classifier.get_params()[hyper])
+                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                for col in chromossome.cols:
+                    if col in self.columns_proba["value"]:
+                        index = self.columns_proba["value"].index(col)
+                        self.columns_proba["probability"][index] += chromossome.fitness
+                    else:
+                        self.columns_proba["value"].append(col)
+                        self.columns_proba["probability"].append(chromossome.fitness)
                 ensemble.append(chromossome.classifier)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = chromossome.y_train_pred
@@ -359,7 +457,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
     
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
-        text_file.write(' DCE (cols as gene version) ')
+        text_file.write(' DCE with guided mutation (cols as gene version) ')
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
@@ -370,7 +468,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
             for i in range(0, 10):
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file = 'dce_cols_gene_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+                csv_file = 'dce_col_as_gene_guided_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 print('\n\nIteration = ',i)
                 text_file.write("\n\nIteration = %i" % (i))
                 ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg,
@@ -448,14 +546,14 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"h:i:o:e:s:",["ifile=","ofile=","enumber=","stoptime="])
     except getopt.GetoptError:
-        print('dce_col_as_gene.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
+        print('dce_col_as_gene_guided_mutation.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
         sys.exit(2)
     if opts == []:
-        print('dce_col_as_gene.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
+        print('dce_col_as_gene_guided_mutation.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('dce_col_as_gene.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
+            print('dce_col_as_gene_guided_mutation.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
@@ -479,7 +577,7 @@ def main(argv):
     
     if inputfile == "iris":
         dataset = datasets.load_iris()
-        print('Runing DCE (cols as gene version)...')
+        print('Runing DCE with guided mutation (cols as gene version)...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
                         n_estimators=int(n_estimators), 
@@ -487,7 +585,7 @@ def main(argv):
                         stop_time=int(stop_time))
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
-        print('Runing DCE (cols as gene version)...')
+        print('Runing DCE with guided mutation (cols as gene version)...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
                         n_estimators=int(n_estimators), 
@@ -495,7 +593,7 @@ def main(argv):
                         stop_time=int(stop_time))
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
-        print('Runing DCE (cols as gene version)...')
+        print('Runing DCE with guided mutation (cols as gene version)...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
                         n_estimators=int(n_estimators), 
@@ -505,7 +603,7 @@ def main(argv):
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
         dataset.iloc[:, -1] = le.fit_transform(dataset.iloc[:, -1])
-        print('Runing DCE (cols as gene version)...')
+        print('Runing DCE with guided mutation (cols as gene version)...')
         compare_results(data=dataset.iloc[:, 0:-1].values, 
                         target=dataset.iloc[:, -1].values, 
                         n_estimators=int(n_estimators), 

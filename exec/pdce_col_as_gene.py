@@ -39,7 +39,8 @@ class Chromossome:
         self.random_state = random_state
         self.rnd = rnd
         self.cols = []
-        self.mutate(self.rnd, x_n_cols)
+        self.x_n_cols = x_n_cols
+        self.mutate(self.rnd)
 
     def fit(self, X, y):
         is_fitted = True
@@ -48,7 +49,7 @@ class Chromossome:
     def predict(self, X):
         return self.classifier.predict(X)
 
-    def mutate(self, rnd, x_n_cols):
+    def mutate(self, rnd):
         change = rnd.randint(0, 3)
         if self.classifier is None:
             param = {}
@@ -75,8 +76,8 @@ class Chromossome:
             if 'random_state' in list(all_parameters.keys()):
                 self.classifier.set_params(random_state=self.random_state)
             #defining which columns will be used
-            n_cols = rnd.randint(1, x_n_cols+1)
-            self.cols = rnd.choice(x_n_cols, n_cols, replace=False)
+            n_cols = rnd.randint(1, self.x_n_cols+1)
+            self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
         elif change == 0:
             #changing the classifier
             param = {}
@@ -114,7 +115,7 @@ class Chromossome:
                 mutation_positions = rnd.choice(range(0, len_hyper), n_positions)
                 i=0
                 for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
-                    if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
+                    if i in mutation_positions:
                         if isinstance(h_range[0], str):
                             param[hyperparameter] = h_range[rnd.choice(len(h_range))]
                         elif isinstance(h_range[0], float):
@@ -134,8 +135,8 @@ class Chromossome:
                     self.classifier.set_params(random_state=self.random_state)
         elif change == 2:
             #changing the columns
-            n_cols = rnd.randint(1, x_n_cols+1)
-            self.cols = rnd.choice(x_n_cols, n_cols, replace=False)
+            n_cols = rnd.randint(1, self.x_n_cols+1)
+            self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
         
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -180,7 +181,7 @@ class DiversityEnsembleClassifier:
                     
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
-            new_chromossome.mutate(self.rnd, self.x_n_cols)
+            new_chromossome.mutate(self.rnd)
             try:
                 self.population[children[i]] = new_chromossome
             except:
