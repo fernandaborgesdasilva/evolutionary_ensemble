@@ -66,7 +66,7 @@ class RandomSearchEnsembleClassifier:
                 h_range_ = []
                 h_range_.append(min(h_range))
                 h_range_.append(max(h_range))
-                param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1]+1)
+                param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1])
             else:
                 h_range_ = []
                 h_range_.append(min(h_range))
@@ -369,9 +369,7 @@ def main(argv):
                         target=dataset.iloc[:, -1].values, 
                         n_estimators=int(n_estimators), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time), 
-                        all_possible_ensembles=possible_ensembles,
-                        possible_ensembles_time=total_time
+                        stop_time=int(stop_time)
                        )
     print('It is finished!')
 

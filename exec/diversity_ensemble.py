@@ -71,7 +71,7 @@ class Chromossome:
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
                 else:
                     h_range_ = []
                     h_range_.append(min(h_range))
@@ -249,7 +249,7 @@ class DiversityEnsembleClassifier:
                                        "classifiers_accuracy":classifiers_fitness}})
             if prev_ensemble_accuracy != 0:
                 increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
-                if (increase_accuracy < 1.0):
+                if (increase_accuracy < 0.5):
                     stop_criteria = stop_criteria + 1
                 else:
                     stop_criteria = 0

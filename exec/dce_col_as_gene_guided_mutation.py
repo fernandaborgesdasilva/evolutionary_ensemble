@@ -123,7 +123,7 @@ class Chromossome:
                             mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
                             sigma = (max(h_range) - min(h_range))/80
                             a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
-                            param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma)
+                            param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
                         else:
                             r_proba_val = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
                             min_noise = max(min(h_range), r_proba_val - 2)
@@ -189,7 +189,7 @@ class Chromossome:
                                 mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
                                 sigma = (max(h_range) - min(h_range))/80
                                 a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
-                                param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma)
+                                param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
                             else:
                                 r_proba_val = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
                                 min_noise = max(min(h_range), r_proba_val - 2)
@@ -420,7 +420,7 @@ class DiversityEnsembleClassifier:
                                        "ensemble_accuracy":ensemble_accuracy,
                                        "ensemble":ensemble,
                                        "classifiers_accuracy":classifiers_fitness,
-                                       "ensemble_cols":ensemble_cols,
+                                       "ensemble_cols":ensemble_cols
                                        }})
             if prev_ensemble_accuracy != 0:
                 increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0

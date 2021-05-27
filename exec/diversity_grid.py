@@ -245,7 +245,7 @@ class DiversityEnsembleClassifier:
                                        "classifiers_accuracy":classifiers_fitness}})
             if prev_ensemble_accuracy != 0:
                 increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
-                if (increase_accuracy < 1.0):
+                if (increase_accuracy < 0.5):
                     stop_criteria = stop_criteria + 1
                 else:
                     stop_criteria = 0

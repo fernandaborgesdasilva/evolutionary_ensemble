@@ -65,7 +65,7 @@ class Chromossome:
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
                 else:
                     h_range_ = []
                     h_range_.append(min(h_range))
@@ -92,7 +92,7 @@ class Chromossome:
                     h_range_ = []
                     h_range_.append(min(h_range))
                     h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
                 else:
                     h_range_ = []
                     h_range_.append(min(h_range))
@@ -108,27 +108,31 @@ class Chromossome:
             len_hyper = len(self.genotypes_pool[self.classifier_algorithm])
             #changing the hyperparameters conf
             if len_hyper != 0:
-                if len_hyper == 1:
-                    n_positions = 1
-                else:
-                    n_positions = rnd.randint(1, len_hyper+1)
-                mutation_positions = rnd.choice(range(0, len_hyper), n_positions)
-                i=0
-                for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
-                    if i in mutation_positions:
+                possible_hypers = []
+                for hyper, values in self.genotypes_pool[self.classifier_algorithm].items():
+                    if len(values) > 1:
+                        possible_hypers.append(hyper)
+                if len(possible_hypers) > 0:
+                    if len(possible_hypers) == 1:
+                        n_positions = 1
+                    else:
+                        n_positions = rnd.randint(1, len(possible_hypers) + 1)
+                    mutation_positions = rnd.choice(range(0, len(possible_hypers)), n_positions)
+                    for hyper_id in mutation_positions:
+                        hyperparameter = possible_hypers[hyper_id]
+                        h_range = self.genotypes_pool[self.classifier_algorithm][hyperparameter]
                         if isinstance(h_range[0], str):
                             param[hyperparameter] = h_range[rnd.choice(len(h_range))]
                         elif isinstance(h_range[0], float):
                             h_range_ = []
                             h_range_.append(min(h_range))
                             h_range_.append(max(h_range))
-                            param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1]+1)
+                            param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
                         else:
                             h_range_ = []
                             h_range_.append(min(h_range))
                             h_range_.append(max(h_range))
                             param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
-                    i+= 1
                 self.classifier = clf.set_params(**param)
                 all_parameters = self.classifier.get_params()
                 if 'random_state' in list(all_parameters.keys()):
@@ -226,7 +230,7 @@ class DiversityEnsembleClassifier:
         
         header = open(csv_file, "w")
         try:
-            header.write('start_time,end_time,total_time_ms,diversity,fitness,ensemble_accuracy,ensemble,classifiers_accuracy')
+            header.write('start_time,end_time,total_time_ms,diversity,fitness,ensemble_accuracy,ensemble,classifiers_accuracy,ensemble_cols')
             header.write('\n')
         finally:
             header.close()
@@ -254,6 +258,7 @@ class DiversityEnsembleClassifier:
                 break
             
             ensemble = []
+            ensemble_cols = []
             classifiers_fitness = []
             
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
@@ -268,6 +273,7 @@ class DiversityEnsembleClassifier:
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
                 ensemble.append(chromossome.classifier)
+                ensemble_cols.append(chromossome.cols)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = chromossome.y_train_pred
                 
@@ -300,10 +306,12 @@ class DiversityEnsembleClassifier:
                                        "fitness":fitness,
                                        "ensemble_accuracy":ensemble_accuracy,
                                        "ensemble":ensemble,
-                                       "classifiers_accuracy":classifiers_fitness}})
+                                       "classifiers_accuracy":classifiers_fitness,
+                                       "ensemble_cols":ensemble_cols
+                                       }})
             if prev_ensemble_accuracy != 0:
                 increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
-                if (increase_accuracy < 1.0):
+                if (increase_accuracy < 0.5):
                     stop_criteria = stop_criteria + 1
                 else:
                     stop_criteria = 0
