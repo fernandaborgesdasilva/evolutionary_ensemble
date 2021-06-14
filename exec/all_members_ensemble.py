@@ -17,7 +17,7 @@ def gen_members(dims):
             #'sklearn.discriminant_analysis.LinearDiscriminantAnalysis': {},
             #'QuadraticDiscriminantAnalysis': {},
             #'BernoulliNB': {},
-            'sklearn.linear_model.LogisticRegression': {'C':[1, 1000], 'max_iter':[100], 'solver':['saga']},
+            'sklearn.linear_model.LogisticRegression': {'C':[1, 1000], 'max_iter':[100], 'solver':['saga'], 'tol':[1e-5]},
             #'NearestCentroid': {},
             #'sklearn.linear_model.PassiveAggressiveClassifier': {'C':[1, 1000], 'max_iter':[100]},
             'sklearn.linear_model.SGDClassifier': {'alpha':[1e-5, 1e-2], 'max_iter':[100]}

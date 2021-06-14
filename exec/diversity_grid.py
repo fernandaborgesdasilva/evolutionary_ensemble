@@ -39,7 +39,7 @@ class Chromossome:
         self.random_state = random_state
         self.random_state = random_state
         self.rnd = rnd
-        self.mutate(self.rnd)
+        #self.mutate(self.rnd)
 
     def fit(self, X, y):
         is_fitted = True
@@ -78,6 +78,7 @@ class Chromossome:
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
+        self.random_state = random_state
         self.fitness = fitness
 
     def fit(self, X, y):
@@ -93,26 +94,19 @@ class DiversityEnsembleClassifier:
         self.max_epochs = max_epochs
         self.population = []
         self.algorithms = algorithms
+        self.len_X = len_X
         self.random_state = random_state
         self.rnd = RandomState(self.random_state)
         self.ensemble = []
         for i in range(0, population_size):
             self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, rnd=self.rnd, random_state=self.random_state))
-
+        for i in range(0, population_size):
+            self.population[i].mutate(self.rnd)
     def generate_offspring(self, parents, children, pop_fitness, epoch):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
             children = [x for x in range(self.population_size, 2*self.population_size)]
-        
-        if (len(parents) < self.population_size):
-            diff = self.population_size - len(parents)
-            for i in range(0, diff):
-                max_fit_index_aux = np.argmax(pop_fitness)
-                self.population[children_aux[i]] = copy.deepcopy(self.population[max_fit_index_aux])
-                parents.append(children_aux[i])
-                pop_fitness = np.delete(pop_fitness, max_fit_index_aux)
-                children = np.delete(children, i)
 
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
@@ -155,9 +149,7 @@ class DiversityEnsembleClassifier:
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
     
     def fit(self, X, y, csv_file):
-        #diversity_values, fitness_values = [], []
         result_dict = dict()
-        ##print('Starting genetic algorithm...')
         kf = KFold(n_splits=5, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
         writing_results_task_obj = None
@@ -200,18 +192,33 @@ class DiversityEnsembleClassifier:
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
-            
-            #diversity_values.append(diversity)
-            #fitness_values.append(fitness)
+
             len_X = len(X)
+            if (len(selected) < self.population_size):
+                diff = self.population_size - len(selected)
+                for i in range(0, diff):
+                    extra_predictions = np.zeros([y.shape[0]])
+                    extra_classifier = Chromossome(genotypes_pool=self.algorithms, len_X=self.len_X, rnd=self.rnd, random_state=self.random_state)
+                    extra_classifier.mutate(self.rnd)
+                    for train, val in kf.split(X):
+                        extra_classifier.fit(X[train], y[train])
+                        extra_classifier.y_train_pred[val] = extra_classifier.predict(X[val])
+                        extra_predictions[val] = np.equal(extra_classifier.y_train_pred[val], y[val])
+                    extra_classifier.fitness = extra_predictions.sum()/len(extra_predictions)
+                    self.population[not_selected[i]] = extra_classifier
+                    selected.append(not_selected[i])
+                    not_selected = np.delete(not_selected, i)
+                    ensemble.append(extra_classifier)
+                    classifiers_fitness.append(extra_classifier.fitness)
+            
             ensemble_pred = np.zeros([self.population_size, len_X])
-            y_train_pred = np.zeros(len_X)
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
                 ensemble.append(chromossome.classifier)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = chromossome.y_train_pred
-                
+
+            y_train_pred = np.zeros(len_X)  
             for i in range(0, len_X):
                 pred = {}
                 for j, sel in enumerate(selected):
