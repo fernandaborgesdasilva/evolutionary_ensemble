@@ -218,11 +218,10 @@ class DiversityEnsembleClassifier:
                         extra_y_train_pred[val] = extra_classifier.predict(X[val])
                         extra_predictions[val] = np.equal(extra_y_train_pred[val], y[val])
                     extra_classifier.fitness = extra_predictions.sum()/len(extra_predictions)
+                    y_fit_pred[not_selected[i]] = extra_y_train_pred
                     self.population[not_selected[i]] = extra_classifier
                     selected.append(not_selected[i])
                     not_selected = np.delete(not_selected, i)
-                    ensemble.append(extra_classifier)
-                    classifiers_fitness.append(extra_classifier.fitness)
         
             ensemble_pred = np.zeros([self.population_size, len_X])
             for i, sel in enumerate(selected):

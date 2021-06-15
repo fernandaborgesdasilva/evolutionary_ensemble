@@ -242,7 +242,7 @@ class DiversityEnsembleClassifier:
         self.hyperparameter_proba = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
         self.columns_proba = {"value":[],"probability":[]}
         for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=algorithms, x_n_cols=x_n_cols, rnd=self.rnd, random_state=random_state))
+            self.population.append(Chromossome(genotypes_pool=self.algorithms, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state))
         for i in range(0, population_size):
             self.population[i].mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
             
@@ -251,15 +251,6 @@ class DiversityEnsembleClassifier:
         if not parents:
             parents = [x for x in range(0, self.population_size)]
             children = [x for x in range(self.population_size, 2*self.population_size)]
-        
-        if (len(parents) < self.population_size):
-            diff = self.population_size - len(parents)
-            for i in range(0, diff):
-                max_fit_index_aux = np.argmax(pop_fitness)
-                self.population[children_aux[i]] = copy.deepcopy(self.population[max_fit_index_aux])
-                parents.append(children_aux[i])
-                pop_fitness = np.delete(pop_fitness, max_fit_index_aux)
-                children = np.delete(children, i)
                     
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
@@ -365,8 +356,24 @@ class DiversityEnsembleClassifier:
             selected, diversity, fitness, pop_fitness = self.diversity_selection(all_predictions, selection_threshold)
 
             len_X = len(X)
+            if (len(selected) < self.population_size):
+                diff = self.population_size - len(selected)
+                for i in range(0, diff):
+                    extra_y_train_pred = np.zeros(len_X)
+                    extra_predictions = np.zeros([y.shape[0]])
+                    extra_classifier = Chromossome(genotypes_pool=self.algorithms, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state)
+                    extra_classifier.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)                   
+                    for train, val in kf.split(X):
+                        extra_classifier.fit(X[train][:,extra_classifier.cols], y[train])
+                        extra_y_train_pred[val] = extra_classifier.predict(X[val][:,extra_classifier.cols])
+                        extra_predictions[val] = np.equal(extra_y_train_pred[val], y[val])
+                    extra_classifier.fitness = extra_predictions.sum()/len(extra_predictions)
+                    y_fit_pred[not_selected[i]] = extra_y_train_pred
+                    self.population[not_selected[i]] = extra_classifier
+                    selected.append(not_selected[i])
+                    not_selected = np.delete(not_selected, i)
+
             ensemble_pred = np.zeros([self.population_size, len_X])
-            y_train_pred = np.zeros(len_X)
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
                 for hyper in chromossome.classifier.get_params():
@@ -404,7 +411,8 @@ class DiversityEnsembleClassifier:
                 ensemble_cols.append(chromossome.cols)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = y_fit_pred[sel]
-
+                
+            y_train_pred = np.zeros(len_X)
             for i in range(0, len_X):
                 pred = {}
                 for j, sel in enumerate(selected):
