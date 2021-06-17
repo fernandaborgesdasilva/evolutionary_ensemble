@@ -8,16 +8,16 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.preprocessing import LabelEncoder
 import numpy as np
-from numpy.random import RandomState
+from numpy.random import RandomState, SeedSequence
 import pandas as pd
+import statistics
 import operator
 import time
-import sys, getopt, os
+import sys, getopt
 import copy
 from collections import defaultdict
 from scipy.stats import truncnorm
 from joblib import Parallel, delayed
-import statistics
 from all_members_ensemble import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
@@ -28,27 +28,25 @@ import warnings
 import itertools
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
-    os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
+from sklearn.exceptions import ConvergenceWarning
+warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
 
-class Chromossome:
-    def __init__(self, genotypes_pool, x_n_cols, rnd=None, random_state=None):
-
+class Individual:
+    def __init__(self, genotypes_pool, len_X, x_n_cols, rnd=None, random_state=None):
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
         self.fitness = 0
+        self.y_train_pred = np.zeros(len_X)
         self.random_state = random_state
         self.rnd = rnd
         self.cols = []
         self.x_n_cols = x_n_cols
-        #self.mutate(self.rnd)
 
     def fit(self, X, y):
         is_fitted = True
         self.classifier.fit(X, y)
-        
+
     def predict(self, X):
         return self.classifier.predict(X)
 
@@ -216,7 +214,7 @@ class Chromossome:
                 self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
             else:
                 self.cols = rnd.choice(cols_values, n_cols, p=cols_proba_, replace=False)
-        
+            
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
@@ -230,80 +228,80 @@ class Estimator:
         return self.classifier.predict(X)
 
 class DiversityEnsembleClassifier:
-    def __init__(self, algorithms, x_n_cols, population_size = 100, max_epochs = 100, random_state=None):
+    def __init__(self, individuals, len_X, x_n_cols, population_size, num_generations, num_islands, migration_interval, migration_size, random_state):
         self.population_size = population_size
-        self.max_epochs = max_epochs
-        self.population = []
-        self.algorithms = algorithms
+        self.num_generations = num_generations
+        #self.population = []
+        self.individuals = individuals
+        self.len_X = len_X
         self.x_n_cols = x_n_cols
+        self.num_islands = num_islands
+        self.migration_interval = migration_interval
+        self.migration_size = migration_size
         self.random_state = random_state
         self.rnd = RandomState(self.random_state)
         self.ensemble = []
         self.hyperparameter_proba = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
         self.columns_proba = {"value":[],"probability":[]}
-        for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=self.algorithms, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state))
-        for i in range(0, population_size):
-            self.population[i].mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
-            
-    def generate_offspring(self, parents, children, pop_fitness, mutation_guided_before):
+        #self.islands_pop = np.empty((self.num_islands, 2*self.population_size))
+        self.islands_pop = [ [None] * 2 * self.population_size ]*self.num_islands
+        for island_id in range(0, self.num_islands):
+            for i in range(0, self.population_size):
+                self.islands_pop[island_id][i] = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state)
+            for i in range(0, self.population_size):
+                self.islands_pop[island_id][i].mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
+
+    def generate_offspring(self, island_id, parents, children, pop_fitness, mutation_guided_before):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
             children = [x for x in range(self.population_size, 2*self.population_size)]
-                    
         for i in range(0, self.population_size):
-            new_chromossome = copy.deepcopy(self.population[parents[i]])
-            new_chromossome.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba, mutation_guided_before)
-            try:
-                self.population[children[i]] = new_chromossome
-            except:
-                self.population.append(new_chromossome)
+            new_individual = copy.deepcopy(self.islands_pop[island_id][parents[i]])
+            new_individual.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba, mutation_guided_before)
+            self.islands_pop[island_id][children[i]] = new_individual
         if mutation_guided_before == 0:
             return 1
         else:
             return 0
 
-    def fit_predict_population(self, not_fitted, kfolds, X, y):
-        predictions = np.empty([y.shape[0]])
-        y_train_pred = np.empty([y.shape[0]])
-        chromossome = self.population[not_fitted]
-        for train, val in kfolds.split(X):
-            chromossome.fit(X[train][:,chromossome.cols], y[train])
-            y_train_pred[val] = chromossome.predict(X[val][:,chromossome.cols])
-            predictions[val] = np.equal(y_train_pred[val], y[val])
-        return [not_fitted, predictions, y_train_pred]
+    def fit_predict_population(self, island_id, not_fitted, predictions, kfolds, X, y):
+        for i in not_fitted:
+            individual = self.islands_pop[island_id][i]
+            for train, val in kfolds.split(X):
+                individual.fit(X[train][:,individual.cols], y[train])
+                individual.y_train_pred[val] = individual.predict(X[val][:,individual.cols])
+                predictions[i][val] = np.equal(individual.y_train_pred[val], y[val])
+        return predictions
 
-    def diversity_selection(self, predictions, selection_threshold):
+    def diversity_selection(self, island_id, predictions, selection_threshold):
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
-        target_chromossome = np.argmax(pop_fitness)
-        selected = [target_chromossome]
-        self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
+        target_individual = np.argmax(pop_fitness)
+        selected = [target_individual]
+        self.islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
         diversity  = np.zeros(2*self.population_size)
-        mean_fitness = pop_fitness[target_chromossome]
+        mean_fitness = pop_fitness[target_individual]
         distances[pop_fitness < selection_threshold] = float('-inf')
         for i in range(0, self.population_size-1):
-            distances[target_chromossome] = float('-inf')
-            d_i = np.logical_xor(predictions, predictions[target_chromossome]).sum(axis=1)
+            distances[target_individual] = float('-inf')
+            d_i = np.logical_xor(predictions, predictions[target_individual]).sum(axis=1)
             distances += d_i
-            target_chromossome = np.argmax(distances)
-            if distances[target_chromossome] == float('-inf'):
+            target_individual = np.argmax(distances)
+            if distances[target_individual] == float('-inf'):
                 break
             diversity += d_i/predictions.shape[1]
-            mean_fitness += pop_fitness[target_chromossome]
-            selected.append(target_chromossome)
-            self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
-
+            mean_fitness += pop_fitness[target_individual]
+            selected.append(target_individual)
+            self.islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
-
-    def fit(self, X, y, n_cores, csv_file):
-        diversity_values, fitness_values = [], []
+    
+    def fit(self, X, y, csv_file, island_id):
         result_dict = dict()
         kf = KFold(n_splits=5, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
-        my_event_loop = asyncio.get_event_loop()
         writing_results_task_obj = None
+        my_event_loop = asyncio.get_event_loop()
         
         header = open(csv_file, "w")
         try:
@@ -315,122 +313,104 @@ class DiversityEnsembleClassifier:
         selected = []
         not_selected = [x for x in range(0, 2*self.population_size)]
         pop_fitness = []
-        all_predictions = np.zeros([2*self.population_size, y.shape[0]])
-        y_fit_pred = np.zeros([2*self.population_size, y.shape[0]])
-        total_parallel_time = 0
-
+        predictions = np.zeros([2*self.population_size, y.shape[0]])
         frequencies = np.unique(y, return_counts=True)[1]
         selection_threshold = max(frequencies)/np.sum(frequencies)
-        stop_criteria = 0
+        #stop_criteria = 0
         prev_ensemble_accuracy = 0
         best_ensemble_accuracy = 0
         best_ensemble = []
         best_classifiers_fitness = []
         mutation_guided_before = 1
-
-        for epoch in range(self.max_epochs):
+        
+        for epoch in range(self.migration_interval):
             now = time.time()
             struct_now = time.localtime(now)
             mlsec = repr(now).split('.')[1][:3]
             start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             time_aux = int(round(now * 1000))
-
-            if stop_criteria == 10:
-                break
-
+            #if stop_criteria == 10:
+            #    break
             ensemble = []
             ensemble_cols = []
             classifiers_fitness = []
-
-            mutation_guided_before = self.generate_offspring(selected, not_selected, pop_fitness, mutation_guided_before)
-
-            parallel_time_aux = int(round(time.time() * 1000))
-            backend = 'loky'
-            fit_predictions = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit_predict_population)(item, kf, X, y) for item in not_selected)
-            total_parallel_time = total_parallel_time + (int(round(time.time() * 1000)) - parallel_time_aux)
-            
-            for i in fit_predictions:
-                all_predictions[i[0]] = i[1]
-                y_fit_pred[i[0]] = i[2]
-
-            selected, diversity, fitness, pop_fitness = self.diversity_selection(all_predictions, selection_threshold)
+            #This step generates new individuals by mutating the selected ones in the generation before
+            mutation_guided_before = self.generate_offspring(island_id, selected, not_selected, pop_fitness, mutation_guided_before)
+            predictions = self.fit_predict_population(island_id, not_selected, predictions, kf, X, y)
+            #This selection step of individuals is guided by diversity criteria
+            selected, diversity, fitness, pop_fitness = self.diversity_selection(island_id, predictions, selection_threshold)
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-            
             len_X = len(X)
             if (len(selected) < self.population_size):
                 diff = self.population_size - len(selected)
                 for i in range(0, diff):
-                    extra_y_train_pred = np.zeros(len_X)
                     extra_predictions = np.zeros([y.shape[0]])
-                    extra_classifier = Chromossome(genotypes_pool=self.algorithms, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state)
-                    extra_classifier.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)                   
+                    extra_classifier = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state)
+                    extra_classifier.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
                     for train, val in kf.split(X):
                         extra_classifier.fit(X[train][:,extra_classifier.cols], y[train])
-                        extra_y_train_pred[val] = extra_classifier.predict(X[val][:,extra_classifier.cols])
-                        extra_predictions[val] = np.equal(extra_y_train_pred[val], y[val])
+                        extra_classifier.y_train_pred[val] = extra_classifier.predict(X[val][:,extra_classifier.cols])
+                        extra_predictions[val] = np.equal(extra_classifier.y_train_pred[val], y[val])
                     extra_classifier.fitness = extra_predictions.sum()/len(extra_predictions)
-                    y_fit_pred[not_selected[i]] = extra_y_train_pred
-                    self.population[not_selected[i]] = extra_classifier
+                    self.islands_pop[island_id][not_selected[i]] = extra_classifier
                     selected.append(not_selected[i])
                     not_selected = np.delete(not_selected, i)
-
+            #The weight of the probability of a value of hyperparameter being chosen is increased in this step
             ensemble_pred = np.zeros([self.population_size, len_X])
             for i, sel in enumerate(selected):
-                chromossome = self.population[sel]
-                for hyper in chromossome.classifier.get_params():
-                    if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
-                        if isinstance(chromossome.classifier.get_params()[hyper], float):
-                            value = round(chromossome.classifier.get_params()[hyper], 3)
+                individual = self.islands_pop[island_id][sel]
+                for hyper in individual.classifier.get_params():
+                    if hyper in self.individuals[individual.classifier_algorithm].keys():
+                        if isinstance(individual.classifier.get_params()[hyper], float):
+                            value = round(individual.classifier.get_params()[hyper], 3)
                         else:
-                            value = chromossome.classifier.get_params()[hyper]
-                        if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
-                            if value in self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]['value']:
-                                index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].index(value)
-                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][index] += chromossome.fitness
+                            value = individual.classifier.get_params()[hyper]
+                        if self.hyperparameter_proba[individual.classifier_algorithm].get(hyper, 0) != 0:
+                            if value in self.hyperparameter_proba[individual.classifier_algorithm][hyper]['value']:
+                                index = self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].index(value)
+                                self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"][index] += individual.fitness
                             else:
-                                if len(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"]) < 20:
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                                if len(self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"]) < 20:
+                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].append(value)
+                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
                                 else:
-                                    min_proba = min(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"])
-                                    min_proba_index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].index(min_proba)
-                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][min_proba_index]
-                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"][min_proba_index]
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                                    min_proba = min(self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"])
+                                    min_proba_index = self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].index(min_proba)
+                                    del self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"][min_proba_index]
+                                    del self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"][min_proba_index]
+                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].append(value)
+                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
                         else:
-                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
-                for col in chromossome.cols:
+                            self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].append(value)
+                            self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
+                for col in individual.cols:
                     if col in self.columns_proba["value"]:
                         index = self.columns_proba["value"].index(col)
-                        self.columns_proba["probability"][index] += chromossome.fitness
+                        self.columns_proba["probability"][index] += individual.fitness
                     else:
                         self.columns_proba["value"].append(col)
-                        self.columns_proba["probability"].append(chromossome.fitness)                
-                ensemble.append(chromossome.classifier)
-                ensemble_cols.append(chromossome.cols)
-                classifiers_fitness.append(chromossome.fitness)
-                ensemble_pred[i] = y_fit_pred[sel]
-                
-            y_train_pred = np.zeros(len_X)
+                        self.columns_proba["probability"].append(individual.fitness)
+                ensemble.append(individual.classifier)
+                ensemble_cols.append(individual.cols)
+                classifiers_fitness.append(individual.fitness)
+                ensemble_pred[i] = individual.y_train_pred
+            #Here the weighted voting is used to combine the classifiers' outputs by considering the strength of the classifiers prior to voting
+            y_train_pred = np.zeros(len_X) 
             for i in range(0, len_X):
                 pred = {}
                 for j, sel in enumerate(selected):
                     if ensemble_pred[j][i] in pred:
-                        pred[ensemble_pred[j][i]] += self.population[sel].fitness
+                        pred[ensemble_pred[j][i]] += self.islands_pop[island_id][sel].fitness
                     else:
-                        pred[ensemble_pred[j][i]]  = self.population[sel].fitness
+                        pred[ensemble_pred[j][i]] = self.islands_pop[island_id][sel].fitness
                 y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
-
             ensemble_accuracy = accuracy_score(y, y_train_pred)
-                
+
             now = time.time()
             struct_now = time.localtime(now)
             mlsec = repr(now).split('.')[1][:3]
             end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
             total_time = (int(round(now * 1000)) - time_aux)
-            
             if (epoch%100 == 0 and epoch != 0):
                 if (writing_results_task_obj is not None):
                     my_event_loop.run_until_complete(writing_results_task_obj)
@@ -442,29 +422,40 @@ class DiversityEnsembleClassifier:
                                        "diversity":diversity,
                                        "fitness":fitness,
                                        "ensemble_accuracy":ensemble_accuracy,
-                                       "ensemble":ensemble, 
+                                       "ensemble":ensemble,
                                        "classifiers_accuracy":classifiers_fitness,
                                        "ensemble_cols":ensemble_cols
-                                       }})                
-            if prev_ensemble_accuracy != 0:
-                increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
-                if (increase_accuracy < 0.5):
-                    stop_criteria = stop_criteria + 1
-                else:
-                    stop_criteria = 0
-            prev_ensemble_accuracy = ensemble_accuracy
-            
+                                       }})
+            #if prev_ensemble_accuracy != 0:
+            #    increase_accuracy = ((ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
+            #    if (increase_accuracy < 0.5):
+            #        stop_criteria = stop_criteria + 1
+            #    else:
+            #        stop_criteria = 0
+            #prev_ensemble_accuracy = ensemble_accuracy
+
             if best_ensemble_accuracy < ensemble_accuracy:
                 best_ensemble_accuracy = ensemble_accuracy
                 best_ensemble = ensemble
                 best_classifiers_fitness = classifiers_fitness
-            
+
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
         result_dict = dict()
-        print("\n>>>>> Parallel step processing time = %i" % (total_parallel_time))
+        return [best_ensemble, best_classifiers_fitness, best_ensemble_accuracy]
+
+    def fit_islands(self, X, y, csv_file_name_beg, n_cores):
+        best_ensemble_accuracy = 0
+        backend = 'loky'
+        for iteration in range(round(self.num_generations/self.migration_interval)):
+            csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(island) + csv_file_name_end, island) for island in range(0, self.num_islands))
+            for island_results in fit_results:
+                if best_ensemble_accuracy < island_results[2]:
+                    best_ensemble = island_results[0]
+                    best_classifiers_fitness = island_results[1]
         return best_ensemble, best_classifiers_fitness
-    
+
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
         classifiers_fitness_it = 0
         for estimator in ensemble:
@@ -477,8 +468,9 @@ class DiversityEnsembleClassifier:
         len_X = len(X)
         predictions = np.zeros((self.population_size, len_X))
         y = np.zeros(len_X)
-        for chromossome in range(0, self.population_size):
-            predictions[chromossome] = self.ensemble[chromossome].predict(X)
+        for individual in range(0, self.population_size):
+            predictions[individual] = self.ensemble[individual].predict(X)
+        #Here the weighted voting is used to combine the classifiers' outputs by considering the strength of the classifiers prior to voting
         for i in range(0, len_X):
             pred = {}
             for j in range(0, self.population_size):
@@ -488,26 +480,29 @@ class DiversityEnsembleClassifier:
                     pred[predictions[j][i]]  = self.ensemble[j].fitness
             y[i] = max(pred.items(), key=operator.itemgetter(1))[0]
         return y
-    
+
 async def writing_results_task(result_dict, csv_file):
     async with AIOFile(csv_file, 'a') as afp:
         writer = Writer(afp)
         await writer(pd.DataFrame.from_dict(result_dict, orient='index').to_csv(header=False, index=None))
         await afp.fsync()
-    
-def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
+
+def compare_results(data, target, ensemble_size, outputfile, num_generations, num_islands, migration_interval, migration_size, n_cores):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = [], [], [], [], []
-    sum_total_iter_time = []
     fit_total_time = 0
-    alg = gen_members(data.shape)
+    individuals = gen_members(data.shape)
+    sum_total_iter_time = []
     
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
-        text_file.write(' PDCE with guided mutation (cols as gene version) ')
+        text_file.write(' DCE - Island Model ')
         text_file.write('*'*60)
-        text_file.write('\n\nn_estimators = %i' % (n_estimators))
-        text_file.write('\nstop_time = %i' % (stop_time))
+        text_file.write('\n\nensemble_size = %i' % (ensemble_size))
+        text_file.write('\nnum_generations = %i' % (num_generations))
+        text_file.write('\nnum_islands = %i' % (num_islands))
+        text_file.write('\nmigration_interval = %i' % (migration_interval))
+        text_file.write('\nmigration_sizel = %i' % (migration_size))
         fold = 0
         kf = KFold(n_splits=5, random_state=42)
         for train, val in kf.split(data):
@@ -515,15 +510,21 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
             for i in range(0, 10):
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file = 'pdce_col_as_gene_guided_fold_' + str(fold) + '_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+                #csv_file = 'dce_island_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+                csv_file_name_beg = 'dce_island_fold_' + str(fold) + '_iter_' + str(i)
                 print('\n\nIteration = ',i)
                 text_file.write("\n\nIteration = %i" % (i))
-                ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg,
+                ensemble_classifier = DiversityEnsembleClassifier(individuals=individuals,
+                                                                  len_X = len(train),
                                                                   x_n_cols = data[train].shape[1],
-                                                                  population_size=n_estimators, 
-                                                                  max_epochs=stop_time,
+                                                                  population_size=ensemble_size, 
+                                                                  num_generations=num_generations,
+                                                                  num_islands = num_islands,
+                                                                  migration_interval = migration_interval,
+                                                                  migration_size = migration_size,
                                                                   random_state=i*10)
-                ensemble, classifiers_fitness = ensemble_classifier.fit(data[train], target[train], n_cores, csv_file)
+                #ensemble, classifiers_fitness = ensemble_classifier.fit(data[train], target[train], csv_file_name_beg)
+                ensemble, classifiers_fitness = ensemble_classifier.fit_islands(data[train], target[train], csv_file_name_beg, n_cores)
                 ensemble_classifier.fit_ensemble(data[train], target[train], ensemble, classifiers_fitness)
                 fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
                 text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
@@ -563,7 +564,6 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                 total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
                 text_file.write("\nIteration done in %i" % (total_iter_time))
                 text_file.write(" ms")
-                print("\n>>>>> Iteration done in %i" % (total_iter_time))
                 sum_total_iter_time.append(total_iter_time)
             fold = fold + 1
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
@@ -584,39 +584,58 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write(" ms")
         text_file.write("\nStandard deviation of iterations duration = %i" % statistics.stdev(sum_total_iter_time))
         text_file.write(" ms\n")
-            
+        
 def main(argv):
     inputfile = ''
     outputfile = ''
-    n_estimators = ''
-    stop_time = ''
-    save_results = 'diversity_ensemble_results_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + ".csv"
+    ensemble_size = ''
+    num_generations = ''
+    num_islands = ''
+    migration_interval = ''
+    migration_size = ''
+    n_cores = ''
     try:
-        opts, args = getopt.getopt(argv,"h:i:o:e:s:c:",["ifile=","ofile=","enumber=","stoptime=","cores="])
+        opts, args = getopt.getopt(argv,"h:i:o:e:g:n:m:s:c:",["ifile=",
+                                                              "ofile=",
+                                                              "esize=",
+                                                              "ngenerations=",
+                                                              "nislands=",
+                                                              "minterval=",
+                                                              "msize=",
+                                                              "ncores="])
     except getopt.GetoptError:
-        print('pdce_col_as_gene_guided_mutation.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time> -c <n_cores>')
+        print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores>')
         sys.exit(2)
     if opts == []:
-        print('pdce_col_as_gene_guided_mutation.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time> -c <n_cores>')
+        print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('pdce_col_as_gene_guided_mutation.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time> -c <n_cores>')
+            print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
         elif opt in ("-o", "--ofile"):
             outputfile = arg
-        elif opt in ("-e", "--enumber"):
-            n_estimators = arg
-        elif opt in ("-s", "--stoptime"):
-            stop_time = arg
-        elif opt in ("-c", "--cores"):
+        elif opt in ("-e", "--esize"):
+            ensemble_size = arg
+        elif opt in ("-g", "--ngenerations"):
+            num_generations = arg
+        elif opt in ("-n", "--nislands"):
+            num_islands = arg
+        elif opt in ("-m", "--minterval"):
+            migration_interval = arg
+        elif opt in ("-s", "--msize"):
+            migration_size = arg
+        elif opt in ("-c", "--ncores"):
             n_cores = arg
     print('Input file is ', inputfile)
     print('Output file is ', outputfile)
-    print('The number of estimators is ', n_estimators)
-    print('The number of iterations is ', stop_time)
+    print('The ensemble size is ', ensemble_size)
+    print('The number of generations is ', num_generations)
+    print('The number of islands is ', num_islands)
+    print('The migration interval is ', migration_interval)
+    print('The migration size is ', migration_size)
     print('The number of cores is ', n_cores)
     
     now = time.time()
@@ -626,55 +645,65 @@ def main(argv):
     print('\nStart time = ', start_time)
     print('\n')
     
-    
     if inputfile == "iris":
         dataset = datasets.load_iris()
-        print('Runing PDCE with guided mutation (cols as gene version)...')
+        print('Runing DCE - Island Model...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
-                        n_estimators=int(n_estimators), 
+                        ensemble_size=int(ensemble_size), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
+                        num_generations=int(num_generations),
+                        num_islands=int(num_islands),
+                        migration_interval=int(migration_interval),
+                        migration_size=int(migration_size),
                         n_cores=int(n_cores)
-                       )
+                        )
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
-        print('Runing PDCE with guided mutation (cols as gene version)...')
+        print('Runing DCE - Island Model...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
-                        n_estimators=int(n_estimators), 
+                        ensemble_size=int(ensemble_size), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
+                        num_generations=int(num_generations),
+                        num_islands=int(num_islands),
+                        migration_interval=int(migration_interval),
+                        migration_size=int(migration_size),
                         n_cores=int(n_cores)
-                       )
+                        )
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
-        print('Runing PDCE with guided mutation (cols as gene version)...')
+        print('Runing DCE - Island Model...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
-                        n_estimators=int(n_estimators), 
+                        ensemble_size=int(ensemble_size), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
+                        num_generations=int(num_generations),
+                        num_islands=int(num_islands),
+                        migration_interval=int(migration_interval),
+                        migration_size=int(migration_size),
                         n_cores=int(n_cores)
-                       )
+                        )
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
         dataset.iloc[:, -1] = le.fit_transform(dataset.iloc[:, -1])
-        print('Runing PDCE with guided mutation (cols as gene version)...')
+        print('Runing DCE - Island Model...')
         compare_results(data=dataset.iloc[:, 0:-1].values, 
                         target=dataset.iloc[:, -1].values, 
-                        n_estimators=int(n_estimators), 
+                        ensemble_size=int(ensemble_size), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
+                        num_generations=int(num_generations),
+                        num_islands=int(num_islands),
+                        migration_interval=int(migration_interval),
+                        migration_size=int(migration_size),
                         n_cores=int(n_cores)
-                       )
+                        )
     now = time.time()
     struct_now = time.localtime(now)
     mlsec = repr(now).split('.')[1][:3]
     end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
     print('\nEnd time = ', end_time)
-    
     print('\nIt is finished!')
 
 if __name__ == "__main__":

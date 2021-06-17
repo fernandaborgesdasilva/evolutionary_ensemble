@@ -169,7 +169,9 @@ class DiversityEnsembleClassifier:
         finally:
             header.close()
 
-        selected, not_selected, pop_fitness = [], [], []
+        selected = []
+        not_selected = [x for x in range(0, 2*self.population_size)]
+        pop_fitness = []
         predictions = np.zeros([2*self.population_size, y.shape[0]])
 
         frequencies = np.unique(y, return_counts=True)[1]
@@ -194,11 +196,11 @@ class DiversityEnsembleClassifier:
             ensemble = []
             classifiers_fitness = []
             
-            not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
             self.generate_offspring(selected, not_selected, pop_fitness)
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
+            not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
 
             len_X = len(X)
             if (len(selected) < self.population_size):
