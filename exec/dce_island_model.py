@@ -13,7 +13,7 @@ import pandas as pd
 import statistics
 import operator
 import time
-import sys, getopt
+import sys, getopt, os
 import copy
 from collections import defaultdict
 from scipy.stats import truncnorm
@@ -28,8 +28,9 @@ import warnings
 import itertools
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-from sklearn.exceptions import ConvergenceWarning
-warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+    os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
 
 class Individual:
     def __init__(self, genotypes_pool, len_X, x_n_cols, rnd=None, random_state=None):
@@ -231,7 +232,6 @@ class DiversityEnsembleClassifier:
     def __init__(self, individuals, len_X, x_n_cols, population_size, num_generations, num_islands, migration_interval, migration_size, random_state):
         self.population_size = population_size
         self.num_generations = num_generations
-        #self.population = []
         self.individuals = individuals
         self.len_X = len_X
         self.x_n_cols = x_n_cols
@@ -239,47 +239,49 @@ class DiversityEnsembleClassifier:
         self.migration_interval = migration_interval
         self.migration_size = migration_size
         self.random_state = random_state
-        self.rnd = RandomState(self.random_state)
+        np.random.seed(self.random_state)
         self.ensemble = []
-        self.hyperparameter_proba = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-        self.columns_proba = {"value":[],"probability":[]}
-        #self.islands_pop = np.empty((self.num_islands, 2*self.population_size))
-        self.islands_pop = [ [None] * 2 * self.population_size ]*self.num_islands
+        self.hyperparameter_proba = [defaultdict(lambda: defaultdict(lambda: defaultdict(list)))] * self.num_islands
+        self.columns_proba = [{"value":[],"probability":[]}] * self.num_islands
+        self.islands_results_before_migrate =  [ [None] * 6 ] * self.num_islands
+        self.islands_pop_rnd = [None] * self.num_islands
+        self.islands_pop = [ [None] * 2 * self.population_size ] * self.num_islands
         for island_id in range(0, self.num_islands):
+            self.islands_pop_rnd[island_id] = RandomState((island_id + 1)*(self.random_state + 1))
             for i in range(0, self.population_size):
-                self.islands_pop[island_id][i] = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state)
+                self.islands_pop[island_id][i] = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.islands_pop_rnd[island_id], random_state=self.random_state)
             for i in range(0, self.population_size):
-                self.islands_pop[island_id][i].mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
-
-    def generate_offspring(self, island_id, parents, children, pop_fitness, mutation_guided_before):
+                self.islands_pop[island_id][i].mutate(self.islands_pop_rnd[island_id], self.hyperparameter_proba[island_id], self.columns_proba[island_id])
+                
+    def generate_offspring(self, island_id, parents, children, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
             children = [x for x in range(self.population_size, 2*self.population_size)]
         for i in range(0, self.population_size):
-            new_individual = copy.deepcopy(self.islands_pop[island_id][parents[i]])
-            new_individual.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba, mutation_guided_before)
-            self.islands_pop[island_id][children[i]] = new_individual
+            new_individual = copy.deepcopy(aux_islands_pop[island_id][parents[i]])
+            new_individual.mutate(self.islands_pop_rnd[island_id], aux_hyperparameter_proba[island_id], aux_columns_proba[island_id], mutation_guided_before)
+            aux_islands_pop[island_id][children[i]] = new_individual
         if mutation_guided_before == 0:
             return 1
         else:
             return 0
 
-    def fit_predict_population(self, island_id, not_fitted, predictions, kfolds, X, y):
+    def fit_predict_population(self, island_id, not_fitted, predictions, kfolds, X, y, aux_islands_pop):
         for i in not_fitted:
-            individual = self.islands_pop[island_id][i]
+            individual = aux_islands_pop[island_id][i]
             for train, val in kfolds.split(X):
                 individual.fit(X[train][:,individual.cols], y[train])
                 individual.y_train_pred[val] = individual.predict(X[val][:,individual.cols])
                 predictions[i][val] = np.equal(individual.y_train_pred[val], y[val])
         return predictions
 
-    def diversity_selection(self, island_id, predictions, selection_threshold):
+    def diversity_selection(self, island_id, predictions, selection_threshold, aux_islands_pop):
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
         target_individual = np.argmax(pop_fitness)
         selected = [target_individual]
-        self.islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
+        aux_islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
         diversity  = np.zeros(2*self.population_size)
         mean_fitness = pop_fitness[target_individual]
         distances[pop_fitness < selection_threshold] = float('-inf')
@@ -293,8 +295,8 @@ class DiversityEnsembleClassifier:
             diversity += d_i/predictions.shape[1]
             mean_fitness += pop_fitness[target_individual]
             selected.append(target_individual)
-            self.islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
-        return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
+            aux_islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
+        return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size)
     
     def fit(self, X, y, csv_file, island_id):
         result_dict = dict()
@@ -309,19 +311,30 @@ class DiversityEnsembleClassifier:
             header.write('\n')
         finally:
             header.close()
-
-        selected = []
-        not_selected = [x for x in range(0, 2*self.population_size)]
-        pop_fitness = []
+        
         predictions = np.zeros([2*self.population_size, y.shape[0]])
         frequencies = np.unique(y, return_counts=True)[1]
         selection_threshold = max(frequencies)/np.sum(frequencies)
-        #stop_criteria = 0
-        prev_ensemble_accuracy = 0
-        best_ensemble_accuracy = 0
-        best_ensemble = []
-        best_classifiers_fitness = []
-        mutation_guided_before = 1
+        aux_islands_pop = self.islands_pop
+        aux_hyperparameter_proba = self.hyperparameter_proba
+        aux_columns_proba = self.columns_proba
+        if self.islands_results_before_migrate[island_id][0] is None:
+            selected = []
+            not_selected = [x for x in range(0, 2*self.population_size)]
+            #stop_criteria = 0
+            #prev_ensemble_accuracy = 0
+            best_ensemble_accuracy = 0
+            best_ensemble = []
+            best_classifiers_fitness = []
+            mutation_guided_before = 1
+        else:
+            best_ensemble = self.islands_results_before_migrate[island_id][0]
+            best_classifiers_fitness = self.islands_results_before_migrate[island_id][1]
+            best_ensemble_accuracy = self.islands_results_before_migrate[island_id][2]
+            classifiers_fitness = self.islands_results_before_migrate[island_id][3]
+            selected = self.islands_results_before_migrate[island_id][4]
+            mutation_guided_before = self.islands_results_before_migrate[island_id][5]
+            not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
         
         for epoch in range(self.migration_interval):
             now = time.time()
@@ -335,61 +348,61 @@ class DiversityEnsembleClassifier:
             ensemble_cols = []
             classifiers_fitness = []
             #This step generates new individuals by mutating the selected ones in the generation before
-            mutation_guided_before = self.generate_offspring(island_id, selected, not_selected, pop_fitness, mutation_guided_before)
-            predictions = self.fit_predict_population(island_id, not_selected, predictions, kf, X, y)
+            mutation_guided_before = self.generate_offspring(island_id, selected, not_selected, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba)
+            predictions = self.fit_predict_population(island_id, not_selected, predictions, kf, X, y, aux_islands_pop)
             #This selection step of individuals is guided by diversity criteria
-            selected, diversity, fitness, pop_fitness = self.diversity_selection(island_id, predictions, selection_threshold)
+            selected, diversity, fitness = self.diversity_selection(island_id, predictions, selection_threshold, aux_islands_pop)
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
             len_X = len(X)
             if (len(selected) < self.population_size):
                 diff = self.population_size - len(selected)
                 for i in range(0, diff):
                     extra_predictions = np.zeros([y.shape[0]])
-                    extra_classifier = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.rnd, random_state=self.random_state)
-                    extra_classifier.mutate(self.rnd, self.hyperparameter_proba, self.columns_proba)
+                    extra_classifier = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.islands_pop_rnd[island_id], random_state=self.random_state)
+                    extra_classifier.mutate(self.islands_pop_rnd[island_id], aux_hyperparameter_proba[island_id], aux_columns_proba[island_id])
                     for train, val in kf.split(X):
                         extra_classifier.fit(X[train][:,extra_classifier.cols], y[train])
                         extra_classifier.y_train_pred[val] = extra_classifier.predict(X[val][:,extra_classifier.cols])
                         extra_predictions[val] = np.equal(extra_classifier.y_train_pred[val], y[val])
                     extra_classifier.fitness = extra_predictions.sum()/len(extra_predictions)
-                    self.islands_pop[island_id][not_selected[i]] = extra_classifier
+                    aux_islands_pop[island_id][not_selected[i]] = extra_classifier
                     selected.append(not_selected[i])
                     not_selected = np.delete(not_selected, i)
             #The weight of the probability of a value of hyperparameter being chosen is increased in this step
             ensemble_pred = np.zeros([self.population_size, len_X])
             for i, sel in enumerate(selected):
-                individual = self.islands_pop[island_id][sel]
+                individual = aux_islands_pop[island_id][sel]
                 for hyper in individual.classifier.get_params():
                     if hyper in self.individuals[individual.classifier_algorithm].keys():
                         if isinstance(individual.classifier.get_params()[hyper], float):
                             value = round(individual.classifier.get_params()[hyper], 3)
                         else:
                             value = individual.classifier.get_params()[hyper]
-                        if self.hyperparameter_proba[individual.classifier_algorithm].get(hyper, 0) != 0:
-                            if value in self.hyperparameter_proba[individual.classifier_algorithm][hyper]['value']:
-                                index = self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].index(value)
-                                self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"][index] += individual.fitness
+                        if aux_hyperparameter_proba[island_id][individual.classifier_algorithm].get(hyper, 0) != 0:
+                            if value in aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]['value']:
+                                index = aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["value"].index(value)
+                                aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"][index] += individual.fitness
                             else:
-                                if len(self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"]) < 20:
-                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
+                                if len(aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["value"]) < 20:
+                                    aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["value"].append(value)
+                                    aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
                                 else:
-                                    min_proba = min(self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"])
-                                    min_proba_index = self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].index(min_proba)
-                                    del self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"][min_proba_index]
-                                    del self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"][min_proba_index]
-                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
+                                    min_proba = min(aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"])
+                                    min_proba_index = aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"].index(min_proba)
+                                    del aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"][min_proba_index]
+                                    del aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["value"][min_proba_index]
+                                    aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["value"].append(value)
+                                    aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
                         else:
-                            self.hyperparameter_proba[individual.classifier_algorithm][hyper]["value"].append(value)
-                            self.hyperparameter_proba[individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
+                            aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["value"].append(value)
+                            aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]["probability"].append(individual.fitness)
                 for col in individual.cols:
-                    if col in self.columns_proba["value"]:
-                        index = self.columns_proba["value"].index(col)
-                        self.columns_proba["probability"][index] += individual.fitness
+                    if col in aux_columns_proba[island_id]["value"]:
+                        index = aux_columns_proba[island_id]["value"].index(col)
+                        aux_columns_proba[island_id]["probability"][index] += individual.fitness
                     else:
-                        self.columns_proba["value"].append(col)
-                        self.columns_proba["probability"].append(individual.fitness)
+                        aux_columns_proba[island_id]["value"].append(col)
+                        aux_columns_proba[island_id]["probability"].append(individual.fitness)
                 ensemble.append(individual.classifier)
                 ensemble_cols.append(individual.cols)
                 classifiers_fitness.append(individual.fitness)
@@ -400,9 +413,9 @@ class DiversityEnsembleClassifier:
                 pred = {}
                 for j, sel in enumerate(selected):
                     if ensemble_pred[j][i] in pred:
-                        pred[ensemble_pred[j][i]] += self.islands_pop[island_id][sel].fitness
+                        pred[ensemble_pred[j][i]] += aux_islands_pop[island_id][sel].fitness
                     else:
-                        pred[ensemble_pred[j][i]] = self.islands_pop[island_id][sel].fitness
+                        pred[ensemble_pred[j][i]] = aux_islands_pop[island_id][sel].fitness
                 y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
             ensemble_accuracy = accuracy_score(y, y_train_pred)
 
@@ -442,18 +455,68 @@ class DiversityEnsembleClassifier:
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
         result_dict = dict()
-        return [best_ensemble, best_classifiers_fitness, best_ensemble_accuracy]
+        return [best_ensemble, best_classifiers_fitness, best_ensemble_accuracy, classifiers_fitness, selected, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba]
 
     def fit_islands(self, X, y, csv_file_name_beg, n_cores):
         best_ensemble_accuracy = 0
+        csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
         backend = 'loky'
-        for iteration in range(round(self.num_generations/self.migration_interval)):
+        for iteration in range(0, round(self.num_generations/self.migration_interval)):
             csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(island) + csv_file_name_end, island) for island in range(0, self.num_islands))
-            for island_results in fit_results:
-                if best_ensemble_accuracy < island_results[2]:
-                    best_ensemble = island_results[0]
-                    best_classifiers_fitness = island_results[1]
+            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, isl) for isl in range(0, self.num_islands))
+            
+            for island_id, island in enumerate(fit_results):
+                self.islands_pop[island_id] = island[6][island_id]
+                self.hyperparameter_proba[island_id] = island[7][island_id]
+                self.columns_proba[island_id] = island[8][island_id]
+            
+            print("\n\n\n\nDEBUG DEBUG DEBUG COMECO DA MIGRACAO ")
+            ring_islands = np.random.choice(self.num_islands, self.num_islands, replace=False)
+            print("\nDEBUG DEBUG DEBUG ring_islands = ", ring_islands)
+            for island_id, island in enumerate(fit_results):
+                print("\nDEBUG DEBUG DEBUG island_id = ",island_id)
+                right_neighbor_index = list(ring_islands).index(island_id) + 1
+                if right_neighbor_index >= len(ring_islands):
+                    right_neighbor_index = 0
+                neighbor_island = ring_islands[right_neighbor_index]
+                print("\nDEBUG DEBUG DEBUG neighbor_island = ",neighbor_island)
+
+                last_best_ensemble = island[0]
+                last_best_classifiers_fitness = island[1]
+                last_best_ensemble_accuracy = island[2]
+                last_classifiers_fitness = island[3]
+                last_selected = island[4]
+                last_mutation_guided_before = island[5]
+                
+                self.islands_results_before_migrate[island_id][0] = last_best_ensemble
+                self.islands_results_before_migrate[island_id][1] = last_best_classifiers_fitness
+                self.islands_results_before_migrate[island_id][2] = last_best_ensemble_accuracy
+                self.islands_results_before_migrate[island_id][3] = last_classifiers_fitness
+                self.islands_results_before_migrate[island_id][4] = last_selected
+                self.islands_results_before_migrate[island_id][5] = last_mutation_guided_before
+
+                #print("\nDEBUG DEBUG DEBUG self.islands_pop = ",island[6][island_id][0].classifier)
+                #print("\nDEBUG DEBUG DEBUG self.hyperparameter_proba = ",island[7][island_id])
+                #print("\nDEBUG DEBUG DEBUG self.columns_proba = ",island[8][island_id])
+                #print("\nDEBUG DEBUG DEBUG best_ensemble = ",self.islands_results_before_migrate[island_id][0])
+                #print("\nDEBUG DEBUG DEBUG best_classifiers_fitness = ",self.islands_results_before_migrate[island_id][1])
+                #print("\nDEBUG DEBUG DEBUG best_ensemble_accuracy = ",self.islands_results_before_migrate[island_id][2])
+                #print("\nDEBUG DEBUG DEBUG classifiers_fitness = ",self.islands_results_before_migrate[island_id][3])
+                #print("\nDEBUG DEBUG DEBUG selected = ",self.islands_results_before_migrate[island_id][4])
+                #print("\nDEBUG DEBUG DEBUG mutation_guided_before = ",self.islands_results_before_migrate[island_id][5])
+
+                last_pop_classifiers_fitness = np.array(last_classifiers_fitness)
+                idx_individuals_to_migrate = (-last_pop_classifiers_fitness).argsort()[:self.migration_size]
+                neighbor_last_pop_classifiers_fitness = np.array(self.islands_results_before_migrate[neighbor_island][3])
+                idx_individuals_to_delete = (neighbor_last_pop_classifiers_fitness).argsort()[:self.migration_size]
+                for individual in range(0,self.migration_size):
+                    print("\n >>>>>>>>>>>>>>>>>>> MIGRACAO ANTES = ",self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]].classifier)
+                    self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]] = self.islands_pop[island_id][idx_individuals_to_migrate[individual]]
+                    print("\n >>>>>>>>>>>>>>>>>>> MIGRACAO DEPOIS = ",self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]].classifier)
+                if best_ensemble_accuracy < last_best_ensemble_accuracy:
+                    best_ensemble = last_best_ensemble
+                    best_classifiers_fitness = last_best_classifiers_fitness
+
         return best_ensemble, best_classifiers_fitness
 
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
