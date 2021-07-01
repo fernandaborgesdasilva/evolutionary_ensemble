@@ -32,6 +32,22 @@ if not sys.warnoptions:
     warnings.simplefilter("ignore")
     os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
 
+import sys
+import pdb
+
+class ForkedPdb(pdb.Pdb):
+    """A Pdb subclass that may be used
+    from a forked multiprocessing child
+
+    """
+    def interaction(self, *args, **kwargs):
+        _stdin = sys.stdin
+        try:
+            sys.stdin = open('/dev/stdin')
+            pdb.Pdb.interaction(self, *args, **kwargs)
+        finally:
+            sys.stdin = _stdin
+
 class Individual:
     def __init__(self, genotypes_pool, len_X, x_n_cols, rnd=None, random_state=None):
         self.genotypes_pool = genotypes_pool
@@ -119,7 +135,14 @@ class Individual:
                     else:
                         #it chooses between the values already used
                         if isinstance(h_range[0], str):
-                            param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                            #param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                            try:
+                                param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                            except:
+                                with open('/tmp/teste','w') as f:
+                                    print(hyper_values, file=f)
+                                    print(hyper_proba_, file=f)
+                                ForkedPdb().set_trace()
                         elif isinstance(h_range[0], float):
                             mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
                             sigma = (max(h_range) - min(h_range))/80
@@ -241,9 +264,11 @@ class DiversityEnsembleClassifier:
         self.random_state = random_state
         np.random.seed(self.random_state)
         self.ensemble = []
-        self.hyperparameter_proba = [defaultdict(lambda: defaultdict(lambda: defaultdict(list)))] * self.num_islands
-        self.columns_proba = [{"value":[],"probability":[]}] * self.num_islands
-        self.islands_results_before_migrate =  [ [None] * 6 ] * self.num_islands
+        #self.hyperparameter_proba = [defaultdict(lambda: defaultdict(lambda: defaultdict(list)))] * self.num_islands
+        self.hyperparameter_proba = [defaultdict(lambda: defaultdict(lambda: defaultdict(list))) for _ in range(self.num_islands)]
+        #self.columns_proba = [{"value":[],"probability":[]}] * self.num_islands
+        self.columns_proba = [{"value":[],"probability":[]} for _ in range(self.num_islands)]
+        self.islands_results_before_migrate = [ [None] * 6 ] * self.num_islands
         self.islands_pop_rnd = [None] * self.num_islands
         self.islands_pop = [ [None] * 2 * self.population_size ] * self.num_islands
         for island_id in range(0, self.num_islands):
@@ -252,7 +277,7 @@ class DiversityEnsembleClassifier:
                 self.islands_pop[island_id][i] = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.islands_pop_rnd[island_id], random_state=self.random_state)
             for i in range(0, self.population_size):
                 self.islands_pop[island_id][i].mutate(self.islands_pop_rnd[island_id], self.hyperparameter_proba[island_id], self.columns_proba[island_id])
-                
+
     def generate_offspring(self, island_id, parents, children, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba):
         children_aux = children
         if not parents:
@@ -315,9 +340,15 @@ class DiversityEnsembleClassifier:
         predictions = np.zeros([2*self.population_size, y.shape[0]])
         frequencies = np.unique(y, return_counts=True)[1]
         selection_threshold = max(frequencies)/np.sum(frequencies)
-        aux_islands_pop = self.islands_pop
-        aux_hyperparameter_proba = self.hyperparameter_proba
-        aux_columns_proba = self.columns_proba
+        #aux_islands_pop = self.islands_pop[:]
+        aux_islands_pop = copy.deepcopy(self.islands_pop)
+        #aux_hyperparameter_proba = self.hyperparameter_proba[:]
+        aux_hyperparameter_proba = copy.deepcopy(self.hyperparameter_proba)
+        #print("\n\nDEBUG DEBUG DEBUG island_id = ", island_id)
+        #print("\nDEBUG DEBUG DEBUG aux_hyperparameter_proba ANTES = ", aux_hyperparameter_proba)
+        #aux_columns_proba = self.columns_proba[:]
+        aux_columns_proba = copy.deepcopy(self.columns_proba)
+        #print("\nDEBUG DEBUG DEBUG aux_columns_proba ANTES = ", aux_columns_proba)
         if self.islands_results_before_migrate[island_id][0] is None:
             selected = []
             not_selected = [x for x in range(0, 2*self.population_size)]
@@ -455,31 +486,47 @@ class DiversityEnsembleClassifier:
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
         my_event_loop.run_until_complete(writing_results_task_obj)
         result_dict = dict()
+        dict_to_return = dict()
+        dict_to_return.update({epoch:{"best_ensemble":best_ensemble,
+                                      "best_classifiers_fitness":best_classifiers_fitness,
+                                      "best_ensemble_accuracy":best_ensemble_accuracy,
+                                      "classifiers_fitness":classifiers_fitness,
+                                      "selected":selected,
+                                      "mutation_guided_before":mutation_guided_before,
+                                      "aux_islands_pop":aux_islands_pop,
+                                      "aux_hyperparameter_proba":aux_hyperparameter_proba,
+                                      "aux_columns_proba":aux_columns_proba
+                                     }})
+        #print("\nDEBUG DEBUG DEBUG aux_hyperparameter_proba DEPOIS = ", aux_hyperparameter_proba)
+        #print("\nDEBUG DEBUG DEBUG aux_columns_proba DEPOIS = ", aux_columns_proba)
         return [best_ensemble, best_classifiers_fitness, best_ensemble_accuracy, classifiers_fitness, selected, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba]
 
     def fit_islands(self, X, y, csv_file_name_beg, n_cores):
         best_ensemble_accuracy = 0
+        prev_ensemble_accuracy = 0
         csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
         backend = 'loky'
         for iteration in range(0, round(self.num_generations/self.migration_interval)):
             csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
             fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, isl) for isl in range(0, self.num_islands))
             
+            #print("\n\n\n\nDEBUG DEBUG DEBUG COMECO DA MIGRACAO ")
             for island_id, island in enumerate(fit_results):
-                self.islands_pop[island_id] = island[6][island_id]
-                self.hyperparameter_proba[island_id] = island[7][island_id]
-                self.columns_proba[island_id] = island[8][island_id]
+                #self.islands_pop[island_id] = island[6][island_id][:]
+                self.islands_pop[island_id] = copy.deepcopy(island[6][island_id])
+                #self.hyperparameter_proba[island_id] = island[7][island_id][:]
+                self.hyperparameter_proba[island_id] = copy.deepcopy(island[7][island_id])
+                #print("\nDEBUG DEBUG DEBUG island_id = ", island_id)
+                #print("\nDEBUG DEBUG DEBUG self.hyperparameter_proba[island_id] = ", self.hyperparameter_proba[island_id])
+                #self.columns_proba[island_id] = island[8][island_id][:]
+                self.columns_proba[island_id] = copy.deepcopy(island[8][island_id])
             
-            print("\n\n\n\nDEBUG DEBUG DEBUG COMECO DA MIGRACAO ")
             ring_islands = np.random.choice(self.num_islands, self.num_islands, replace=False)
-            print("\nDEBUG DEBUG DEBUG ring_islands = ", ring_islands)
             for island_id, island in enumerate(fit_results):
-                print("\nDEBUG DEBUG DEBUG island_id = ",island_id)
                 right_neighbor_index = list(ring_islands).index(island_id) + 1
                 if right_neighbor_index >= len(ring_islands):
                     right_neighbor_index = 0
                 neighbor_island = ring_islands[right_neighbor_index]
-                print("\nDEBUG DEBUG DEBUG neighbor_island = ",neighbor_island)
 
                 last_best_ensemble = island[0]
                 last_best_classifiers_fitness = island[1]
@@ -495,28 +542,22 @@ class DiversityEnsembleClassifier:
                 self.islands_results_before_migrate[island_id][4] = last_selected
                 self.islands_results_before_migrate[island_id][5] = last_mutation_guided_before
 
-                #print("\nDEBUG DEBUG DEBUG self.islands_pop = ",island[6][island_id][0].classifier)
-                #print("\nDEBUG DEBUG DEBUG self.hyperparameter_proba = ",island[7][island_id])
-                #print("\nDEBUG DEBUG DEBUG self.columns_proba = ",island[8][island_id])
-                #print("\nDEBUG DEBUG DEBUG best_ensemble = ",self.islands_results_before_migrate[island_id][0])
-                #print("\nDEBUG DEBUG DEBUG best_classifiers_fitness = ",self.islands_results_before_migrate[island_id][1])
-                #print("\nDEBUG DEBUG DEBUG best_ensemble_accuracy = ",self.islands_results_before_migrate[island_id][2])
-                #print("\nDEBUG DEBUG DEBUG classifiers_fitness = ",self.islands_results_before_migrate[island_id][3])
-                #print("\nDEBUG DEBUG DEBUG selected = ",self.islands_results_before_migrate[island_id][4])
-                #print("\nDEBUG DEBUG DEBUG mutation_guided_before = ",self.islands_results_before_migrate[island_id][5])
-
                 last_pop_classifiers_fitness = np.array(last_classifiers_fitness)
                 idx_individuals_to_migrate = (-last_pop_classifiers_fitness).argsort()[:self.migration_size]
                 neighbor_last_pop_classifiers_fitness = np.array(self.islands_results_before_migrate[neighbor_island][3])
                 idx_individuals_to_delete = (neighbor_last_pop_classifiers_fitness).argsort()[:self.migration_size]
                 for individual in range(0,self.migration_size):
-                    print("\n >>>>>>>>>>>>>>>>>>> MIGRACAO ANTES = ",self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]].classifier)
                     self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]] = self.islands_pop[island_id][idx_individuals_to_migrate[individual]]
-                    print("\n >>>>>>>>>>>>>>>>>>> MIGRACAO DEPOIS = ",self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]].classifier)
                 if best_ensemble_accuracy < last_best_ensemble_accuracy:
+                    best_ensemble_accuracy = last_best_ensemble_accuracy
                     best_ensemble = last_best_ensemble
                     best_classifiers_fitness = last_best_classifiers_fitness
-
+            if prev_ensemble_accuracy != 0:
+                increase_accuracy = ((best_ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
+                if (increase_accuracy < 0.5):
+                    break
+            prev_ensemble_accuracy = best_ensemble_accuracy
+    
         return best_ensemble, best_classifiers_fitness
 
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
@@ -571,7 +612,8 @@ def compare_results(data, target, ensemble_size, outputfile, num_generations, nu
         for train, val in kf.split(data):
             print('\n\n>>>>>>>>>> Fold = ',fold)
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
-            for i in range(0, 10):
+            #for i in range(0, 10):
+            for i in range(4, 10):
                 fit_time_aux = int(round(time.time() * 1000))
                 #csv_file = 'dce_island_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 csv_file_name_beg = 'dce_island_fold_' + str(fold) + '_iter_' + str(i)
