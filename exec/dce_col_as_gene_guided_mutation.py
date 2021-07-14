@@ -118,7 +118,7 @@ class Chromossome:
                     else:
                         #it chooses between the values already used
                         if isinstance(h_range[0], str):
-                            param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                            param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_).item()
                         elif isinstance(h_range[0], float):
                             mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
                             sigma = (max(h_range) - min(h_range))/80
@@ -184,7 +184,7 @@ class Chromossome:
                         else:
                             #it chooses between the values already used
                             if isinstance(h_range[0], str):
-                                param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
+                                param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_).item()
                             elif isinstance(h_range[0], float):
                                 mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
                                 sigma = (max(h_range) - min(h_range))/80
@@ -294,6 +294,47 @@ class DiversityEnsembleClassifier:
             self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
     
+    def hyperparameter_proba_update(self, chromossome):
+        for hyper in chromossome.classifier.get_params():
+            if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
+                if isinstance(chromossome.classifier.get_params()[hyper], float):
+                    value = round(chromossome.classifier.get_params()[hyper], 3)
+                else:
+                    value = chromossome.classifier.get_params()[hyper]
+                    assert isinstance(value, int) or isinstance(value, str), 'hyperparameter value of wrong type!'
+                aux_hyperparameter_proba_hyper = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]
+                if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
+                #this hyperparameter already exists in aux_hyperparameter_proba
+                    if value in aux_hyperparameter_proba_hyper['value']:
+                    #this hyperparameter value already exists in aux_hyperparameter_proba
+                        index = aux_hyperparameter_proba_hyper["value"].index(value)
+                        aux_hyperparameter_proba_hyper["probability"][index] += chromossome.fitness
+                    else:
+                    #adding this hyperparameter value to aux_hyperparameter_proba
+                        if len(aux_hyperparameter_proba_hyper["value"]) < 20:
+                            aux_hyperparameter_proba_hyper["value"].append(value)
+                            aux_hyperparameter_proba_hyper["probability"].append(chromossome.fitness)
+                        else:
+                            min_proba = min(aux_hyperparameter_proba_hyper["probability"])
+                            min_proba_index = aux_hyperparameter_proba_hyper["probability"].index(min_proba)
+                            del aux_hyperparameter_proba_hyper["probability"][min_proba_index]
+                            del aux_hyperparameter_proba_hyper["value"][min_proba_index]
+                            aux_hyperparameter_proba_hyper["value"].append(value)
+                            aux_hyperparameter_proba_hyper["probability"].append(chromossome.fitness)
+                else:
+                #adding the hyperparameter to aux_hyperparameter_proba
+                    aux_hyperparameter_proba_hyper["value"].append(value)
+                    aux_hyperparameter_proba_hyper["probability"].append(chromossome.fitness)
+        
+    def columns_proba_update(self, chromossome):
+        for col in chromossome.cols:
+            if col in self.columns_proba["value"]:
+                index = self.columns_proba["value"].index(col)
+                self.columns_proba["probability"][index] += chromossome.fitness
+            else:
+                self.columns_proba["value"].append(col)
+                self.columns_proba["probability"].append(chromossome.fitness)
+
     def fit(self, X, y, csv_file):
         result_dict = dict()
         kf = KFold(n_splits=5, random_state=self.random_state)
@@ -362,37 +403,41 @@ class DiversityEnsembleClassifier:
             ensemble_pred = np.zeros([self.population_size, len_X])
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
-                for hyper in chromossome.classifier.get_params():
-                    if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
-                        if isinstance(chromossome.classifier.get_params()[hyper], float):
-                            value = round(chromossome.classifier.get_params()[hyper], 3)
-                        else:
-                            value = chromossome.classifier.get_params()[hyper]
-                        if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
-                            if value in self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]['value']:
-                                index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].index(value)
-                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][index] += chromossome.fitness
-                            else:
-                                if len(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"]) < 20:
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
-                                else:
-                                    min_proba = min(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"])
-                                    min_proba_index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].index(min_proba)
-                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][min_proba_index]
-                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"][min_proba_index]
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
-                        else:
-                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
-                for col in chromossome.cols:
-                    if col in self.columns_proba["value"]:
-                        index = self.columns_proba["value"].index(col)
-                        self.columns_proba["probability"][index] += chromossome.fitness
-                    else:
-                        self.columns_proba["value"].append(col)
-                        self.columns_proba["probability"].append(chromossome.fitness)
+                #Update aux_hyperparameter_proba_hyper
+                self.hyperparameter_proba_update(chromossome)
+                #Update aux_columns_proba
+                self.columns_proba_update(chromossome)
+                #for hyper in chromossome.classifier.get_params():
+                #    if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
+                #        if isinstance(chromossome.classifier.get_params()[hyper], float):
+                #            value = round(chromossome.classifier.get_params()[hyper], 3)
+                #        else:
+                #            value = chromossome.classifier.get_params()[hyper]
+                #        if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
+                #            if value in self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]['value']:
+                #                index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].index(value)
+                #                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][index] += chromossome.fitness
+                #            else:
+                #                if len(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"]) < 20:
+                #                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
+                #                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                #                else:
+                #                    min_proba = min(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"])
+                #                    min_proba_index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].index(min_proba)
+                #                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][min_proba_index]
+                #                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"][min_proba_index]
+                #                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
+                #                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                #        else:
+                #            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
+                #            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                #for col in chromossome.cols:
+                #    if col in self.columns_proba["value"]:
+                #        index = self.columns_proba["value"].index(col)
+                #        self.columns_proba["probability"][index] += chromossome.fitness
+                #    else:
+                #        self.columns_proba["value"].append(col)
+                #        self.columns_proba["probability"].append(chromossome.fitness)
                 ensemble.append(chromossome.classifier)
                 ensemble_cols.append(chromossome.cols)
                 classifiers_fitness.append(chromossome.fitness)
