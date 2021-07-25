@@ -50,11 +50,42 @@ class Chromossome:
     def predict(self, X):
         return self.classifier.predict(X)
 
-    def mutate(self, rnd, hyperparameter_proba, mutation_guided_before=0, n_positions=None):
-        change_classifier = rnd.randint(0, len(self.genotypes_pool))
+    def choose_hyper_value(self,mutation_guided_before, hyper_values, hyper_proba_, h_range, param, hyperparameter):
+        if mutation_guided_before == 0 or len(hyper_values) == 0:
+            #it does a search for new values
+            if isinstance(h_range[0], str):
+                param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
+            elif isinstance(h_range[0], float):
+                h_range_ = []
+                h_range_.append(min(h_range))
+                h_range_.append(max(h_range))
+                param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1])
+            else:
+                h_range_ = []
+                h_range_.append(min(h_range))
+                h_range_.append(max(h_range))
+                param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1] + 1)
+        else:
+            #it chooses between the values already used
+            if isinstance(h_range[0], str):
+                param[hyperparameter] = self.rnd.choice(hyper_values, 1, p=hyper_proba_).item()
+            elif isinstance(h_range[0], float):
+                mu = float(self.rnd.choice(hyper_values, 1, p=hyper_proba_))
+                sigma = (max(h_range) - min(h_range))/80
+                a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
+                param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
+            else:
+                r_proba_val = int(self.rnd.choice(hyper_values, 1, p=hyper_proba_))
+                min_noise = max(min(h_range), r_proba_val - 2)
+                max_noise = min(max(h_range), r_proba_val + 2)
+                param[hyperparameter] = self.rnd.choice(list(set(range(min_noise, max_noise + 1)) - set([r_proba_val])), 1).item()
+        return param
+
+    def mutate(self, hyperparameter_proba, mutation_guided_before=0, n_positions=None):
+        change_classifier = self.rnd.randint(0, len(self.genotypes_pool))
         if self.classifier is None or change_classifier != 0:
             param = {}
-            self.classifier_algorithm = list(self.genotypes_pool.keys())[rnd.choice(len(list(self.genotypes_pool.keys())))]
+            self.classifier_algorithm = list(self.genotypes_pool.keys())[self.rnd.choice(len(list(self.genotypes_pool.keys())))]
             mod, f = self.classifier_algorithm.rsplit('.', 1)
             clf = getattr(__import__(mod, fromlist=[f]), f)()            
         else:
@@ -64,7 +95,7 @@ class Chromossome:
         if not n_positions or n_positions>len(self.genotypes_pool[self.classifier_algorithm]):
             n_positions = len(self.genotypes_pool[self.classifier_algorithm])
 
-        mutation_positions = rnd.choice(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
+        mutation_positions = self.rnd.choice(range(0, len(self.genotypes_pool[self.classifier_algorithm])), n_positions)
         i=0
         for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
             hyper_values = []
@@ -81,34 +112,7 @@ class Chromossome:
                     hyper_proba_.append(1.0/len(hyper_proba))
             if len(h_range) > 1:
                 if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
-                    if mutation_guided_before == 0 or len(hyper_values) == 0:
-                        #it does a search for new values
-                        if isinstance(h_range[0], str):
-                            param[hyperparameter] = h_range[rnd.choice(len(h_range))]
-                        elif isinstance(h_range[0], float):
-                            h_range_ = []
-                            h_range_.append(min(h_range))
-                            h_range_.append(max(h_range))
-                            param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
-                        else:
-                            h_range_ = []
-                            h_range_.append(min(h_range))
-                            h_range_.append(max(h_range))
-                            param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
-                    else:
-                        #it chooses between the values already used
-                        if isinstance(h_range[0], str):
-                            param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_)
-                        elif isinstance(h_range[0], float):
-                            mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
-                            sigma = (max(h_range) - min(h_range))/80
-                            a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
-                            param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
-                        else:
-                            r_proba_val = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
-                            min_noise = max(min(h_range), r_proba_val - 2)
-                            max_noise = min(max(h_range), r_proba_val + 2)
-                            param[hyperparameter] = rnd.choice(list(set(range(min_noise, max_noise + 1)) - set([r_proba_val])), 1).item()
+                    param = self.choose_hyper_value(mutation_guided_before, hyper_values, hyper_proba_, h_range, param, hyperparameter)
             elif len(h_range) == 1:
                 param[hyperparameter] = h_range[0]
             i+= 1
@@ -144,7 +148,7 @@ class DiversityEnsembleClassifier:
         for i in range(0, population_size):
             self.population.append(Chromossome(genotypes_pool=self.algorithms, rnd=self.rnd, random_state=self.random_state))
         for i in range(0, population_size):
-            self.population[i].mutate(self.rnd, self.hyperparameter_proba)
+            self.population[i].mutate(self.hyperparameter_proba)
             
     def generate_offspring(self, parents, children, pop_fitness, mutation_guided_before):
         children_aux = children
@@ -154,7 +158,7 @@ class DiversityEnsembleClassifier:
                     
         for i in range(0, self.population_size):
             new_chromossome = copy.deepcopy(self.population[parents[i]])
-            new_chromossome.mutate(self.rnd, self.hyperparameter_proba, mutation_guided_before)
+            new_chromossome.mutate(self.hyperparameter_proba, mutation_guided_before)
             try:
                 self.population[children[i]] = new_chromossome
             except:
@@ -194,13 +198,44 @@ class DiversityEnsembleClassifier:
             mean_fitness += pop_fitness[target_chromossome]
             selected.append(target_chromossome)
             self.population[target_chromossome].fitness = pop_fitness[target_chromossome]
-
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size), pop_fitness
+
+    def hyperparameter_proba_update(self, chromossome):
+        for hyper in chromossome.classifier.get_params():
+            if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
+                if isinstance(chromossome.classifier.get_params()[hyper], float):
+                    value = round(chromossome.classifier.get_params()[hyper], 3)
+                else:
+                    value = chromossome.classifier.get_params()[hyper]
+                    assert isinstance(value, int) or isinstance(value, str), 'hyperparameter value of wrong type!'
+                aux_hyperparameter_proba_hyper = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]
+                if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
+                #this hyperparameter already exists in aux_hyperparameter_proba
+                    if value in aux_hyperparameter_proba_hyper['value']:
+                    #this hyperparameter value already exists in aux_hyperparameter_proba
+                        index = aux_hyperparameter_proba_hyper["value"].index(value)
+                        aux_hyperparameter_proba_hyper["probability"][index] += chromossome.fitness
+                    else:
+                    #adding this hyperparameter value to aux_hyperparameter_proba
+                        if len(aux_hyperparameter_proba_hyper["value"]) < 20:
+                            aux_hyperparameter_proba_hyper["value"].append(value)
+                            aux_hyperparameter_proba_hyper["probability"].append(chromossome.fitness)
+                        else:
+                            min_proba = min(aux_hyperparameter_proba_hyper["probability"])
+                            min_proba_index = aux_hyperparameter_proba_hyper["probability"].index(min_proba)
+                            del aux_hyperparameter_proba_hyper["probability"][min_proba_index]
+                            del aux_hyperparameter_proba_hyper["value"][min_proba_index]
+                            aux_hyperparameter_proba_hyper["value"].append(value)
+                            aux_hyperparameter_proba_hyper["probability"].append(chromossome.fitness)
+                else:
+                #adding the hyperparameter to aux_hyperparameter_proba
+                    aux_hyperparameter_proba_hyper["value"].append(value)
+                    aux_hyperparameter_proba_hyper["probability"].append(chromossome.fitness)
 
     def fit(self, X, y, n_cores, csv_file):
         diversity_values, fitness_values = [], []
         result_dict = dict()
-        kf = KFold(n_splits=5, random_state=self.random_state)
+        kf = KFold(n_splits=5, shuffle=True, random_state=self.random_state)
         start_time = int(round(time.time() * 1000))
         my_event_loop = asyncio.get_event_loop()
         writing_results_task_obj = None
@@ -262,7 +297,7 @@ class DiversityEnsembleClassifier:
                     extra_y_train_pred = np.zeros(len_X)
                     extra_predictions = np.zeros([y.shape[0]])
                     extra_classifier = Chromossome(genotypes_pool=self.algorithms, rnd=self.rnd, random_state=self.random_state)
-                    extra_classifier.mutate(self.rnd, self.hyperparameter_proba)                  
+                    extra_classifier.mutate(self.hyperparameter_proba)                  
                     for train, val in kf.split(X):
                         extra_classifier.fit(X[train], y[train])
                         extra_y_train_pred[val] = extra_classifier.predict(X[val])
@@ -276,30 +311,8 @@ class DiversityEnsembleClassifier:
             ensemble_pred = np.zeros([self.population_size, len_X])
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
-                for hyper in chromossome.classifier.get_params():
-                    if hyper in self.algorithms[chromossome.classifier_algorithm].keys():
-                        if isinstance(chromossome.classifier.get_params()[hyper], float):
-                            value = round(chromossome.classifier.get_params()[hyper], 3)
-                        else:
-                            value = chromossome.classifier.get_params()[hyper]
-                        if self.hyperparameter_proba[chromossome.classifier_algorithm].get(hyper, 0) != 0:
-                            if value in self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]['value']:
-                                index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].index(value)
-                                self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][index] += chromossome.fitness
-                            else:
-                                if len(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"]) < 20:
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
-                                else:
-                                    min_proba = min(self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"])
-                                    min_proba_index = self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].index(min_proba)
-                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"][min_proba_index]
-                                    del self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"][min_proba_index]
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                                    self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
-                        else:
-                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["value"].append(value)
-                            self.hyperparameter_proba[chromossome.classifier_algorithm][hyper]["probability"].append(chromossome.fitness)
+                #Update aux_hyperparameter_proba_hyper
+                self.hyperparameter_proba_update(chromossome)
                 ensemble.append(chromossome.classifier)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = y_fit_pred[sel]
@@ -400,7 +413,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
         fold = 0
-        kf = KFold(n_splits=5, random_state=42)
+        kf = KFold(n_splits=5, shuffle=True, random_state=42)
         for train, val in kf.split(data):
             print('\n\n>>>>>>>>>> Fold = ',fold)
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))

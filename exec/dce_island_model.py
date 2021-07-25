@@ -33,13 +33,12 @@ if not sys.warnoptions:
     os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
 
 class Individual:
-    def __init__(self, genotypes_pool, len_X, x_n_cols, rnd=None, random_state=None):
+    def __init__(self, genotypes_pool, len_X, x_n_cols, random_state=None):
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
         self.fitness = 0
         self.y_train_pred = np.zeros(len_X)
-        self.rnd = rnd
         self.random_state = random_state
         self.cols = []
         self.x_n_cols = x_n_cols
@@ -51,44 +50,112 @@ class Individual:
     def predict(self, X):
         return self.classifier.predict(X)
 
-    def mutate(self, hyperparameter_proba, columns_proba, island_id, mutation_guided_before=0, extra_classifier_to_mutate=0, n_positions=None):
-        change = self.rnd.randint(0, 3)
-        if self.classifier is None or extra_classifier_to_mutate == 1:
-            param = {}
-            #defining the classifier
-            self.classifier_algorithm = list(self.genotypes_pool.keys())[self.rnd.choice(len(list(self.genotypes_pool.keys())))]
-            mod, f = self.classifier_algorithm.rsplit('.', 1)
-            clf = getattr(__import__(mod, fromlist=[f]), f)()
-            #defining the hyperparameters conf
-            for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
-                if isinstance(h_range[0], str):
-                    param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
-                elif isinstance(h_range[0], float):
-                    h_range_ = []
-                    h_range_.append(min(h_range))
-                    h_range_.append(max(h_range))
-                    param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1])
+    def create_individual(self, rnd):
+        param = {}
+        #defining the classifier
+        self.classifier_algorithm = list(self.genotypes_pool.keys())[rnd.choice(len(list(self.genotypes_pool.keys())))]
+        mod, f = self.classifier_algorithm.rsplit('.', 1)
+        clf = getattr(__import__(mod, fromlist=[f]), f)()
+        #defining the hyperparameters conf
+        for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
+            if isinstance(h_range[0], str):
+                param[hyperparameter] = h_range[rnd.choice(len(h_range))]
+            elif isinstance(h_range[0], float):
+                h_range_ = []
+                h_range_.append(min(h_range))
+                h_range_.append(max(h_range))
+                param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
+            else:
+                h_range_ = []
+                h_range_.append(min(h_range))
+                h_range_.append(max(h_range))
+                param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
+        self.classifier = clf.set_params(**param)
+        all_parameters = self.classifier.get_params()
+        if 'random_state' in list(all_parameters.keys()):
+            self.classifier.set_params(random_state=self.random_state)
+        #defining which columns will be used
+        n_cols = rnd.randint(1, self.x_n_cols + 1)
+        self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
+
+    def choose_hyper_value(self, rnd, mutation_guided_before, hyper_values, hyper_proba_, h_range, param, hyperparameter):
+        if mutation_guided_before == 0 or len(hyper_values) == 0:
+            #it does a search for new values
+            if isinstance(h_range[0], str):
+                param[hyperparameter] = h_range[rnd.choice(len(h_range))]
+            elif isinstance(h_range[0], float):
+                h_range_ = []
+                h_range_.append(min(h_range))
+                h_range_.append(max(h_range))
+                param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
+            else:
+                h_range_ = []
+                h_range_.append(min(h_range))
+                h_range_.append(max(h_range))
+                param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1] + 1)
+        else:
+            #it chooses between the values already used
+            if isinstance(h_range[0], str):
+                param[hyperparameter] = rnd.choice(hyper_values, 1, p=hyper_proba_).item()
+            elif isinstance(h_range[0], float):
+                mu = float(rnd.choice(hyper_values, 1, p=hyper_proba_))
+                sigma = (max(h_range) - min(h_range))/80
+                a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
+                param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
+            else:
+                r_proba_val = int(rnd.choice(hyper_values, 1, p=hyper_proba_))
+                min_noise = max(min(h_range), r_proba_val - 2)
+                max_noise = min(max(h_range), r_proba_val + 2)
+                param[hyperparameter] = rnd.choice(list(set(range(min_noise, max_noise + 1)) - set([r_proba_val])), 1).item()
+        return param
+
+    def change_classifier(self, rnd, hyperparameter_proba, mutation_guided_before):
+        param = {}
+        self.classifier_algorithm = list(self.genotypes_pool.keys())[rnd.choice(len(list(self.genotypes_pool.keys())))]
+        mod, f = self.classifier_algorithm.rsplit('.', 1)
+        clf = getattr(__import__(mod, fromlist=[f]), f)()
+        #defining the hyperparameters conf
+        for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
+            if len(h_range) > 1:
+                hyper_values = []
+                hyper_proba = []
+                hyper_proba_ = []
+                if hyperparameter_proba.get(self.classifier_algorithm, 0) != 0:
+                    if hyperparameter_proba[self.classifier_algorithm].get(hyperparameter, 0) != 0:
+                        hyper_values = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["value"]
+                        hyper_proba = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["probability"]
+                for fitness in hyper_proba:
+                    if sum(hyper_proba) > 0:
+                        hyper_proba_.append(fitness/sum(hyper_proba))
+                    else:
+                        hyper_proba_.append(1.0/len(hyper_proba))
+                param = self.choose_hyper_value(rnd, mutation_guided_before, hyper_values, hyper_proba_, h_range, param, hyperparameter)
+            elif len(h_range) == 1:
+                param[hyperparameter] = h_range[0]
+        self.classifier = clf.set_params(**param)
+        all_parameters = self.classifier.get_params()
+        if 'random_state' in list(all_parameters.keys()):
+            self.classifier.set_params(random_state=self.random_state)
+    
+    def change_hyperparameters(self, rnd, hyperparameter_proba, mutation_guided_before, n_positions):
+        param = self.classifier.get_params()
+        clf = self.classifier
+        len_hyper = len(self.genotypes_pool[self.classifier_algorithm])
+        #changing the hyperparameters conf
+        if len_hyper != 0:
+            possible_hypers = []
+            for hyper, values in self.genotypes_pool[self.classifier_algorithm].items():
+                if len(values) > 1:
+                    possible_hypers.append(hyper)
+            if len(possible_hypers) > 0:
+                if len(possible_hypers) == 1:
+                    n_positions = 1
                 else:
-                    h_range_ = []
-                    h_range_.append(min(h_range))
-                    h_range_.append(max(h_range))
-                    param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1]+1)
-            self.classifier = clf.set_params(**param)
-            all_parameters = self.classifier.get_params()
-            if 'random_state' in list(all_parameters.keys()):
-                self.classifier.set_params(random_state=self.random_state)
-            #defining which columns will be used
-            n_cols = self.rnd.randint(1, self.x_n_cols + 1)
-            self.cols = self.rnd.choice(self.x_n_cols, n_cols, replace=False)
-        elif change == 0:
-            #changing the classifier
-            param = {}
-            self.classifier_algorithm = list(self.genotypes_pool.keys())[self.rnd.choice(len(list(self.genotypes_pool.keys())))]
-            mod, f = self.classifier_algorithm.rsplit('.', 1)
-            clf = getattr(__import__(mod, fromlist=[f]), f)()
-            #defining the hyperparameters conf
-            for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
-                if len(h_range) > 1:
+                    n_positions = rnd.randint(1, len(possible_hypers) + 1)
+                mutation_positions = rnd.choice(range(0, len(possible_hypers)), n_positions)
+                for hyper_id in mutation_positions:
+                    hyperparameter = possible_hypers[hyper_id]
+                    h_range = self.genotypes_pool[self.classifier_algorithm][hyperparameter]
                     hyper_values = []
                     hyper_proba = []
                     hyper_proba_ = []
@@ -101,120 +168,38 @@ class Individual:
                             hyper_proba_.append(fitness/sum(hyper_proba))
                         else:
                             hyper_proba_.append(1.0/len(hyper_proba))
-
-                    if mutation_guided_before == 0 or len(hyper_values) == 0:
-                        #it does a search for new values
-                        if isinstance(h_range[0], str):
-                            param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
-                        elif isinstance(h_range[0], float):
-                            h_range_ = []
-                            h_range_.append(min(h_range))
-                            h_range_.append(max(h_range))
-                            param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1])
-                        else:
-                            h_range_ = []
-                            h_range_.append(min(h_range))
-                            h_range_.append(max(h_range))
-                            param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1] + 1)
-                    else:
-                        #it chooses between the values already used
-                        if isinstance(h_range[0], str):
-                            param[hyperparameter] = self.rnd.choice(hyper_values, 1, p=hyper_proba_).item()
-                        elif isinstance(h_range[0], float):
-                            mu = float(self.rnd.choice(hyper_values, 1, p=hyper_proba_))
-                            sigma = (max(h_range) - min(h_range))/80
-                            a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
-                            param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
-                        else:
-                            r_proba_val = int(self.rnd.choice(hyper_values, 1, p=hyper_proba_))
-                            min_noise = max(min(h_range), r_proba_val - 2)
-                            max_noise = min(max(h_range), r_proba_val + 2)
-                            param[hyperparameter] = self.rnd.choice(list(set(range(min_noise, max_noise + 1)) - set([r_proba_val])), 1).item()
-                elif len(h_range) == 1:
-                    param[hyperparameter] = h_range[0]
+                    param = self.choose_hyper_value(rnd, mutation_guided_before, hyper_values, hyper_proba_, h_range, param, hyperparameter)
             self.classifier = clf.set_params(**param)
             all_parameters = self.classifier.get_params()
             if 'random_state' in list(all_parameters.keys()):
                 self.classifier.set_params(random_state=self.random_state)
-        elif change == 1:
-            param = self.classifier.get_params()
-            clf = self.classifier
-            len_hyper = len(self.genotypes_pool[self.classifier_algorithm])
-            #changing the hyperparameters conf
-            if len_hyper != 0:
-                possible_hypers = []
-                for hyper, values in self.genotypes_pool[self.classifier_algorithm].items():
-                    if len(values) > 1:
-                        possible_hypers.append(hyper)
-                if len(possible_hypers) > 0:
-                    if len(possible_hypers) == 1:
-                        n_positions = 1
-                    else:
-                        n_positions = self.rnd.randint(1, len(possible_hypers) + 1)
-                    mutation_positions = self.rnd.choice(range(0, len(possible_hypers)), n_positions)
-                    for hyper_id in mutation_positions:
-                        hyperparameter = possible_hypers[hyper_id]
-                        h_range = self.genotypes_pool[self.classifier_algorithm][hyperparameter]
-                        hyper_values = []
-                        hyper_proba = []
-                        hyper_proba_ = []
-                        if hyperparameter_proba.get(self.classifier_algorithm, 0) != 0:
-                            if hyperparameter_proba[self.classifier_algorithm].get(hyperparameter, 0) != 0:
-                                hyper_values = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["value"]
-                                hyper_proba = hyperparameter_proba[self.classifier_algorithm][hyperparameter]["probability"]
-                        for fitness in hyper_proba:
-                            if sum(hyper_proba) > 0:
-                                hyper_proba_.append(fitness/sum(hyper_proba))
-                            else:
-                                hyper_proba_.append(1.0/len(hyper_proba))
 
-                        if mutation_guided_before == 0 or len(hyper_values) == 0:
-                            #it does a search for new values
-                            if isinstance(h_range[0], str):
-                                param[hyperparameter] = h_range[self.rnd.choice(len(h_range))]
-                            elif isinstance(h_range[0], float):
-                                h_range_ = []
-                                h_range_.append(min(h_range))
-                                h_range_.append(max(h_range))
-                                param[hyperparameter] = self.rnd.uniform(h_range_[0], h_range_[1])
-                            else:
-                                h_range_ = []
-                                h_range_.append(min(h_range))
-                                h_range_.append(max(h_range))
-                                param[hyperparameter] = self.rnd.randint(h_range_[0], h_range_[1] + 1)
-                        else:
-                            #it chooses between the values already used
-                            if isinstance(h_range[0], str):
-                                param[hyperparameter] = self.rnd.choice(hyper_values, 1, p=hyper_proba_).item()
-                            elif isinstance(h_range[0], float):
-                                mu = float(self.rnd.choice(hyper_values, 1, p=hyper_proba_))
-                                sigma = (max(h_range) - min(h_range))/80
-                                a,b = (min(h_range)-mu)/sigma, (max(h_range)-mu)/sigma
-                                param[hyperparameter] = truncnorm.rvs(a, b, loc=mu, scale=sigma, random_state=self.random_state)
-                            else:
-                                r_proba_val = int(self.rnd.choice(hyper_values, 1, p=hyper_proba_))
-                                min_noise = max(min(h_range), r_proba_val - 2)
-                                max_noise = min(max(h_range), r_proba_val + 2)
-                                param[hyperparameter] = self.rnd.choice(list(set(range(min_noise, max_noise + 1)) - set([r_proba_val])), 1).item()
-                self.classifier = clf.set_params(**param)
-                all_parameters = self.classifier.get_params()
-                if 'random_state' in list(all_parameters.keys()):
-                    self.classifier.set_params(random_state=self.random_state)
-        elif change == 2:
-            #changing the columns
-            cols_proba_ = []
-            cols_values = columns_proba["value"]
-            cols_proba = columns_proba["probability"]
-            for fitness in cols_proba:
-                if sum(cols_proba) > 0:
-                    cols_proba_.append(fitness/sum(cols_proba))
-                else:
-                    cols_proba_.append(1.0/len(cols_proba))
-            n_cols = self.rnd.randint(1, self.x_n_cols + 1)
-            if mutation_guided_before == 0 or n_cols > len(cols_values):
-                self.cols = self.rnd.choice(self.x_n_cols, n_cols, replace=False)
+    def change_columns(self, rnd, columns_proba, mutation_guided_before):
+        #changing the columns
+        cols_proba_ = []
+        cols_values = columns_proba["value"]
+        cols_proba = columns_proba["probability"]
+        for fitness in cols_proba:
+            if sum(cols_proba) > 0:
+                cols_proba_.append(fitness/sum(cols_proba))
             else:
-                self.cols = self.rnd.choice(cols_values, n_cols, p=cols_proba_, replace=False)
+                cols_proba_.append(1.0/len(cols_proba))
+        n_cols = rnd.randint(1, self.x_n_cols + 1)
+        if mutation_guided_before == 0 or n_cols > len(cols_values):
+            self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
+        else:
+            self.cols = rnd.choice(cols_values, n_cols, p=cols_proba_, replace=False)
+
+    def mutate(self, rnd, hyperparameter_proba, columns_proba, island_id, mutation_guided_before=0, n_positions=None):
+        change = rnd.randint(0, 3)
+        if self.classifier is None:
+            self.create_individual(rnd)
+        elif change == 0:
+            self.change_classifier(rnd, hyperparameter_proba, mutation_guided_before)
+        elif change == 1:
+            self.change_hyperparameters(rnd, hyperparameter_proba, mutation_guided_before, n_positions)
+        elif change == 2:
+            self.change_columns(rnd, columns_proba, mutation_guided_before)
             
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
@@ -243,7 +228,6 @@ class DiversityEnsembleClassifier:
         self.ensemble = []
         self.hyperparameter_proba = [defaultdict(lambda: defaultdict(lambda: defaultdict(list))) for _ in range(self.num_islands)]
         self.columns_proba = [{"value":[],"probability":[]} for _ in range(self.num_islands)]
-        #self.islands_results_before_migrate = [ [None] * 6 ] * self.num_islands
         self.islands_results_before_migrate = [{"best_ensemble":None,
                                                 "best_classifiers_fitness":None,
                                                 "best_ensemble_accuracy":None,
@@ -255,25 +239,22 @@ class DiversityEnsembleClassifier:
                                                 "aux_columns_proba":None
                                                } for _ in range(self.num_islands)]
         self.islands_migration_info = [{"idx_individuals_to_migrate":[],"idx_individuals_to_delete":[]} for _ in range(self.num_islands)]
-        #self.islands_pop_rnd = [None] * self.num_islands
-        self.islands_pop_rnd = []
         self.islands_pop = [ [None] * 2 * self.population_size ] * self.num_islands
         for island_id in range(0, self.num_islands):
-            #self.islands_pop_rnd[island_id] = RandomState((island_id + 1)*(self.random_state + 1))
-            self.islands_pop_rnd.append(RandomState((island_id + 1)*(self.random_state + 1)))
             for i in range(0, self.population_size):
-                self.islands_pop[island_id][i] = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.islands_pop_rnd[island_id], random_state=self.random_state)
+                self.islands_pop[island_id][i] = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, random_state=self.random_state)
+            island_rnd = RandomState((island_id + 1)*(self.random_state + 1))
             for i in range(0, self.population_size):
-                self.islands_pop[island_id][i].mutate(self.hyperparameter_proba[island_id], self.columns_proba[island_id], island_id)
+                self.islands_pop[island_id][i].mutate(island_rnd, self.hyperparameter_proba[island_id], self.columns_proba[island_id], island_id)
 
-    def generate_offspring(self, island_id, parents, children, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba):
+    def generate_offspring(self, individual_rnd, island_id, parents, children, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
             children = [x for x in range(self.population_size, 2*self.population_size)]
         for i in range(0, self.population_size):
             new_individual = copy.deepcopy(aux_islands_pop[island_id][parents[i]])
-            new_individual.mutate(aux_hyperparameter_proba[island_id], aux_columns_proba[island_id], island_id, mutation_guided_before)
+            new_individual.mutate(individual_rnd, aux_hyperparameter_proba[island_id], aux_columns_proba[island_id], island_id, mutation_guided_before)
             aux_islands_pop[island_id][children[i]] = new_individual
         if mutation_guided_before == 0:
             return 1
@@ -318,7 +299,13 @@ class DiversityEnsembleClassifier:
                     value = round(individual.classifier.get_params()[hyper], 3)
                 else:
                     value = individual.classifier.get_params()[hyper]
-                    assert isinstance(value, int) or isinstance(value, str), 'hyperparameter value of wrong type!'
+                    if isinstance(value, np.ndarray):
+                        assert len(value) == 1, f'hyperparameter value of wrong type!{hyper}: {value} {type(value)}'
+                        value = value[0]
+                        if isinstance(value, float):
+                            value = round(value, 3)
+                    assert isinstance(value, (int, str, float)), f'hyperparameter value of wrong type!{hyper}: {value} {type(value)}'
+
                 aux_hyperparameter_proba_hyper = aux_hyperparameter_proba[island_id][individual.classifier_algorithm][hyper]
                 if aux_hyperparameter_proba[island_id][individual.classifier_algorithm].get(hyper, 0) != 0:
                 #this hyperparameter already exists in aux_hyperparameter_proba
@@ -354,9 +341,9 @@ class DiversityEnsembleClassifier:
                 aux_columns_proba[island_id]["probability"].append(individual.fitness)
         return aux_columns_proba
 
-    def fit(self, X, y, csv_file, island_id):
+    def fit(self, X, y, csv_file, individual_rnd, island_id):
         result_dict = dict()
-        kf = KFold(n_splits=5, random_state=self.random_state)
+        kf = KFold(n_splits=5, shuffle=False)
         start_time = int(round(time.time() * 1000))
         writing_results_task_obj = None
         my_event_loop = asyncio.get_event_loop()
@@ -401,7 +388,7 @@ class DiversityEnsembleClassifier:
             ensemble_cols = []
             classifiers_fitness = []
             #This step generates new individuals by mutating the selected ones in the generation before
-            mutation_guided_before = self.generate_offspring(island_id, selected, not_selected, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba)
+            mutation_guided_before = self.generate_offspring(individual_rnd, island_id, selected, not_selected, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba)
             predictions = self.fit_predict_population(island_id, not_selected, predictions, kf, X, y, aux_islands_pop)
             #This selection step of individuals is guided by diversity criteria
             selected, diversity, fitness = self.diversity_selection(island_id, predictions, selection_threshold, aux_islands_pop)
@@ -411,10 +398,8 @@ class DiversityEnsembleClassifier:
                 diff = self.population_size - len(selected)
                 for i in range(0, diff):
                     extra_predictions = np.zeros([y.shape[0]])
-                    #extra_classifier = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, rnd=self.islands_pop_rnd[island_id], random_state=self.random_state)
-                    extra_classifier = copy.deepcopy(aux_islands_pop[island_id][len(selected)-1])
-                    extra_classifier_to_mutate = 1
-                    extra_classifier.mutate(aux_hyperparameter_proba[island_id], aux_columns_proba[island_id], island_id, extra_classifier_to_mutate)
+                    extra_classifier = Individual(genotypes_pool=self.individuals, len_X=self.len_X, x_n_cols=self.x_n_cols, random_state=self.random_state)
+                    extra_classifier.mutate(individual_rnd, aux_hyperparameter_proba[island_id], aux_columns_proba[island_id], island_id)
                     for train, val in kf.split(X):
                         extra_classifier.fit(X[train][:,extra_classifier.cols], y[train])
                         extra_classifier.y_train_pred[val] = extra_classifier.predict(X[val][:,extra_classifier.cols])
@@ -494,9 +479,13 @@ class DiversityEnsembleClassifier:
         csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
         backend = 'loky'
         for iteration in range(0, round(self.num_generations/self.migration_interval)):
+            islands_pop_rnd = [None] * self.num_islands
+            for island_id in range(0, self.num_islands):
+                islands_pop_rnd[island_id] = RandomState((iteration+1)*(island_id + 1)*(self.random_state + 1))
             csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, isl) for isl in range(0, self.num_islands))
-            print("\n\n\n\nDEBUG DEBUG DEBUG COMECO DA MIGRACAO ")
+            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, islands_pop_rnd[isl], isl) for isl in range(0, self.num_islands))
+            
+            #The status of the last population of each island is set below
             for island_id, island in enumerate(fit_results):
                 self.islands_pop[island_id] = copy.deepcopy(island["aux_islands_pop"][island_id])
                 self.hyperparameter_proba[island_id] = copy.deepcopy(island["aux_hyperparameter_proba"][island_id])
@@ -510,15 +499,8 @@ class DiversityEnsembleClassifier:
                 last_pop_classifiers_fitness = np.array(island["classifiers_fitness"]).argsort()
                 self.islands_migration_info[island_id]["idx_individuals_to_migrate"] = last_pop_classifiers_fitness[-self.migration_size:]
                 self.islands_migration_info[island_id]["idx_individuals_to_delete"] = last_pop_classifiers_fitness[:self.migration_size]
-                print("\n\nDEBUG DEBUG DEBUG island_id = ",island_id)
-                print("\nDEBUG DEBUG DEBUG self.hyperparameter_proba[island_id] = ",self.hyperparameter_proba[island_id])
-                print("\nDEBUG DEBUG DEBUG self.columns_proba[island_id] = ",self.columns_proba[island_id])
-                print("\nDEBUG DEBUG DEBUG best_ensemble = ",self.islands_results_before_migrate[island_id]["best_ensemble"])
-                print("\nDEBUG DEBUG DEBUG best_classifiers_fitness = ",self.islands_results_before_migrate[island_id]["best_classifiers_fitness"])
-                print("\nDEBUG DEBUG DEBUG best_ensemble_accuracy = ",self.islands_results_before_migrate[island_id]["best_ensemble_accuracy"])
-                print("\nDEBUG DEBUG DEBUG classifiers_fitness = ",self.islands_results_before_migrate[island_id]["classifiers_fitness"])
-                print("\nDEBUG DEBUG DEBUG selected = ",self.islands_results_before_migrate[island_id]["selected"])
             
+            #Migration steps
             ring_islands = self.rnd.choice(self.num_islands, self.num_islands, replace=False)
             for island_id, island in enumerate(fit_results):
                 right_neighbor_index = list(ring_islands).index(island_id) + 1
@@ -530,19 +512,19 @@ class DiversityEnsembleClassifier:
                 last_best_ensemble_accuracy = self.islands_results_before_migrate[island_id]["best_ensemble_accuracy"]
                 idx_individuals_to_migrate = self.islands_migration_info[island_id]["idx_individuals_to_migrate"]
                 idx_individuals_to_delete = self.islands_migration_info[neighbor_island]["idx_individuals_to_delete"]
-
                 for individual in range(0,self.migration_size):
                     self.islands_pop[neighbor_island][idx_individuals_to_delete[individual]] = self.islands_pop[island_id][idx_individuals_to_migrate[individual]]
+                #Updating the best ensemble accuracy until now
                 if best_ensemble_accuracy < last_best_ensemble_accuracy:
                     best_ensemble_accuracy = last_best_ensemble_accuracy
                     best_ensemble = last_best_ensemble
                     best_classifiers_fitness = last_best_classifiers_fitness
+                
             if prev_ensemble_accuracy != 0:
                 increase_accuracy = ((best_ensemble_accuracy - prev_ensemble_accuracy)/prev_ensemble_accuracy) * 100.0
                 if (increase_accuracy < 0.5):
                     break
             prev_ensemble_accuracy = best_ensemble_accuracy
-    
         return best_ensemble, best_classifiers_fitness
 
     def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
@@ -593,13 +575,12 @@ def compare_results(data, target, ensemble_size, outputfile, num_generations, nu
         text_file.write('\nmigration_interval = %i' % (migration_interval))
         text_file.write('\nmigration_sizel = %i' % (migration_size))
         fold = 0
-        kf = KFold(n_splits=5, random_state=42)
+        kf = KFold(n_splits=5, shuffle=False)
         for train, val in kf.split(data):
             print('\n\n>>>>>>>>>> Fold = ',fold)
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
             for i in range(0, 10):
                 fit_time_aux = int(round(time.time() * 1000))
-                #csv_file = 'dce_island_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 csv_file_name_beg = 'dce_island_fold_' + str(fold) + '_iter_' + str(i)
                 print('\n\nIteration = ',i)
                 text_file.write("\n\nIteration = %i" % (i))
@@ -612,7 +593,6 @@ def compare_results(data, target, ensemble_size, outputfile, num_generations, nu
                                                                   migration_interval = migration_interval,
                                                                   migration_size = migration_size,
                                                                   random_state=i*10)
-                #ensemble, classifiers_fitness = ensemble_classifier.fit(data[train], target[train], csv_file_name_beg)
                 ensemble, classifiers_fitness = ensemble_classifier.fit_islands(data[train], target[train], csv_file_name_beg, n_cores)
                 ensemble_classifier.fit_ensemble(data[train], target[train], ensemble, classifiers_fitness)
                 fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
