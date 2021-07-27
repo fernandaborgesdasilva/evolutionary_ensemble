@@ -292,6 +292,22 @@ class DiversityEnsembleClassifier:
             aux_islands_pop[island_id][target_individual].fitness = pop_fitness[target_individual]
         return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size)
     
+    def accuracy_selection(self, island_id, predictions, selection_threshold, aux_islands_pop):
+        selected = []
+        mean_fitness = 0
+        diversity  = np.zeros(2*self.population_size)
+        pop_accuracy = predictions.sum(axis=1)/predictions.shape[1]
+        pop_accuracy[pop_accuracy < selection_threshold] = float('-inf')
+        for index in np.argsort(pop_accuracy)[-self.population_size:]:
+            value = pop_accuracy[index]
+            if value > 0.0:
+                selected.append(index)
+                d_i = np.logical_xor(predictions, predictions[index]).sum(axis=1)
+                diversity += d_i/predictions.shape[1]
+                mean_fitness += pop_accuracy[index]
+                aux_islands_pop[island_id][index].fitness = pop_accuracy[index]
+        return selected, (diversity[selected]/self.population_size).mean(), mean_fitness/(self.population_size)
+    
     def hyperparameter_proba_update(self, individual, island_id, aux_hyperparameter_proba):
         for hyper in individual.classifier.get_params():
             if hyper in self.individuals[individual.classifier_algorithm].keys():
@@ -310,11 +326,11 @@ class DiversityEnsembleClassifier:
                 if aux_hyperparameter_proba[island_id][individual.classifier_algorithm].get(hyper, 0) != 0:
                 #this hyperparameter already exists in aux_hyperparameter_proba
                     if value in aux_hyperparameter_proba_hyper['value']:
-                    #this hyperparameter value already exists in aux_hyperparameter_proba
+                        #this hyperparameter value already exists in aux_hyperparameter_proba
                         index = aux_hyperparameter_proba_hyper["value"].index(value)
                         aux_hyperparameter_proba_hyper["probability"][index] += individual.fitness
                     else:
-                    #adding this hyperparameter value to aux_hyperparameter_proba
+                        #adding this hyperparameter value to aux_hyperparameter_proba
                         if len(aux_hyperparameter_proba_hyper["value"]) < 20:
                             aux_hyperparameter_proba_hyper["value"].append(value)
                             aux_hyperparameter_proba_hyper["probability"].append(individual.fitness)
@@ -341,7 +357,7 @@ class DiversityEnsembleClassifier:
                 aux_columns_proba[island_id]["probability"].append(individual.fitness)
         return aux_columns_proba
 
-    def fit(self, X, y, csv_file, individual_rnd, island_id):
+    def fit(self, X, y, selection_criteria, csv_file, individual_rnd, island_id):
         result_dict = dict()
         kf = KFold(n_splits=5, shuffle=False)
         start_time = int(round(time.time() * 1000))
@@ -390,8 +406,12 @@ class DiversityEnsembleClassifier:
             #This step generates new individuals by mutating the selected ones in the generation before
             mutation_guided_before = self.generate_offspring(individual_rnd, island_id, selected, not_selected, mutation_guided_before, aux_islands_pop, aux_hyperparameter_proba, aux_columns_proba)
             predictions = self.fit_predict_population(island_id, not_selected, predictions, kf, X, y, aux_islands_pop)
-            #This selection step of individuals is guided by diversity criteria
-            selected, diversity, fitness = self.diversity_selection(island_id, predictions, selection_threshold, aux_islands_pop)
+            if selection_criteria == 1:
+                #This selection step of individuals is guided by diversity criteria
+                selected, diversity, fitness = self.diversity_selection(island_id, predictions, selection_threshold, aux_islands_pop)
+            else:
+                #This selection step of individuals is guided only by accuracy criteria
+                selected, diversity, fitness = self.accuracy_selection(island_id, predictions, selection_threshold, aux_islands_pop)
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
             len_X = len(X)
             if (len(selected) < self.population_size):
@@ -473,7 +493,7 @@ class DiversityEnsembleClassifier:
                               })
         return dict_to_return
 
-    def fit_islands(self, X, y, csv_file_name_beg, n_cores):
+    def fit_islands(self, X, y, selection_criteria, csv_file_name_beg, n_cores):
         best_ensemble_accuracy = 0
         prev_ensemble_accuracy = 0
         csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
@@ -483,7 +503,7 @@ class DiversityEnsembleClassifier:
             for island_id in range(0, self.num_islands):
                 islands_pop_rnd[island_id] = RandomState((iteration+1)*(island_id + 1)*(self.random_state + 1))
             csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, islands_pop_rnd[isl], isl) for isl in range(0, self.num_islands))
+            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, selection_criteria, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, islands_pop_rnd[isl], isl) for isl in range(0, self.num_islands))
             
             #The status of the last population of each island is set below
             for island_id, island in enumerate(fit_results):
@@ -558,7 +578,7 @@ async def writing_results_task(result_dict, csv_file):
         await writer(pd.DataFrame.from_dict(result_dict, orient='index').to_csv(header=False, index=None))
         await afp.fsync()
 
-def compare_results(data, target, ensemble_size, outputfile, num_generations, num_islands, migration_interval, migration_size, n_cores):
+def compare_results(data, target, ensemble_size, outputfile, num_generations, num_islands, migration_interval, migration_size, n_cores, selection_criteria):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = [], [], [], [], []
     fit_total_time = 0
@@ -593,7 +613,7 @@ def compare_results(data, target, ensemble_size, outputfile, num_generations, nu
                                                                   migration_interval = migration_interval,
                                                                   migration_size = migration_size,
                                                                   random_state=i*10)
-                ensemble, classifiers_fitness = ensemble_classifier.fit_islands(data[train], target[train], csv_file_name_beg, n_cores)
+                ensemble, classifiers_fitness = ensemble_classifier.fit_islands(data[train], target[train], selection_criteria, csv_file_name_beg, n_cores)
                 ensemble_classifier.fit_ensemble(data[train], target[train], ensemble, classifiers_fitness)
                 fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
                 text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
@@ -663,24 +683,26 @@ def main(argv):
     migration_interval = ''
     migration_size = ''
     n_cores = ''
+    selection_criteria = ''
     try:
-        opts, args = getopt.getopt(argv,"h:i:o:e:g:n:m:s:c:",["ifile=",
+        opts, args = getopt.getopt(argv,"h:i:o:e:g:n:m:s:c:t:",["ifile=",
                                                               "ofile=",
                                                               "esize=",
                                                               "ngenerations=",
                                                               "nislands=",
                                                               "minterval=",
                                                               "msize=",
-                                                              "ncores="])
+                                                              "ncores=",
+                                                              "selection="])
     except getopt.GetoptError:
-        print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores>')
+        print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores> -t <selection_criteria>')
         sys.exit(2)
     if opts == []:
-        print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores>')
+        print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores> -t <selection_criteria>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores>')
+            print('dce_island_model.py -i <inputfile> -o <outputfile> -e <ensemble_size> -g <num_generations> -n <num_islands> -m <migration_interval> -s <migration_size> -c <n_cores> -t <selection_criteria>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
@@ -698,6 +720,8 @@ def main(argv):
             migration_size = arg
         elif opt in ("-c", "--ncores"):
             n_cores = arg
+        elif opt in ("-t", "--selection"):
+            selection_criteria = arg
     print('Input file is ', inputfile)
     print('Output file is ', outputfile)
     print('The ensemble size is ', ensemble_size)
@@ -706,6 +730,7 @@ def main(argv):
     print('The migration interval is ', migration_interval)
     print('The migration size is ', migration_size)
     print('The number of cores is ', n_cores)
+    print('The selection criteria is ', selection_criteria)
     
     now = time.time()
     struct_now = time.localtime(now)
@@ -725,7 +750,8 @@ def main(argv):
                         num_islands=int(num_islands),
                         migration_interval=int(migration_interval),
                         migration_size=int(migration_size),
-                        n_cores=int(n_cores)
+                        n_cores=int(n_cores),
+                        selection_criteria=int(selection_criteria)
                         )
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
@@ -738,7 +764,8 @@ def main(argv):
                         num_islands=int(num_islands),
                         migration_interval=int(migration_interval),
                         migration_size=int(migration_size),
-                        n_cores=int(n_cores)
+                        n_cores=int(n_cores),
+                        selection_criteria=int(selection_criteria)
                         )
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
@@ -751,7 +778,8 @@ def main(argv):
                         num_islands=int(num_islands),
                         migration_interval=int(migration_interval),
                         migration_size=int(migration_size),
-                        n_cores=int(n_cores)
+                        n_cores=int(n_cores),
+                        selection_criteria=int(selection_criteria)
                         )
     else:
         le = LabelEncoder()
@@ -766,7 +794,8 @@ def main(argv):
                         num_islands=int(num_islands),
                         migration_interval=int(migration_interval),
                         migration_size=int(migration_size),
-                        n_cores=int(n_cores)
+                        n_cores=int(n_cores),
+                        selection_criteria=int(selection_criteria)
                         )
     now = time.time()
     struct_now = time.localtime(now)
