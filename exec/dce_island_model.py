@@ -184,8 +184,8 @@ class Individual:
                 cols_proba_.append(fitness/sum(cols_proba))
             else:
                 cols_proba_.append(1.0/len(cols_proba))
-        n_cols = rnd.randint(1, self.x_n_cols + 1)
-        if mutation_guided_before == 0 or n_cols > len(cols_values):
+        n_cols = rnd.randint(1, self.x_n_cols + 1)        
+        if mutation_guided_before == 0 or n_cols > (len(cols_values) - cols_proba_.count(0.0)):
             self.cols = rnd.choice(self.x_n_cols, n_cols, replace=False)
         else:
             self.cols = rnd.choice(cols_values, n_cols, p=cols_proba_, replace=False)
@@ -202,9 +202,10 @@ class Individual:
             self.change_columns(rnd, columns_proba, mutation_guided_before)
             
 class Estimator:
-    def __init__(self, classifier=None, random_state=None, fitness=0):
+    def __init__(self, classifier, random_state, fitness, ensemble_cols):
         self.classifier = classifier
         self.fitness = fitness
+        self.cols = ensemble_cols
 
     def fit(self, X, y):
         is_fitted = True
@@ -229,6 +230,7 @@ class DiversityEnsembleClassifier:
         self.hyperparameter_proba = [defaultdict(lambda: defaultdict(lambda: defaultdict(list))) for _ in range(self.num_islands)]
         self.columns_proba = [{"value":[],"probability":[]} for _ in range(self.num_islands)]
         self.islands_results_before_migrate = [{"best_ensemble":None,
+                                                "best_ensemble_cols":None,
                                                 "best_classifiers_fitness":None,
                                                 "best_ensemble_accuracy":None,
                                                 "classifiers_fitness":None,
@@ -383,10 +385,12 @@ class DiversityEnsembleClassifier:
             not_selected = [x for x in range(0, 2*self.population_size)]
             best_ensemble_accuracy = 0
             best_ensemble = []
+            best_ensemble_cols = []
             best_classifiers_fitness = []
             mutation_guided_before = 1
         else:
             best_ensemble = copy.deepcopy(self.islands_results_before_migrate[island_id]["best_ensemble"])
+            best_ensemble_cols = copy.deepcopy(self.islands_results_before_migrate[island_id]["best_ensemble_cols"])
             best_classifiers_fitness = copy.deepcopy(self.islands_results_before_migrate[island_id]["best_classifiers_fitness"])
             best_ensemble_accuracy = copy.deepcopy(self.islands_results_before_migrate[island_id]["best_ensemble_accuracy"])
             classifiers_fitness = copy.deepcopy(self.islands_results_before_migrate[island_id]["classifiers_fitness"])
@@ -475,6 +479,7 @@ class DiversityEnsembleClassifier:
             if best_ensemble_accuracy < ensemble_accuracy:
                 best_ensemble_accuracy = ensemble_accuracy
                 best_ensemble = ensemble
+                best_ensemble_cols = ensemble_cols
                 best_classifiers_fitness = classifiers_fitness
 
         writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
@@ -482,6 +487,7 @@ class DiversityEnsembleClassifier:
         result_dict = dict()
         dict_to_return = dict()
         dict_to_return.update({"best_ensemble":best_ensemble,
+                               "best_ensemble_cols":best_ensemble_cols,
                                "best_classifiers_fitness":best_classifiers_fitness,
                                "best_ensemble_accuracy":best_ensemble_accuracy,
                                "classifiers_fitness":classifiers_fitness,
@@ -511,6 +517,7 @@ class DiversityEnsembleClassifier:
                 self.hyperparameter_proba[island_id] = copy.deepcopy(island["aux_hyperparameter_proba"][island_id])
                 self.columns_proba[island_id] = copy.deepcopy(island["aux_columns_proba"][island_id])
                 self.islands_results_before_migrate[island_id]["best_ensemble"] = copy.deepcopy(island["best_ensemble"])
+                self.islands_results_before_migrate[island_id]["best_ensemble_cols"] = copy.deepcopy(island["best_ensemble_cols"])
                 self.islands_results_before_migrate[island_id]["best_classifiers_fitness"] = copy.deepcopy(island["best_classifiers_fitness"])
                 self.islands_results_before_migrate[island_id]["best_ensemble_accuracy"] = copy.deepcopy(island["best_ensemble_accuracy"])
                 self.islands_results_before_migrate[island_id]["classifiers_fitness"] = copy.deepcopy(island["classifiers_fitness"])
@@ -527,7 +534,8 @@ class DiversityEnsembleClassifier:
                 if right_neighbor_index >= len(ring_islands):
                     right_neighbor_index = 0
                 neighbor_island = ring_islands[right_neighbor_index]
-                last_best_ensemble = self.islands_results_before_migrate[island_id]["best_ensemble"] 
+                last_best_ensemble = self.islands_results_before_migrate[island_id]["best_ensemble"]
+                last_best_ensemble_cols = self.islands_results_before_migrate[island_id]["best_ensemble_cols"] 
                 last_best_classifiers_fitness = self.islands_results_before_migrate[island_id]["best_classifiers_fitness"]
                 last_best_ensemble_accuracy = self.islands_results_before_migrate[island_id]["best_ensemble_accuracy"]
                 idx_individuals_to_migrate = self.islands_migration_info[island_id]["idx_individuals_to_migrate"]
@@ -538,6 +546,7 @@ class DiversityEnsembleClassifier:
                 if best_ensemble_accuracy < last_best_ensemble_accuracy:
                     best_ensemble_accuracy = last_best_ensemble_accuracy
                     best_ensemble = last_best_ensemble
+                    best_ensemble_cols = last_best_ensemble_cols
                     best_classifiers_fitness = last_best_classifiers_fitness
                 
             if prev_ensemble_accuracy != 0:
@@ -545,22 +554,22 @@ class DiversityEnsembleClassifier:
                 if (increase_accuracy < 0.5):
                     break
             prev_ensemble_accuracy = best_ensemble_accuracy
-        return best_ensemble, best_classifiers_fitness
+        return best_ensemble, best_classifiers_fitness, best_ensemble_cols
 
-    def fit_ensemble(self, X, y, ensemble, classifiers_fitness):
+    def fit_ensemble(self, X, y, ensemble, classifiers_fitness, ensemble_cols):
         classifiers_fitness_it = 0
-        for estimator in ensemble:
-            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, fitness=classifiers_fitness[classifiers_fitness_it]))
+        for index, estimator in enumerate(ensemble):
+            self.ensemble.append(Estimator(classifier=estimator, random_state=self.random_state, fitness=classifiers_fitness[classifiers_fitness_it], ensemble_cols=ensemble_cols[index]))
             classifiers_fitness_it = classifiers_fitness_it + 1
         for classifier in self.ensemble:
-            classifier.fit(X, y)
+            classifier.fit(X[:,classifier.cols], y)
 
     def predict(self, X):
         len_X = len(X)
         predictions = np.zeros((self.population_size, len_X))
         y = np.zeros(len_X)
         for individual in range(0, self.population_size):
-            predictions[individual] = self.ensemble[individual].predict(X)
+            predictions[individual] = self.ensemble[individual].predict(X[:,self.ensemble[individual].cols])
         #Here the weighted voting is used to combine the classifiers' outputs by considering the strength of the classifiers prior to voting
         for i in range(0, len_X):
             pred = {}
@@ -601,7 +610,7 @@ def compare_results(data, target, ensemble_size, outputfile, num_generations, nu
             text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
             for i in range(0, 10):
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file_name_beg = 'dce_island_fold_' + str(fold) + '_iter_' + str(i)
+                csv_file_name_beg = 'dce_island_sel_' + str(selection_criteria) + '_fold_' + str(fold) + '_iter_' + str(i)
                 print('\n\nIteration = ',i)
                 text_file.write("\n\nIteration = %i" % (i))
                 ensemble_classifier = DiversityEnsembleClassifier(individuals=individuals,
@@ -613,8 +622,8 @@ def compare_results(data, target, ensemble_size, outputfile, num_generations, nu
                                                                   migration_interval = migration_interval,
                                                                   migration_size = migration_size,
                                                                   random_state=i*10)
-                ensemble, classifiers_fitness = ensemble_classifier.fit_islands(data[train], target[train], selection_criteria, csv_file_name_beg, n_cores)
-                ensemble_classifier.fit_ensemble(data[train], target[train], ensemble, classifiers_fitness)
+                ensemble, classifiers_fitness, ensemble_cols = ensemble_classifier.fit_islands(data[train], target[train], selection_criteria, csv_file_name_beg, n_cores)
+                ensemble_classifier.fit_ensemble(data[train], target[train], ensemble, classifiers_fitness, ensemble_cols)
                 fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
                 text_file.write("\n\nDEC fit done in %i" % (fit_total_time))
                 text_file.write(" ms")
