@@ -18,7 +18,7 @@ from collections import defaultdict
 from scipy.stats import truncnorm
 from joblib import Parallel, delayed
 import statistics
-from all_members_ensemble import gen_members
+from mnist_alg_pool import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
 import nest_asyncio
@@ -266,7 +266,6 @@ class DiversityEnsembleClassifier:
         predictions = np.empty([y.shape[0]])
         y_train_pred = np.empty([y.shape[0]])
         chromossome = self.population[not_fitted]
-        print("\n\n >>>>>>>> chromossome = ", chromossome.classifier)
         for train, val in kfolds.split(X):
             if self.col_as_gene == 1:
                 chromossome.fit(X[train][:,chromossome.cols], y[train])
@@ -542,16 +541,16 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores, 
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        fold = 0
         kf = KFold(n_splits=5, shuffle=False)
-        for train, val in kf.split(data):
-            print('\n\n>>>>>>>>>> Fold = ',fold)
-            text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
-            for i in range(0, 10):
+        for i in range(0, 10):
+            fold = 0
+            print('\n\nIteration = ',i)
+            text_file.write("\n\nIteration = %i" % (i))
+            for train, val in kf.split(data):
+                print('\n\n>>>>>>>>>> Fold = ',fold)
+                text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file = 'pdce_fold_' + str(fold) + '_col_' + str(col_as_gene) + '_mutation_' +  str(guided_mutation)  + '_iter_' + str(i) + '_cores_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-                print('\n\nIteration = ',i)
-                text_file.write("\n\nIteration = %i" % (i))
+                csv_file = 'pdce_fold_' + str(fold) + '_col_' + str(col_as_gene) + '_mutation_' + str(guided_mutation)  + '_iter_' + str(i) + '_cores_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv' 
                 ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg,
                                                                   x_n_cols=data[train].shape[1],
                                                                   col_as_gene=col_as_gene,
@@ -602,7 +601,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores, 
                 text_file.write(" ms")
                 print("\n>>>>> Iteration done in %i" % (total_iter_time))
                 sum_total_iter_time.append(total_iter_time)
-            fold = fold + 1
+                fold = fold + 1
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:
