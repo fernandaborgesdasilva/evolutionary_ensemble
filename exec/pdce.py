@@ -266,7 +266,6 @@ class DiversityEnsembleClassifier:
         predictions = np.empty([y.shape[0]])
         y_train_pred = np.empty([y.shape[0]])
         chromossome = self.population[not_fitted]
-        print("\n\n >>>>>>>> chromossome = ", chromossome.classifier)
         for train, val in kfolds.split(X):
             if self.col_as_gene == 1:
                 chromossome.fit(X[train][:,chromossome.cols], y[train])
