@@ -1,21 +1,23 @@
 #!/bin/bash
-#SBATCH -J breast
-#SBATCH -o breast.%j.out
-#SBATCH -e breast.%j.err
+#SBATCH -J captcha
+#SBATCH -o captcha.%j.out
+#SBATCH -e captcha.%j.err
 #SBATCH -n 32
 #SBATCH --mem=20GB
-#SBATCH -w compute-0-3
+#SBATCH -w compute-0-12
 export OPENBLAS_NUM_THREADS=1
 input_file=captcha
 captcha_dir=/home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/dados_captcha.csv
 num_classifiers=10
 num_iterations=19448
+num_iterations_rs=100
 source /home/covoes/env_v_p/bin/activate
 #mkdir /home/covoes/fernanda/commit_6d92dc1/$input_file
 #rm -rf /tmp/fernanda/commit_6d92dc1/$input_file
+#mkdir /tmp/fernanda/commit_6d92dc1
 #mkdir /tmp/fernanda/commit_6d92dc1/$input_file
 pushd /tmp/fernanda/commit_6d92dc1/
-pushd captcha
+pushd $input_file
 echo "1 >>>>>>>>> diversity_ensemble.py"
 time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/diversity_ensemble.py -i $captcha_dir -o saida_dce -e $num_classifiers -s $num_iterations &> output_dce.txt
 cp /tmp/fernanda/commit_6d92dc1/$input_file/saida_dce /home/covoes/fernanda/commit_6d92dc1/$input_file
@@ -25,7 +27,7 @@ rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/output_dce.txt
 cp /tmp/fernanda/commit_6d92dc1/$input_file/diversity_fold_* /home/covoes/fernanda/commit_6d92dc1/$input_file
 rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/diversity_fold_*
 echo "2 >>>>>>>>> random_search.py"
-time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/random_search.py -i $captcha_dir -o saida_rs -e $num_classifiers -s $num_iterations &> output_rs.txt
+time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/random_search.py -i $captcha_dir -o saida_rs -e $num_classifiers -s $num_iterations_rs &> output_rs.txt
 cp /tmp/fernanda/commit_6d92dc1/$input_file/saida_rs /home/covoes/fernanda/commit_6d92dc1/$input_file
 rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/saida_rs
 cp /tmp/fernanda/commit_6d92dc1/$input_file/output_rs.txt /home/covoes/fernanda/commit_6d92dc1/$input_file
@@ -70,7 +72,7 @@ for num_cores in $list;do
     rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/parallel_diversity_fold_*
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_random_search.py with $num_cores cores and parallel type = 0"
-    time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/parallel_random_search.py -i $captcha_dir -o saida_prs_0_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores -p 0 &> output_prs_0_$num_cores.txt
+    time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/parallel_random_search.py -i $captcha_dir -o saida_prs_0_$num_cores -e $num_classifiers -s $num_iterations_rs -c $num_cores -p 0 &> output_prs_0_$num_cores.txt
     cp /tmp/fernanda/commit_6d92dc1/$input_file/saida_prs_0_$num_cores /home/covoes/fernanda/commit_6d92dc1/$input_file
     rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/saida_prs_0_$num_cores
     cp /tmp/fernanda/commit_6d92dc1/$input_file/output_prs_0_$num_cores.txt /home/covoes/fernanda/commit_6d92dc1/$input_file
@@ -79,7 +81,7 @@ for num_cores in $list;do
     rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/parallel_rs_results_ptype_0_fold_*
     let iteration=$iteration+1
     echo "$iteration >>>>>>>>> parallel_random_search.py with $num_cores cores and parallel type = 1"
-    time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/parallel_random_search.py -i $captcha_dir -o saida_prs_1_$num_cores -e $num_classifiers -s $num_iterations -c $num_cores -p 1 &> output_prs_1_$num_cores.txt
+    time python3 -u /home/covoes/fernanda/commit_6d92dc1/evolutionary_ensemble/exec/parallel_random_search.py -i $captcha_dir -o saida_prs_1_$num_cores -e $num_classifiers -s $num_iterations_rs -c $num_cores -p 1 &> output_prs_1_$num_cores.txt
     cp /tmp/fernanda/commit_6d92dc1/$input_file/saida_prs_1_$num_cores /home/covoes/fernanda/commit_6d92dc1/$input_file
     rm -rf /tmp/fernanda/commit_6d92dc1/$input_file/saida_prs_1_$num_cores
     cp /tmp/fernanda/commit_6d92dc1/$input_file/output_prs_1_$num_cores.txt /home/covoes/fernanda/commit_6d92dc1/$input_file

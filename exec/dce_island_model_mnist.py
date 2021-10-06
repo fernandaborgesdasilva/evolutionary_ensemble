@@ -18,6 +18,7 @@ import copy
 from collections import defaultdict
 from scipy.stats import truncnorm
 from joblib import Parallel, delayed
+import klepto
 from mnist_alg_pool import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
@@ -497,7 +498,9 @@ class DiversityEnsembleClassifier:
                                "aux_hyperparameter_proba":aux_hyperparameter_proba,
                                "aux_columns_proba":aux_columns_proba
                               })
-        return dict_to_return
+        dir_island_archive = "dir_island_archive_" + str(island_id)
+        island_archive = klepto.archives.dir_archive(dir_island_archive, dict_to_return, serialized=True,  cached=True)
+        island_archive.dump()
 
     def fit_islands(self, X, y, selection_criteria, csv_file_name_beg, n_cores):
         best_ensemble_accuracy = 0
@@ -509,10 +512,14 @@ class DiversityEnsembleClassifier:
             for island_id in range(0, self.num_islands):
                 islands_pop_rnd[island_id] = RandomState((iteration+1)*(island_id + 1)*(self.random_state + 1))
             csv_file_name_end = '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            fit_results = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, selection_criteria, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, islands_pop_rnd[isl], isl) for isl in range(0, self.num_islands))
+            Parallel(n_jobs=n_cores, backend=backend)(delayed(self.fit)(X, y, selection_criteria, csv_file_name_beg + '_island_' + str(isl) + csv_file_name_end, islands_pop_rnd[isl], isl) for isl in range(0, self.num_islands))
             
             #The status of the last population of each island is set below
-            for island_id, island in enumerate(fit_results):
+            #for island_id, island in enumerate(fit_results):
+            for island_id in range(0, self.num_islands):
+                dir_island_archive = "dir_island_archive_" + str(island_id)
+                island = klepto.archives.dir_archive(dir_island_archive, {}, serialized=True, cached=True)
+                island.load()
                 self.islands_pop[island_id] = copy.deepcopy(island["aux_islands_pop"][island_id])
                 self.hyperparameter_proba[island_id] = copy.deepcopy(island["aux_hyperparameter_proba"][island_id])
                 self.columns_proba[island_id] = copy.deepcopy(island["aux_columns_proba"][island_id])
@@ -529,7 +536,11 @@ class DiversityEnsembleClassifier:
             
             #Migration steps
             ring_islands = self.rnd.choice(self.num_islands, self.num_islands, replace=False)
-            for island_id, island in enumerate(fit_results):
+            #for island_id, island in enumerate(fit_results):
+            for island_id in range(0, self.num_islands):
+                dir_island_archive = "dir_island_archive_" + str(island_id)
+                island = klepto.archives.dir_archive(dir_island_archive, {}, serialized=True, cached=True)
+                island.load()
                 right_neighbor_index = list(ring_islands).index(island_id) + 1
                 if right_neighbor_index >= len(ring_islands):
                     right_neighbor_index = 0
