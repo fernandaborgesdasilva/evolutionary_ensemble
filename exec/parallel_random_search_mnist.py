@@ -94,8 +94,6 @@ class RandomSearchEnsembleClassifier:
         classifier_id = 0
         for classifier in classifiers:
             y_pred = train_clf(classifier, x_file, y_file, self.random_state)
-            print("\n\nDEBUG DEBUG DEBUG classifier = ", classifier)
-            print("\nDEBUG DEBUG DEBUG y_pred = ", y_pred)
             classifiers_predictions[classifier_id][:] = y_pred
             classifiers_right_predictions[classifier_id] = accuracy_score(y_true, y_pred)
             classifier_id = classifier_id + 1
@@ -128,10 +126,8 @@ class RandomSearchEnsembleClassifier:
 
     def fit(self, X, y, n_cores, csv_file, random_state, parallel_type):
         #parallel_time_aux = int(round(time.time() * 1000))
-        #x_train_file_path = "/dev/shm/temp_x_train_prs" + str(n_cores) + ".npy"
-        #y_train_file_path = "/dev/shm/temp_y_train_prs" + str(n_cores) + ".npy"
-        x_train_file_path = "./temp_x_train_prs" + str(n_cores) + ".npy"
-        y_train_file_path = "./temp_y_train_prs" + str(n_cores) + ".npy"
+        x_train_file_path = "/dev/shm/temp_x_train_prs" + str(n_cores) + ".npy"
+        y_train_file_path = "/dev/shm/temp_y_train_prs" + str(n_cores) + ".npy"
         np.save(x_train_file_path, X)
         np.save(y_train_file_path, y)
         len_y = len(y)
@@ -175,8 +171,6 @@ class RandomSearchEnsembleClassifier:
                                                                                                     ) for item in ensemble)
 
                 for i, y_pred in enumerate(classifiers_predictions):
-                    print("\n\nDEBUG DEBUG DEBUG classifier = ", ensemble[i])
-                    print("\nDEBUG DEBUG DEBUG classifier = ", y_pred)
                     classifiers_right_predictions[i] = accuracy_score(y, y_pred)
                 
                 y_train_pred = np.zeros(len_X)
