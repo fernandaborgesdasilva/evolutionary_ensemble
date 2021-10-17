@@ -498,7 +498,7 @@ class DiversityEnsembleClassifier:
                                "aux_hyperparameter_proba":aux_hyperparameter_proba,
                                "aux_columns_proba":aux_columns_proba
                               })
-        dir_island_archive = "dir_island_archive_" + str(island_id)
+        dir_island_archive = "/dev/shm/dir_island_archive_" + str(island_id)
         island_archive = klepto.archives.dir_archive(dir_island_archive, dict_to_return, serialized=True,  cached=True)
         island_archive.dump()
 
@@ -517,7 +517,7 @@ class DiversityEnsembleClassifier:
             #The status of the last population of each island is set below
             #for island_id, island in enumerate(fit_results):
             for island_id in range(0, self.num_islands):
-                dir_island_archive = "dir_island_archive_" + str(island_id)
+                dir_island_archive = "/dev/shm/dir_island_archive_" + str(island_id)
                 island = klepto.archives.dir_archive(dir_island_archive, {}, serialized=True, cached=True)
                 island.load()
                 self.islands_pop[island_id] = copy.deepcopy(island["aux_islands_pop"][island_id])
@@ -538,7 +538,7 @@ class DiversityEnsembleClassifier:
             ring_islands = self.rnd.choice(self.num_islands, self.num_islands, replace=False)
             #for island_id, island in enumerate(fit_results):
             for island_id in range(0, self.num_islands):
-                dir_island_archive = "dir_island_archive_" + str(island_id)
+                dir_island_archive = "/dev/shm/dir_island_archive_" + str(island_id)
                 island = klepto.archives.dir_archive(dir_island_archive, {}, serialized=True, cached=True)
                 island.load()
                 right_neighbor_index = list(ring_islands).index(island_id) + 1
