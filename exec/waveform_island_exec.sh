@@ -1,17 +1,18 @@
 #!/bin/bash
-#SBATCH -J mnist_island
-#SBATCH -o mnist_island.%j.out
-#SBATCH -e mnist_island.%j.err
+#SBATCH -J waveform_island
+#SBATCH -o waveform_island.%j.out
+#SBATCH -e waveform_island.%j.err
 #SBATCH -n 32
-#SBATCH --mem=70GB
-#SBATCH -w compute-0-3
+#SBATCH --mem=20GB
+#SBATCH -w compute-0-16
 export OPENBLAS_NUM_THREADS=1
-input_file=mnist
-mnist_dir=/home/covoes/fernanda/commit_e40d945/mnist_amos_3_8_9.csv
+input_file=waveform
+waveform_dir=/home/covoes/fernanda/commit_e40d945/waveform-5000_csv.csv
 num_classifiers=10
 num_iterations=19448
 source /home/covoes/env_v_p/bin/activate
-#mkdir /tmp/fernanda/commit_e40d945/
+mkdir /tmp/fernanda
+mkdir /tmp/fernanda/commit_e40d945
 mkdir /tmp/fernanda/commit_e40d945/island
 mkdir /tmp/fernanda/commit_e40d945/island/$input_file
 mkdir /home/covoes/fernanda/commit_e40d945/island/$input_file
@@ -35,10 +36,10 @@ for qtd_ilhas in $lista_qtd_ilhas;do
                     mkdir /home/covoes/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size
                     pushd /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size
                     let iteration=$iteration+1
-                    echo "$iteration >>>>>>>>> dce_island_model_mnist.py with $qtd_ilhas cores and with selection criteria iqual to 0"
+                    echo "$iteration >>>>>>>>> dce_island_model.py with $qtd_ilhas cores and with selection criteria iqual to 0"
                     echo "mig_interval = $mig_interval"
                     echo "mig_size = $mig_size"
-                    time python3 -u /home/covoes/fernanda/commit_e40d945/evolutionary_ensemble/exec/dce_island_model_mnist.py -i $mnist_dir -o outputfile_dce_island_model_t0_$qtd_ilhas -e $num_classifiers -g $num_iterations -n$qtd_ilhas -m $mig_interval -s $mig_size -c $qtd_ilhas -t 0 &> stdout_dce_island_model_t0_$qtd_ilhas.txt
+                    time python3 -u /home/covoes/fernanda/commit_e40d945/evolutionary_ensemble/exec/dce_island_model.py -i $waveform_dir -o outputfile_dce_island_model_t0_$qtd_ilhas -e $num_classifiers -g $num_iterations -n$qtd_ilhas -m $mig_interval -s $mig_size -c $qtd_ilhas -t 0 &> stdout_dce_island_model_t0_$qtd_ilhas.txt
                     cp /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/outputfile_dce_island_model_t0_$qtd_ilhas /home/covoes/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/
                     rm -rf /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/outputfile_dce_island_model_t0_$qtd_ilhas
                     cp /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/stdout_dce_island_model_t0_$qtd_ilhas.txt /home/covoes/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/
@@ -47,10 +48,10 @@ for qtd_ilhas in $lista_qtd_ilhas;do
                     rm -rf /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/dce_island_sel_*
                     echo ""
                     let iteration=$iteration+1
-                    echo "$iteration >>>>>>>>> dce_island_model_mnist.py with $qtd_ilhas cores and with selection criteria iqual to 1"
+                    echo "$iteration >>>>>>>>> dce_island_model.py with $qtd_ilhas cores and with selection criteria iqual to 1"
                     echo "mig_interval = $mig_interval"
                     echo "mig_size = $mig_size"
-                    time python3 -u /home/covoes/fernanda/commit_e40d945/evolutionary_ensemble/exec/dce_island_model_mnist.py -i $mnist_dir -o outputfile_dce_island_model_t1_$qtd_ilhas -e $num_classifiers -g $num_iterations -n$qtd_ilhas -m $mig_interval -s $mig_size -c $qtd_ilhas -t 1 &> stdout_dce_island_model_t1_$qtd_ilhas.txt
+                    time python3 -u /home/covoes/fernanda/commit_e40d945/evolutionary_ensemble/exec/dce_island_model.py -i $waveform_dir -o outputfile_dce_island_model_t1_$qtd_ilhas -e $num_classifiers -g $num_iterations -n$qtd_ilhas -m $mig_interval -s $mig_size -c $qtd_ilhas -t 1 &> stdout_dce_island_model_t1_$qtd_ilhas.txt
                     cp /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/outputfile_dce_island_model_t1_$qtd_ilhas /home/covoes/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/
                     rm -rf /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/outputfile_dce_island_model_t1_$qtd_ilhas
                     cp /tmp/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/stdout_dce_island_model_t1_$qtd_ilhas.txt /home/covoes/fernanda/commit_e40d945/island/$input_file/qtd_ilhas_$qtd_ilhas/mig_interval_$mig_interval/mig_size_$mig_size/
@@ -65,4 +66,4 @@ for qtd_ilhas in $lista_qtd_ilhas;do
     popd
 done
 deactivate
-pop
+popd
