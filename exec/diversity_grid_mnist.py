@@ -15,7 +15,7 @@ import operator
 import time
 import sys, getopt
 import copy
-from all_members_ensemble import gen_members
+from mnist_alg_pool import gen_members
 import asyncio
 from aiofile import AIOFile, Writer
 import nest_asyncio
@@ -30,15 +30,16 @@ warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
 
 
 class Chromossome:
-    def __init__(self, genotypes_pool, len_X, rnd=None, random_state=None):
+    def __init__(self, genotypes_pool, len_X,  rnd=None, random_state=None):
         self.genotypes_pool = genotypes_pool
         self.classifier = None
         self.classifier_algorithm = None
         self.fitness = 0
         self.y_train_pred = np.zeros(len_X)
         self.random_state = random_state
+        self.random_state = random_state
         self.rnd = rnd
-        self.mutate(self.rnd)
+        #self.mutate(self.rnd)
 
     def fit(self, X, y):
         is_fitted = True
@@ -65,18 +66,7 @@ class Chromossome:
         i=0
         for hyperparameter, h_range in self.genotypes_pool[self.classifier_algorithm].items():
             if i in mutation_positions or self.classifier_algorithm != self.classifier.__class__:
-                if isinstance(h_range[0], str):
-                    param[hyperparameter] = h_range[rnd.choice(len(h_range))]
-                elif isinstance(h_range[0], float):
-                    h_range_ = []
-                    h_range_.append(min(h_range))
-                    h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.uniform(h_range_[0], h_range_[1])
-                else:
-                    h_range_ = []
-                    h_range_.append(min(h_range))
-                    h_range_.append(max(h_range))
-                    param[hyperparameter] = rnd.randint(h_range_[0], h_range_[1]+1)
+                param[hyperparameter] = h_range[rnd.choice(len(h_range))]
             i+= 1  
             
         self.classifier = clf.set_params(**param)
@@ -88,6 +78,7 @@ class Chromossome:
 class Estimator:
     def __init__(self, classifier=None, random_state=None, fitness=0):
         self.classifier = classifier
+        self.random_state = random_state
         self.fitness = fitness
 
     def fit(self, X, y):
@@ -102,15 +93,16 @@ class DiversityEnsembleClassifier:
         self.population_size = population_size
         self.max_epochs = max_epochs
         self.population = []
-        self.len_X = len_X
         self.algorithms = algorithms
+        self.len_X = len_X
         self.random_state = random_state
         self.rnd = RandomState(self.random_state)
         self.ensemble = []
         for i in range(0, population_size):
-            self.population.append(Chromossome(genotypes_pool=self.algorithms, len_X=self.len_X, rnd=self.rnd, random_state=self.random_state))
-
-    def generate_offspring(self, parents, children, pop_fitness):
+            self.population.append(Chromossome(genotypes_pool=algorithms, len_X=len_X, rnd=self.rnd, random_state=self.random_state))
+        for i in range(0, population_size):
+            self.population[i].mutate(self.rnd)
+    def generate_offspring(self, parents, children, pop_fitness, epoch):
         children_aux = children
         if not parents:
             parents = [x for x in range(0, self.population_size)]
@@ -134,6 +126,7 @@ class DiversityEnsembleClassifier:
         return predictions
 
     def diversity_selection(self, predictions, selection_threshold):
+        #print(-1)
         distances = np.zeros(2*self.population_size)
         pop_fitness = predictions.sum(axis=1)/predictions.shape[1]
         target_chromossome = np.argmax(pop_fitness)
@@ -196,18 +189,19 @@ class DiversityEnsembleClassifier:
             ensemble = []
             classifiers_fitness = []
             
-            self.generate_offspring(selected, not_selected, pop_fitness)
+            self.generate_offspring(selected, not_selected, pop_fitness, epoch)
             predictions = self.fit_predict_population(not_selected, predictions, kf, X, y)
 
             selected, diversity, fitness, pop_fitness = self.diversity_selection(predictions, selection_threshold)
             not_selected = np.setdiff1d([x for x in range(0, 2*self.population_size)], selected)
-
+            
             len_X = len(X)
             if (len(selected) < self.population_size):
                 diff = self.population_size - len(selected)
                 for i in range(0, diff):
                     extra_predictions = np.zeros([y.shape[0]])
                     extra_classifier = Chromossome(genotypes_pool=self.algorithms, len_X=self.len_X, rnd=self.rnd, random_state=self.random_state)
+                    extra_classifier.mutate(self.rnd)
                     for train, val in kf.split(X):
                         extra_classifier.fit(X[train], y[train])
                         extra_classifier.y_train_pred[val] = extra_classifier.predict(X[val])
@@ -216,15 +210,15 @@ class DiversityEnsembleClassifier:
                     self.population[not_selected[i]] = extra_classifier
                     selected.append(not_selected[i])
                     not_selected = np.delete(not_selected, i)
-
+            
             ensemble_pred = np.zeros([self.population_size, len_X])
             for i, sel in enumerate(selected):
                 chromossome = self.population[sel]
                 ensemble.append(chromossome.classifier)
                 classifiers_fitness.append(chromossome.fitness)
                 ensemble_pred[i] = chromossome.y_train_pred
-            
-            y_train_pred = np.zeros(len_X) 
+
+            y_train_pred = np.zeros(len_X)  
             for i in range(0, len_X):
                 pred = {}
                 for j, sel in enumerate(selected):
@@ -247,6 +241,7 @@ class DiversityEnsembleClassifier:
                     my_event_loop.run_until_complete(writing_results_task_obj)
                 writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
                 result_dict = dict()
+            
             result_dict.update({epoch:{"start_time":start_time,
                                        "end_time":end_time,
                                        "total_time_ms":total_time,
@@ -317,16 +312,16 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        fold = 0
         kf = KFold(n_splits=5, random_state=42)
-        for train, val in kf.split(data):
-            print('\n\n>>>>>>>>>> Fold = ',fold)
-            text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
-            for i in range(0, 10):
+        for i in range(0, 10):
+            print('\n\nIteration = ',i)
+            text_file.write("\n\nIteration = %i" % (i))
+            fold = 0
+            for train, val in kf.split(data):
+                print('\n\n>>>>>>>>>> Fold = ',fold)
+                text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file = 'diversity_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-                print('\n\nIteration = ',i)
-                text_file.write("\n\nIteration = %i" % (i))
+                csv_file = 'diversity_grid_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 ensemble_classifier = DiversityEnsembleClassifier(algorithms=alg,
                                                                   len_X = len(train),
                                                                   population_size=n_estimators, 
@@ -373,7 +368,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time):
                 text_file.write("\nIteration done in %i" % (total_iter_time))
                 text_file.write(" ms")
                 sum_total_iter_time.append(total_iter_time)
-            fold = fold + 1
+                fold = fold + 1
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:

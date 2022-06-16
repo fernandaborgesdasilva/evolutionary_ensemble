@@ -17,7 +17,7 @@ import time
 import sys, getopt
 import shutil
 from joblib import Parallel, delayed
-from all_members_ensemble import gen_members
+from mnist_alg_pool import gen_members
 import os
 
 
@@ -185,23 +185,22 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
     total_accuracy, total_f1, total_precision, total_recall, total_auc = [], [], [], [], []
     sum_total_iter_time = []
     alg = gen_members(data.shape)
-    
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
         text_file.write(' Brute Force Ensemble Classifier - Parallel version')
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        fold = 0
         kf = KFold(n_splits=5, random_state=42)
-        for train, val in kf.split(data):
-            print('\n\n>>>>>>>>>> Fold = ',fold)
-            text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
-            for i in range(0, 10):
+        for i in range(0, 10):
+            print('\n\nIteration = ',i)
+            text_file.write("\n\nIteration = %i" % (i))
+            fold = 0
+            for train, val in kf.split(data):
+                print('\n\n>>>>>>>>>> Fold = ',fold)
+                text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
                 fit_time_aux = int(round(time.time() * 1000))
                 csv_file = 'pbfec_seq_fold_' + str(fold) + '_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-                print('\n\nIteration = ',i)
-                text_file.write("\n\nIteration = %i" % (i))
                 ensemble_classifier = BruteForceEnsembleClassifier(algorithms=alg, 
                                                                    stop_time=stop_time, 
                                                                    n_estimators=int(n_estimators), 
@@ -254,7 +253,7 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                 text_file.write(" ms")
                 print("\n>>>>> Iteration done in %i" % (total_iter_time))
                 sum_total_iter_time.append(total_iter_time)
-            fold = fold + 1
+                fold = fold + 1
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:

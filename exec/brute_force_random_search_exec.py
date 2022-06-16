@@ -245,64 +245,69 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, all_possi
         text_file.write(" ms.")
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        for i in range(0, 10):
-            fit_time_aux = int(round(time.time() * 1000))
-            csv_file = 'bfec_rand_results_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-            ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, 
-                                                               n_estimators=int(n_estimators), 
-                                                               random_state=i*10)
-            print('\n\nIteration = ',i)
-            text_file.write("\n\nIteration = %i" % (i))
-            X_train, X_test, y_train, y_test = train_test_split(data, target, test_size=0.2, random_state=i*10)
-            random.seed(i*10)
-            selected_ensemble = random.sample(range(len(all_possible_ensembles)), k=stop_time)
-            ensemble, best_accuracy_classifiers = ensemble_classifier.fit(X_train, 
-                                                                         y_train, 
-                                                                         all_possible_ensembles, 
-                                                                         selected_ensemble, 
-                                                                         csv_file)
-            ensemble_classifier.fit_ensemble(X_train, y_train, ensemble[0], best_accuracy_classifiers)
-            fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
-            text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
-            text_file.write(" ms")
-            predict_aux = int(round(time.time() * 1000))
-            y_pred = ensemble_classifier.predict(X_test)
-            predict_total_time = (int(round(time.time() * 1000)) - predict_aux)
-            text_file.write("\n\nBFEC predict done in %i" % (predict_total_time))
-            text_file.write(" ms")
-            accuracy = accuracy_score(y_test, y_pred)
-            total_accuracy.append(accuracy)
-            try: 
-                f1 = f1_score(y_test, y_pred)
-                total_f1.append(f1)
-            except: pass
-            try: 
-                precision = precision_score(y_test, y_pred)
-                total_precision.append(precision)
-            except: pass
-            try: 
-                recall = recall_score(y_test, y_pred)
-                total_recall.append(recall)
-            except: pass
-            try: 
-                auc = roc_auc_score(y_test, y_pred)
-                total_auc.append(auc)
-            except: pass
-            text_file.write("\n\nAccuracy = %f\n" % (accuracy))
-            if f1>0:
-                text_file.write("F1-score = %f\n" % (f1))
-            if precision>0:
-                text_file.write("Precision = %f\n" % (precision))
-            if recall>0:
-                text_file.write("Recall = %f\n" % (recall))
-            if auc>0:
-                text_file.write("ROC AUC = %f\n" % (auc))
-            memory.clear(warn=False)
-            shutil.rmtree(cachedir)
-            total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
-            text_file.write("\nIteration done in %i" % (total_iter_time))
-            text_file.write(" ms")
-            sum_total_iter_time.append(total_iter_time)
+        fold = 0
+        kf = KFold(n_splits=5, random_state=42)
+        for train, val in kf.split(data):
+            print('\n\n>>>>>>>>>> Fold = ',fold)
+            text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
+            for i in range(0, 10):
+                fit_time_aux = int(round(time.time() * 1000))
+                csv_file = 'bfec_rand_results_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
+                print('\n\nIteration = ',i)
+                text_file.write("\n\nIteration = %i" % (i))
+                ensemble_classifier = BruteForceEnsembleClassifier(stop_time=stop_time, 
+                                                                   n_estimators=int(n_estimators), 
+                                                                   random_state=i*10)
+                random.seed(i*10)
+                selected_ensemble = random.sample(range(len(all_possible_ensembles)), k=stop_time)
+                ensemble, best_accuracy_classifiers = ensemble_classifier.fit(data[train],
+                                                                              target[train],
+                                                                              all_possible_ensembles, 
+                                                                              selected_ensemble, 
+                                                                              csv_file)
+                ensemble_classifier.fit_ensemble(data[train], target[train], ensemble[0], best_accuracy_classifiers)
+                fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
+                text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
+                text_file.write(" ms")
+                predict_aux = int(round(time.time() * 1000))
+                y_pred = ensemble_classifier.predict(data[val])
+                predict_total_time = (int(round(time.time() * 1000)) - predict_aux)
+                text_file.write("\n\nBFEC predict done in %i" % (predict_total_time))
+                text_file.write(" ms")
+                accuracy = accuracy_score(target[val], y_pred)
+                total_accuracy.append(accuracy)
+                try: 
+                    f1 = f1_score(target[val], y_pred)
+                    total_f1.append(f1)
+                except: pass
+                try: 
+                    precision = precision_score(target[val], y_pred)
+                    total_precision.append(precision)
+                except: pass
+                try: 
+                    recall = recall_score(target[val], y_pred)
+                    total_recall.append(recall)
+                except: pass
+                try: 
+                    auc = roc_auc_score(target[val], y_pred)
+                    total_auc.append(auc)
+                except: pass
+                text_file.write("\n\nAccuracy = %f\n" % (accuracy))
+                if f1>0:
+                    text_file.write("F1-score = %f\n" % (f1))
+                if precision>0:
+                    text_file.write("Precision = %f\n" % (precision))
+                if recall>0:
+                    text_file.write("Recall = %f\n" % (recall))
+                if auc>0:
+                    text_file.write("ROC AUC = %f\n" % (auc))
+                memory.clear(warn=False)
+                shutil.rmtree(cachedir)
+                total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
+                text_file.write("\nIteration done in %i" % (total_iter_time))
+                text_file.write(" ms")
+                sum_total_iter_time.append(total_iter_time)
+            fold = fold + 1
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:

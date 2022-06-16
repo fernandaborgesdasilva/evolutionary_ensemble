@@ -16,20 +16,22 @@ import operator
 import time
 import sys, getopt
 import shutil
-from joblib import Parallel, delayed
-from all_members_ensemble import gen_members
+from mnist_alg_pool import gen_members
+import asyncio
+from aiofile import AIOFile, Writer
+import nest_asyncio
 import os
-
+nest_asyncio.apply()
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-if not sys.warnoptions:
-    warnings.simplefilter("ignore")
-    os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
+from sklearn.exceptions import ConvergenceWarning
+warnings.filterwarnings(action='ignore', category=ConvergenceWarning)
+
 
 from joblib import Memory
-cachedir = './parallel_brute_force_search_exec_tmpmemory' + '_' + time.strftime("%H_%M_%S", time.localtime(time.time()))
+cachedir = './brute_force_search_exec_tmpmemory' + '_' + time.strftime("%H_%M_%S", time.localtime(time.time()))
 memory = Memory(cachedir, verbose=0)
 
 class Estimator:
@@ -39,11 +41,11 @@ class Estimator:
         self.accuracy = accuracy
 
     def fit(self, X, y):
-        is_fitted = True
         self.classifier.fit(X, y)
 
     def predict(self, X):
         return self.classifier.predict(X)
+
 
 class BruteForceEnsembleClassifier:
     def __init__(self, algorithms, stop_time = 100, n_estimators = 10, random_state = None):
@@ -78,71 +80,92 @@ class BruteForceEnsembleClassifier:
         for classifier in self.ensemble:
             classifier.fit(X, y)
 
-    def parallel_fit(self, x_file, y_file, len_X, len_y, y_true, classifiers):
-        now = time.time()
-        struct_now = time.localtime(now)
-        mlsec = repr(now).split('.')[1][:3]
-        start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-        time_aux = int(round(now * 1000))
-        result_dict = dict()
-        # a matrix with all observations vs the prediction of each classifier
-        classifiers_predictions = np.zeros([self.n_estimators, len_y])
-        # sum the number of right predictions for each classifier
-        classifiers_right_predictions = np.zeros([self.n_estimators])
-        ensemble_accuracy = np.zeros([len_y])
-        classifier_id = 0
-        for classifier, params in classifiers:
-            y_pred = train_clf(classifier, params, x_file, y_file, self.random_state)
-            classifiers_predictions[classifier_id][:] = y_pred
-            classifiers_right_predictions[classifier_id] = accuracy_score(y_true, y_pred)
-            classifier_id = classifier_id + 1
-
-        y_train_pred = np.zeros(len_X)
-        for i in range(0, len_X):
-            pred = {}
-            for j in range(0,self.n_estimators):
-                if classifiers_predictions[j][i] in pred:
-                    pred[classifiers_predictions[j][i]] += classifiers_right_predictions[j]
-                else:
-                    pred[classifiers_predictions[j][i]]  = classifiers_right_predictions[j]
-            y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
-
-            ensemble_accuracy = accuracy_score(y_true, y_train_pred)
-
-        now = time.time()
-        struct_now = time.localtime(now)
-        mlsec = repr(now).split('.')[1][:3]
-        end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
-        total_time = (int(round(now * 1000)) - time_aux)
-        result_dict.update({"start_time":start_time,
-                            "end_time":end_time,
-                            "total_time_ms":total_time,
-                            "ensemble_accuracy":ensemble_accuracy,
-                            "ensemble":classifiers, 
-                            "accuracy_classifiers":list(classifiers_right_predictions)})
-        return result_dict
-    
-    def fit(self, X, y, n_cores):
-        parallel_time_aux = int(round(time.time() * 1000))
-        x_train_file_path = "/dev/shm/temp_x_train_pbfs" + str(n_cores) + ".npy"
-        y_train_file_path = "/dev/shm/temp_y_train_pbfs" + str(n_cores) + ".npy"
-        np.save(x_train_file_path, X)
-        np.save(y_train_file_path, y)
+    def fit(self, X, y, csv_file):
         len_y = len(y)
         len_X = len(X)
-        backend = 'loky'
-        inputs = combinations(self.estimators_pool(self.algorithms),self.n_estimators)
-        result = Parallel(n_jobs=n_cores, backend=backend)(delayed(self.parallel_fit)(x_train_file_path, 
-                                                                                      y_train_file_path,
-                                                                                      len_X,
-                                                                                      len_y,
-                                                                                      y, 
-                                                                                      item) for index, item in zip(range(0, self.stop_time), inputs))
-        total_parallel_time = (int(round(time.time() * 1000)) - parallel_time_aux)
-        print("\n>>>>> Parallel step processing time = %i" % (total_parallel_time))
+
+        x_train_file_path = "/dev/shm/temp_x_train_bfs.npy"
+        y_train_file_path = "/dev/shm/temp_y_train_bfs.npy"
+        np.save(x_train_file_path, X)
+        np.save(y_train_file_path, y)
+
+        result_dict = dict()
+        best_ensemble_accuracy = 0
+        best_accuracy_classifiers = np.zeros([self.n_estimators])
+        writing_results_task_obj = None
+        my_event_loop = asyncio.get_event_loop()
+        header = open(csv_file, "w")
+        try:
+            header.write('start_time,end_time,total_time_ms,ensemble_accuracy,ensemble,best_accuracy_classifiers')
+            header.write('\n')
+        finally:
+            header.close()
+        
+        for index, classifiers in enumerate(combinations(self.estimators_pool(self.algorithms),self.n_estimators)):
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            start_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+            time_aux = int(round(now * 1000))
+            # a matrix with all observations vs the prediction of each classifier
+            classifiers_predictions = np.zeros([self.n_estimators, len_y])
+            # sum the number of right predictions for each classifier
+            classifiers_right_predictions = np.zeros([self.n_estimators])
+            ensemble_accuracy = np.zeros([len_y])
+            classifier_id = 0
+            if index >= self.stop_time:
+                break
+            for classifier, params in classifiers:
+                y_pred = train_clf(classifier, params, x_train_file_path, y_train_file_path, self.random_state)
+                classifiers_predictions[classifier_id][:] = y_pred
+                classifiers_right_predictions[classifier_id] = accuracy_score(y, y_pred)
+                classifier_id = classifier_id + 1
+
+            y_train_pred = np.zeros(len_X)
+            for i in range(0, len_X):
+                pred = {}
+                for j in range(0,self.n_estimators):
+                    if classifiers_predictions[j][i] in pred:
+                        pred[classifiers_predictions[j][i]] += classifiers_right_predictions[j]
+                    else:
+                        pred[classifiers_predictions[j][i]]  = classifiers_right_predictions[j]
+                y_train_pred[i] = max(pred.items(), key=operator.itemgetter(1))[0]
+
+            ensemble_accuracy = accuracy_score(y, y_train_pred)
+
+            #select the most accurate ensemble
+            if(ensemble_accuracy > best_ensemble_accuracy):
+                best_ensemble_accuracy = ensemble_accuracy
+                best_accuracy_classifiers = list(classifiers_right_predictions)
+                ensemble = classifiers
+            
+            now = time.time()
+            struct_now = time.localtime(now)
+            mlsec = repr(now).split('.')[1][:3]
+            end_time = time.strftime("%Y-%m-%d %H:%M:%S.{} %Z".format(mlsec), struct_now)
+            total_time = (int(round(now * 1000)) - time_aux)
+            
+            if (index%100 == 0 and index != 0):
+                if (writing_results_task_obj is not None):
+                    my_event_loop.run_until_complete(writing_results_task_obj)
+                writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
+                result_dict = dict()
+            
+            result_dict.update({index: {"start_time":start_time,
+                                        "end_time":end_time,
+                                        "total_time_ms":total_time,
+                                        "ensemble_accuracy":best_ensemble_accuracy,
+                                        "ensemble":ensemble,
+                                        "best_accuracy_classifiers":best_accuracy_classifiers}})
+        
+        writing_results_task_obj = my_event_loop.create_task(writing_results_task(result_dict, csv_file))
+        my_event_loop.run_until_complete(writing_results_task_obj)
+        result_dict = dict()
+
         os.remove(x_train_file_path)
         os.remove(y_train_file_path)
-        return result
+
+        return ensemble, best_accuracy_classifiers
     
     def predict(self, X):
         len_X = len(X)
@@ -180,37 +203,39 @@ def train_clf(classifier, params, x_file, y_file, random_state):
         y_pred[val] = clf.predict(X[val])
     return y_pred
 
-def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
+async def writing_results_task(result_dict, csv_file):
+    async with AIOFile(csv_file, 'a') as afp:
+        writer = Writer(afp)
+        await writer(pd.DataFrame.from_dict(result_dict, orient='index').to_csv(header=False, index=None))
+        await afp.fsync() 
+    
+def compare_results(data, target, n_estimators, outputfile, stop_time):
     accuracy, f1, precision, recall, auc = 0, 0, 0, 0, 0
     total_accuracy, total_f1, total_precision, total_recall, total_auc = [], [], [], [], []
-    sum_total_iter_time = []
     alg = gen_members(data.shape)
     
     with open(outputfile, "w") as text_file:
         text_file.write('*'*60)
-        text_file.write(' Brute Force Ensemble Classifier - Parallel version')
+        text_file.write(' Brute Force Ensemble Classifier ')
         text_file.write('*'*60)
         text_file.write('\n\nn_estimators = %i' % (n_estimators))
         text_file.write('\nstop_time = %i' % (stop_time))
-        fold = 0
+        sum_total_iter_time = []
         kf = KFold(n_splits=5, random_state=42)
-        for train, val in kf.split(data):
-            print('\n\n>>>>>>>>>> Fold = ',fold)
-            text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
-            for i in range(0, 10):
+        for i in range(0, 10):
+            print('\n\nIteration = ',i)
+            text_file.write("\n\nIteration = %i" % (i))
+            fold = 0
+            for train, val in kf.split(data):
+                print('\n\n>>>>>>>>>> Fold = ',fold)
+                text_file.write("\n\n>>>>>>>>>> Fold = %i" % (fold))
                 fit_time_aux = int(round(time.time() * 1000))
-                csv_file = 'pbfec_seq_fold_' + str(fold) + '_iter_' + str(i) + '_' + str(n_cores) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
-                print('\n\nIteration = ',i)
-                text_file.write("\n\nIteration = %i" % (i))
+                csv_file = 'bfec_seq_fold_' + str(fold) + '_iter_' + str(i) + '_' + time.strftime("%H_%M_%S", time.localtime(time.time())) + '.csv'
                 ensemble_classifier = BruteForceEnsembleClassifier(algorithms=alg, 
                                                                    stop_time=stop_time, 
                                                                    n_estimators=int(n_estimators), 
                                                                    random_state=i*10)
-                search_results = ensemble_classifier.fit(data[train], target[train], n_cores)
-                search_results_pd = pd.DataFrame(search_results)
-                search_results_pd.to_csv(csv_file, index = None, header=True)
-                ensemble = search_results_pd.loc[search_results_pd['ensemble_accuracy'].idxmax()]["ensemble"]
-                best_accuracy_classifiers = search_results_pd.loc[search_results_pd['ensemble_accuracy'].idxmax()]["accuracy_classifiers"]
+                ensemble, best_accuracy_classifiers = ensemble_classifier.fit(data[train], target[train], csv_file)
                 ensemble_classifier.fit_ensemble(data[train], target[train], ensemble, best_accuracy_classifiers)
                 fit_total_time = (int(round(time.time() * 1000)) - fit_time_aux)
                 text_file.write("\n\nBFEC fit done in %i" % (fit_total_time))
@@ -252,9 +277,8 @@ def compare_results(data, target, n_estimators, outputfile, stop_time, n_cores):
                 total_iter_time = (int(round(time.time() * 1000)) - fit_time_aux)
                 text_file.write("\nIteration done in %i" % (total_iter_time))
                 text_file.write(" ms")
-                print("\n>>>>> Iteration done in %i" % (total_iter_time))
                 sum_total_iter_time.append(total_iter_time)
-            fold = fold + 1
+                fold = fold + 1
         text_file.write("\n\nAverage Accuracy = %f\n" % (statistics.mean(total_accuracy)))
         text_file.write("Standard Deviation of Accuracy = %f\n" % (statistics.stdev(total_accuracy)))
         if sum(total_f1)>0:
@@ -280,16 +304,16 @@ def main(argv):
     n_estimators = ''
     stop_time = ''
     try:
-        opts, args = getopt.getopt(argv,"h:i:o:e:s:c:",["ifile=","ofile=","enumber=","stoptime=","cores="])
+        opts, args = getopt.getopt(argv,"h:i:o:e:s:",["ifile=","ofile=","enumber=","stoptime="])
     except getopt.GetoptError:
-        print('parallel_brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time> -c <n_cores>')
+        print('brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
         sys.exit(2)
     if opts == []:
-        print('parallel_brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time> -c <n_cores>')
+        print('brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print('parallel_brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time> -c <n_cores>')
+            print('brute_force_search_exec.py -i <inputfile> -o <outputfile> -e <n_estimators> -s <stop_time>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
             inputfile = arg
@@ -299,54 +323,47 @@ def main(argv):
             n_estimators = arg
         elif opt in ("-s", "--stoptime"):
             stop_time = arg
-        elif opt in ("-c", "--cores"):
-            n_cores = arg
     print('Input file is ', inputfile)
     print('Output file is ', outputfile)
     print('The number of estimators is ', n_estimators)
     print('The number of iterations is ', stop_time)
-    print('The number of cores is ', n_cores)
     if inputfile == "iris":
         dataset = datasets.load_iris()
-        print('Runing Brute Force Ensemble Classifier (parallel version)...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
                         n_estimators=int(n_estimators), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
-                        n_cores=int(n_cores)
+                        stop_time=int(stop_time)
                        )
     elif inputfile == "breast":
         dataset = datasets.load_breast_cancer()
-        print('Runing Brute Force Ensemble Classifier (parallel version)...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
                         n_estimators=int(n_estimators), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
-                        n_cores=int(n_cores)
+                        stop_time=int(stop_time)
                        )
     elif  inputfile == "wine":
         dataset = datasets.load_wine()
-        print('Runing Brute Force Ensemble Classifier (parallel version)...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.data, 
                         target=dataset.target, 
                         n_estimators=int(n_estimators), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
-                        n_cores=int(n_cores)
+                        stop_time=int(stop_time)
                        )
     else:
         le = LabelEncoder()
         dataset = pd.read_csv(inputfile)
         dataset.iloc[:, -1] = le.fit_transform(dataset.iloc[:, -1])
-        print('Runing Brute Force Ensemble Classifier (parallel version)...')
+        print('Runing Brute Force Ensemble Classifier...')
         compare_results(data=dataset.iloc[:, 0:-1].values, 
                         target=dataset.iloc[:, -1].values, 
                         n_estimators=int(n_estimators), 
                         outputfile=outputfile, 
-                        stop_time=int(stop_time),
-                        n_cores=int(n_cores)
+                        stop_time=int(stop_time)
                        )
     print('It is finished!')
 
