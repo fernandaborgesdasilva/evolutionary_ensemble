@@ -2,6 +2,6 @@ nest_asyncio==1.2.3
 scipy==1.4.1
 joblib==0.13.0
 pandas==0.25.3
-numpy==1.18.1
+numpy==1.22.0
 aiofile==1.5.2
 scikit_learn==0.19.2
